@@ -17,5 +17,5 @@
 *** TODO Add info pages and search at point
 *** TODO Jump to project's active django source tree
 ** Fabric
-*** TODO Get deploy function running
+*** DONE Get deploy function running
 *** TODO Acknowledge relevant fabfile and run commands for current project

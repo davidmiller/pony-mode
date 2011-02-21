@@ -1,3 +1,29 @@
+;; Python
+(defun django-get-func()
+  "Get the function currently at point - depends on python-mode"
+  (save-excursion
+    (if (py-go-up-tree-to-keyword "\\(def\\)")
+        (if (looking-at "[ \t]*[a-z]+[\s]\\([a-z_]+\\)\\>")
+            (buffer-substring (match-beginning 1) (match-end 1))
+          nil))))
+
+(defun django-get-class()
+  "Get the class at point - depends on python-mode"
+  (save-excursion
+    (if (py-go-up-tree-to-keyword "\\(class\\)")
+        (if (looking-at "[ \t]*[a-z]+[\s]\\([a-zA-Z]+\\)\\>")
+            (buffer-substring (match-beginning 1) (match-end 1))
+          nil))))
+
+(defun django-get-app()
+  "Get the name of the django app currently being edited"
+  (with-temp-buffer
+    (insert default-directory)
+    (goto-char (point-min))
+    (if (looking-at (concat (django-project-root) "\\([a-z]+\\).*"))
+        (buffer-substring (match-beginning 1) (match-end 1))
+      nil)))
+
 ;; Environment
 (defun django-project-root()
   "Return the root of the project(dir with manage.py in) or nil"
@@ -56,6 +82,23 @@
   (let ((url "http://localhost:8000"))
     (browse-url url)))
 
+;; Testing
+(defun django-test()
+  "Run tests here"
+  (interactive)
+  (let ((func (django-get-func))
+        (class (django-get-class))
+        (app (django-get-app))
+        (command nil))
+    (if (string= "test" (substring func 0 4))
+        (setq command (concat app "." class "." func)))
+    (if command
+        (start-process "djangotests" "*tests*"
+                       (django-manage)
+                       "test"
+                       command)))
+  (pop-to-buffer (get-buffer "*tests*")))
+
 ;; Keymaps
 
 (defvar django-minor-mode-map
@@ -64,6 +107,7 @@
 (define-key django-minor-mode-map "\C-c\C-db" 'django-browser)
 (define-key django-minor-mode-map "\C-c\C-dfd" 'django-fabric-deploy)
 (define-key django-minor-mode-map "\C-c\C-dr" 'django-runserver)
+(define-key django-minor-mode-map "\C-c\C-dt" 'django-test)
 
 ;; Minor mode
 (define-minor-mode django-minor-mode
