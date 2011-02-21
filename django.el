@@ -26,6 +26,13 @@
           (setq found manage)))
     (if found (expand-file-name found))))
 
+;; Fabric
+(defun django-fabric-deploy()
+  "Deploy project with fab deploy"
+  (interactive)
+  (start-process "fabric" "*fabric*" "fab" "deploy")
+  (pop-to-buffer (get-buffer "*fabric*")))
+
 
 ;; Server
 (defun django-runserver()
@@ -55,6 +62,7 @@
   (let ((map (make-keymap)))
     map))
 (define-key django-minor-mode-map "\C-c\C-db" 'django-browser)
+(define-key django-minor-mode-map "\C-c\C-dfd" 'django-fabric-deploy)
 (define-key django-minor-mode-map "\C-c\C-dr" 'django-runserver)
 
 ;; Minor mode
