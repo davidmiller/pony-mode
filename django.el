@@ -1,3 +1,8 @@
+;; Django-mode
+(defun django-reload-mode()
+  (interactive)
+  (load-library "django"))
+
 ;; Python
 (defun django-get-func()
   "Get the function currently at point - depends on python-mode"
@@ -43,14 +48,21 @@
 
 (defun django-manage()
   "Return the current manage command"
-  (let ((found nil)
+  (let (
         (django (concat (django-project-root) "../bin/django"))
         (manage (concat (django-project-root) "manage.py")))
     (if (file-exists-p django)
         (setq found django)
       (if (and (not found) (file-exists-p manage))
-          (setq found manage)))
+          (setq found manage)
+        nil))
     (if found (expand-file-name found))))
+
+(defun django-command-exists(cmd)
+  "Is cmd installed in this app"
+  (if (string-match cmd (shell-command-to-string (django-manage)))
+      (setq found-command t)
+    nil))
 
 ;; Fabric
 (defun django-fabric-deploy()
@@ -82,6 +94,17 @@
   (let ((url "http://localhost:8000"))
     (browse-url url)))
 
+;; Shell
+;; Broken
+;; (defun django-shell()
+;;   "Open a shell with the current django project's context loaded"
+;;   (interactive)
+;;   (if (django-command-exists "shell_plus")
+;;       (setq command "shell_plus")
+;;     (setq command "shell"))
+;;   (start-process "djangoshell" "*djangoshell*" (django-manage) command)
+;;   (pop-to-buffer (get-buffer "*djangoshell*")))
+
 ;; Testing
 (defun django-test()
   "Run tests here"
@@ -90,14 +113,20 @@
         (class (django-get-class))
         (app (django-get-app))
         (command nil))
-    (if (string= "test" (substring func 0 4))
-        (setq command (concat app "." class "." func)))
+    (if (and func class app (string= "test" (substring func 0 4)))
+        (setq command (concat app "." class "." func))
+      (if (and class app)
+          (setq command (concat app "." class))
+        (if app
+            (setq command app))))
     (if command
-        (start-process "djangotests" "*tests*"
-                       (django-manage)
-                       "test"
-                       command)))
-  (pop-to-buffer (get-buffer "*tests*")))
+        (let ((confirmed-command
+               (read-from-minibuffer "test: " command)))
+          (start-process "djangotests" "*tests*"
+                         (django-manage)
+                         "test"
+                         confirmed-command)
+          (pop-to-buffer (get-buffer "*tests*"))))))
 
 ;; Keymaps
 
@@ -108,6 +137,7 @@
 (define-key django-minor-mode-map "\C-c\C-dfd" 'django-fabric-deploy)
 (define-key django-minor-mode-map "\C-c\C-dr" 'django-runserver)
 (define-key django-minor-mode-map "\C-c\C-dt" 'django-test)
+(define-key django-minor-mode-map "\C-c\C-d\C-r" 'django-reload-mode)
 
 ;; Minor mode
 (define-minor-mode django-minor-mode

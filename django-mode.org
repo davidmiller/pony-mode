@@ -1,8 +1,8 @@
 * TODO
-** Unit Tests
-*** TODO Run test for app at point
-*** TODO Run testcase at point
-*** TODO Run test at point
+** DONE Unit Tests
+*** DONE Run test for app at point
+*** DONE Run testcase at point
+*** DONE Run test at point
 ** Db
 *** TODO Recognise settings and load sql-XXX
 *** TODO Run sql region on DB
@@ -19,3 +19,5 @@
 ** Fabric
 *** DONE Get deploy function running
 *** TODO Acknowledge relevant fabfile and run commands for current project
+** Shell
+   Need to open shell for app.
