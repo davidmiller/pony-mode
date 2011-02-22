@@ -1,23 +1,23 @@
-* TODO
+* TODOLIST
 ** DONE Unit Tests
 *** DONE Run test for app at point
 *** DONE Run testcase at point
 *** DONE Run test at point
-** Db
+** TODO Db
 *** TODO Recognise settings and load sql-XXX
 *** TODO Run sql region on DB
-** syncdb
-*** TODO Basic syncdb
+** TODO syncdb
+*** DONE Basic syncdb
 *** TODO South
-** Tags
+** TODO Tags
 *** TODO Create tags file
 *** TODO commit into repo
 *** TODO reload
-** Django docs
+** TODO Django docs
 *** TODO Add info pages and search at point
 *** TODO Jump to project's active django source tree
-** Fabric
+** TODO Fabric
 *** DONE Get deploy function running
 *** TODO Acknowledge relevant fabfile and run commands for current project
-** Shell
+** TODO Shell
    Need to open shell for app.
