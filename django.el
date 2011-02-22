@@ -105,15 +105,15 @@
     (browse-url url)))
 
 ;; Shell
-;; Broken
-;; (defun django-shell()
-;;   "Open a shell with the current django project's context loaded"
-;;   (interactive)
-;;   (if (django-command-exists "shell_plus")
-;;       (setq command "shell_plus")
-;;     (setq command "shell"))
-;;   (start-process "djangoshell" "*djangoshell*" (django-manage) command)
-;;   (pop-to-buffer (get-buffer "*djangoshell*")))
+(defun django-shell()
+  "Open a shell with the current django project's context loaded"
+  (interactive)
+  (if (django-command-exists "shell_plus")
+      (setq command "shell_plus")
+    (setq command "shell"))
+  (apply 'make-comint "djangosh" (django-manage) nil (list command))
+  (pop-to-buffer (get-buffer "*djangosh*")))
+
 
 ;; Syncdb
 (defun django-syncdb()
