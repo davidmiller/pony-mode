@@ -71,14 +71,16 @@
   (start-process "fabric" "*fabric*" "fab" "deploy")
   (pop-to-buffer (get-buffer "*fabric*")))
 
-
 ;; Server
 (defun django-runserver()
   "Start the dev server"
   (interactive)
+  (if (django-command-exists "runserver_plus")
+      (setq command "runserver_plus")
+    (setq command "runserver"))
   (start-process "djangoserver" "*djangoserver*"
                  (django-manage)
-                 "runserver_plus")
+                 command)
   (pop-to-buffer (get-buffer "*djangoserver*")))
 
 (defun django-stopserver()
