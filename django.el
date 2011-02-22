@@ -75,12 +75,15 @@
 (defun django-runserver()
   "Start the dev server"
   (interactive)
-  (if (django-command-exists "runserver_plus")
-      (setq command "runserver_plus")
-    (setq command "runserver"))
-  (start-process "djangoserver" "*djangoserver*"
-                 (django-manage)
-                 command)
+  (let ((proc (get-buffer-process "*djangoserver*")))
+    (if proc
+        (message "Django Dev Server already running")
+      (if (django-command-exists "runserver_plus")
+          (setq command "runserver_plus")
+        (setq command "runserver"))
+      (start-process "djangoserver" "*djangoserver*"
+                     (django-manage)
+                     command)))
   (pop-to-buffer (get-buffer "*djangoserver*")))
 
 (defun django-stopserver()
@@ -93,7 +96,12 @@
 (defun django-browser()
   "Open a tab at the development server"
   (interactive)
-  (let ((url "http://localhost:8000"))
+  (let ((url "http://localhost:8000")
+        (proc (get-buffer-process "*djangoserver*")))
+    (if (not proc)
+        (progn
+          (django-runserver)
+          (sit-for 2)))
     (browse-url url)))
 
 ;; Shell
@@ -106,6 +114,14 @@
 ;;     (setq command "shell"))
 ;;   (start-process "djangoshell" "*djangoshell*" (django-manage) command)
 ;;   (pop-to-buffer (get-buffer "*djangoshell*")))
+
+;; Syncdb
+(defun django-syncdb()
+  "Run Syncdb on the current project"
+  (interactive)
+  (start-process "djangomigrations" "*djangomigrations*"
+                 (django-manage) "syncdb")
+  (pop-to-buffer (get-buffer "*djangomigrations*")))
 
 ;; Testing
 (defun django-test()
@@ -138,6 +154,7 @@
 (define-key django-minor-mode-map "\C-c\C-db" 'django-browser)
 (define-key django-minor-mode-map "\C-c\C-dfd" 'django-fabric-deploy)
 (define-key django-minor-mode-map "\C-c\C-dr" 'django-runserver)
+(define-key django-minor-mode-map "\C-c\C-ds" 'django-syncdb)
 (define-key django-minor-mode-map "\C-c\C-dt" 'django-test)
 (define-key django-minor-mode-map "\C-c\C-d\C-r" 'django-reload-mode)
 
