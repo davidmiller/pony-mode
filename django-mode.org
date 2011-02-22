@@ -21,3 +21,12 @@
 *** TODO Acknowledge relevant fabfile and run commands for current project
 ** TODO Shell
    Need to open shell for app.
+** TODO Movement
+*** Jump tp template
+*** Jump to view
+*** jump to model
+** TODO Commands
+*** User input
+*** flush
+*** reset
+*** startapp
