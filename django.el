@@ -153,8 +153,9 @@
     map))
 (define-key django-minor-mode-map "\C-c\C-db" 'django-browser)
 (define-key django-minor-mode-map "\C-c\C-dfd" 'django-fabric-deploy)
+(define-key django-minor-mode-map "\C-c\C-dm" 'django-syncdb)
 (define-key django-minor-mode-map "\C-c\C-dr" 'django-runserver)
-(define-key django-minor-mode-map "\C-c\C-ds" 'django-syncdb)
+(define-key django-minor-mode-map "\C-c\C-ds" 'django-shell)
 (define-key django-minor-mode-map "\C-c\C-dt" 'django-test)
 (define-key django-minor-mode-map "\C-c\C-d\C-r" 'django-reload-mode)
 

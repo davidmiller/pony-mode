@@ -13,13 +13,14 @@
 *** TODO Create tags file
 *** TODO commit into repo
 *** TODO reload
-** TODO Django docs
-*** TODO Add info pages and search at point
+** TODO Docso
+*** TODO Add Django info pages and search at point
 *** TODO Jump to project's active django source tree
+*** TODO Build docs with sphinx
 ** TODO Fabric
 *** DONE Get deploy function running
 *** TODO Acknowledge relevant fabfile and run commands for current project
-** TODO Shell
+** DONE Shell
    Need to open shell for app.
 ** TODO Movement
 *** Jump tp template
@@ -30,3 +31,5 @@
 *** flush
 *** reset
 *** startapp
+
+
