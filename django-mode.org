@@ -37,4 +37,5 @@
 *** startapp
 *** TODO dumpdata
 *** loaddata
-
+** TODO Template mode
+*** TODO Create in-built template mode.
