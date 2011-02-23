@@ -28,6 +28,10 @@
   (let ((s (if (symbolp str) (symbol-name str) str)))
     (replace-regexp-in-string "\\(^[[:space:]\n]*\\|[[:space:]\n]*$\\)" "" s)))
 
+(defun django-pop(buffer)
+  "Wrap pop-to and get buffer"
+  (pop-to-buffer (get-buffer buffer)))
+
 ;; Django-mode
 (defun django-reload-mode()
   (interactive)
@@ -140,11 +144,37 @@
     (message (concat setting " : " (django-get-setting setting)))))
 
 ;; Fabric
+(defun django-fabric-list-commands()
+  "List of all fabric commands for project as strings"
+  (split-string (shell-command-to-string "fab --list | awk '{print $1}'|grep -v Available")))
+
+(defun django-fabric-run(cmd)
+  "Run fabric command"
+  (start-process "fabric" "*fabric*" "fab" cmd)
+  (django-pop "*fabric*"))
+
+(defun django-fabric()
+  "Run a fabric command"
+  (interactive)
+  (django-fabric-run (minibuffer-with-setup-hook 'minibuffer-complete
+                       (completing-read "Fabric: "
+                                        (django-fabric-list-commands)))))
+
 (defun django-fabric-deploy()
   "Deploy project with fab deploy"
   (interactive)
-  (start-process "fabric" "*fabric*" "fab" "deploy")
-  (pop-to-buffer (get-buffer "*fabric*")))
+  (django-fabric-run "deploy"))
+
+;; Fixtures
+(defun django-dumpdata()
+  "Dumpdata to json"
+  (interactive)
+  (let ((dump (read-from-minibuffer "Dumpdata: " (django-get-app)))
+        (target (expand-file-name (read-file-name
+                 "File: "
+                 (expand-file-name default-directory)))))
+    (shell-command (concat (django-manage) " dumpdata " dump " > " target))
+  (message (concat "Written to " target))))
 
 ;; Server
 (defun django-runserver()
@@ -258,7 +288,7 @@
   (let ((map (make-keymap)))
     map))
 (define-key django-minor-mode-map "\C-c\C-db" 'django-browser)
-(define-key django-minor-mode-map "\C-c\C-dfd" 'django-fabric-deploy)
+(define-key django-minor-mode-map "\C-c\C-df" 'django-fabric)
 (define-key django-minor-mode-map "\C-c\C-dm" 'django-syncdb)
 (define-key django-minor-mode-map "\C-c\C-dr" 'django-runserver)
 (define-key django-minor-mode-map "\C-c\C-ds" 'django-shell)
@@ -270,8 +300,10 @@
     (define-key django-minor-mode-map [menu-bar django] (cons "Django " menu-map))
     (define-key menu-map [browser]
       '("Launch project in browser" . django-browser))
+    (define-key menu-map [fabric]
+      '("Run fabric function" . django-fabric))
     (define-key menu-map [deploy]
-      '("Run fabric deploy function" . django-fabric-deploy))
+      '("Run fabric 'deploy' function" . django-fabric-deploy))
     (define-key menu-map [syncdb]
       '("Syncdb" . django-syncdb))
     (define-key menu-map [south-convert]
@@ -287,7 +319,9 @@
     (define-key menu-map [test]
       '("Run tests" . django-test))
     (define-key menu-map [setting]
-      '("Check setting value for project" . django-setting)))
+      '("Check setting value for project" . django-setting))
+    (define-key menu-map [dumpdata]
+      '("Dumpdata to json" . django-dumpdata)))
 
 
 ;; Minor mode

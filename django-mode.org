@@ -6,7 +6,7 @@
 ** TODO Db
 *** TODO Recognise settings and load sql-XXX
 *** TODO Run sql region on DB
-** TODO syncdb
+** syncdb
 *** DONE Basic syncdb
 *** TODO South
 **** DONE Convert app
@@ -21,9 +21,9 @@
 *** TODO Add Django info pages and search at point
 *** TODO Jump to project's active django source tree
 *** TODO Build docs with sphinx
-** TODO Fabric
+** DONE Fabric
 *** DONE Get deploy function running
-*** TODO Acknowledge relevant fabfile and run commands for current project
+*** DONE Acknowledge relevant fabfile and run commands for current project
 ** DONE Shell
    Need to open shell for app.
 ** TODO Movement
@@ -35,5 +35,6 @@
 *** flush
 *** reset
 *** startapp
-
+*** TODO dumpdata
+*** loaddata
 

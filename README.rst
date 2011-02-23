@@ -17,7 +17,12 @@ Features:
 * Run django shell in buffer [C-c C-d s]
   * Checks for shell_plus
   * If not defaults to shell
-* run `fab deploy` for current project within emacs [C-c C-d f d]
+* Fabric integration [C-c C-d f]
+
+Fabric Integration
+------------------
+
+Django-mode will interact with fabric for your current project, building a list of functions to auto-complete, and running commands within a \*fabric\* buffer.
 
 Buildout Support
 ----------------
