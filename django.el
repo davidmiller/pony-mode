@@ -1,3 +1,9 @@
+;; Lisp
+(defun chomp (str)
+  "Chomp leading and tailing whitespace www.emacswiki.org/emacs/ElispCookbook"
+  (let ((s (if (symbolp str) (symbol-name str) str)))
+    (replace-regexp-in-string "\\(^[[:space:]\n]*\\|[[:space:]\n]*$\\)" "" s)))
+
 ;; Django-mode
 (defun django-reload-mode()
   (interactive)
@@ -66,9 +72,11 @@
 
 (defun django-get-setting(setting)
   "Get the django settings.py value for `setting`"
-    (let ((curdir default-directory)
+  (let ((working-dir default-directory)
+        (curdir default-directory)
         (max 10)
-        (found nil))
+        (found nil)
+        (value nil))
     (while (and (not found) (> max 0))
       (progn
         (if (file-exists-p (concat curdir "settings.py"))
@@ -78,11 +86,18 @@
             (setq curdir (concat curdir "../"))
             (setq max (- max 1))))))
     (if found
-        (let ((settings (concat (expand-file-name curdir) "settings.py"))
-              (python-c (concat "import settings; print settings." setting)))))))
+        (let ((settings-dir (expand-file-name curdir))
+              (python-c (concat "python -c 'import settings; print settings.'"
+                                setting)))
+          (cd settings-dir)
+          (setq value (chomp (shell-command-to-string python-c))))
+      nil)))
 
-
-
+(defun django-setting()
+  "Interactively display a setting value in the minibuffer"
+  (interactive)
+  (let ((setting (read-from-minibuffer "Get setting: " (word-at-point))))
+    (message (concat setting " : " (django-get-setting setting)))))
 
 ;; Fabric
 (defun django-fabric-deploy()
@@ -178,6 +193,23 @@
 (define-key django-minor-mode-map "\C-c\C-ds" 'django-shell)
 (define-key django-minor-mode-map "\C-c\C-dt" 'django-test)
 (define-key django-minor-mode-map "\C-c\C-d\C-r" 'django-reload-mode)
+
+;; Menu
+(let ((menu-map (make-sparse-keymap "Django")))
+    (define-key django-minor-mode-map [menu-bar django] (cons "Django " menu-map))
+    (define-key menu-map [browser]
+      '("Launch project in browser" . django-browser))
+    (define-key menu-map [runserver]
+      '("Run dev server for project" . django-runserver))
+    (define-key menu-map [deploy]
+      '("Run fabric deploy function" . django-fabric-deploy))
+    (define-key menu-map [shell]
+      '("Launch Django shell" . django-shell))
+    (define-key menu-map [test]
+      '("Run tests" . django-test))
+    (define-key menu-map [setting]
+      '("Check setting value for project" . django-setting)))
+
 
 ;; Minor mode
 (define-minor-mode django-minor-mode
