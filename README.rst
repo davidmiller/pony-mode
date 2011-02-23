@@ -13,6 +13,7 @@ Features:
 * Run test case at point in buffer [C-c C-d t]
 * Run tests for current app in buffer [C-c C-d t]
 * Run Syncdb on current project [C-c C-d m] (migrate)
+* South integration - run south convert, schemamigration, migrate
 * Run django shell in buffer [C-c C-d s]
   * Checks for shell_plus
   * If not defaults to shell

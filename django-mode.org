@@ -9,11 +9,15 @@
 ** TODO syncdb
 *** DONE Basic syncdb
 *** TODO South
+**** DONE Convert app
+**** DONE schemamigration --auto
+**** DONE Migrate current app
+**** TODO Determine whether we already have migrations for this app
 ** TODO Tags
 *** TODO Create tags file
 *** TODO commit into repo
 *** TODO reload
-** TODO Docso
+** TODO Docs
 *** TODO Add Django info pages and search at point
 *** TODO Jump to project's active django source tree
 *** TODO Build docs with sphinx

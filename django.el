@@ -1,3 +1,27 @@
+;; Copyright (C) 2011 David Miller <david@deadpansincerity.com>
+
+;; Authors: David Miller <david@deadpansincerity.com>
+
+;; Keywords: python django
+
+;;; License
+
+;; This program is free software; you can redistribute it and/or
+;; modify it under the terms of the GNU General Public License
+;; as published by the Free Software Foundation; either version 2
+;; of the License, or (at your option) any later version.
+
+;; This program is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+
+;; You should have received a copy of the GNU General Public License
+;; along with this program; if not, write to the Free Software
+;; Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+
+;;; Code:
+
 ;; Lisp
 (defun chomp (str)
   "Chomp leading and tailing whitespace www.emacswiki.org/emacs/ElispCookbook"
@@ -29,7 +53,7 @@
 (defun django-get-app()
   "Get the name of the django app currently being edited"
   (with-temp-buffer
-    (insert default-directory)
+    (insert (expand-file-name default-directory))
     (goto-char (point-min))
     (if (looking-at (concat (django-project-root) "\\([a-z]+\\).*"))
         (buffer-substring (match-beginning 1) (match-end 1))
@@ -70,6 +94,19 @@
       (setq found-command t)
     nil))
 
+(defun django-command-if-exists(proc-name command args)
+  "Run `command` if it exists"
+  (if (django-command-exists command)
+      (let ((process-buffer (concat "*" proc-name "*")))
+        (progn
+          (message (concat command " " args))
+          (start-process proc-name process-buffer
+                         (django-manage)
+                         command args)
+          (pop-to-buffer (get-buffer process-buffer))))
+
+    nil))
+
 (defun django-get-setting(setting)
   "Get the django settings.py value for `setting`"
   (let ((working-dir default-directory)
@@ -85,13 +122,16 @@
           (progn
             (setq curdir (concat curdir "../"))
             (setq max (- max 1))))))
+
     (if found
         (let ((settings-dir (expand-file-name curdir))
               (python-c (concat "python -c 'import settings; print settings.'"
                                 setting)))
           (cd settings-dir)
-          (setq value (chomp (shell-command-to-string python-c))))
-      nil)))
+          (setq value (chomp (shell-command-to-string python-c)))
+          (cd working-dir))
+      nil)
+    (if value (format "%s" value) nil)))
 
 (defun django-setting()
   "Interactively display a setting value in the minibuffer"
@@ -110,15 +150,19 @@
 (defun django-runserver()
   "Start the dev server"
   (interactive)
-  (let ((proc (get-buffer-process "*djangoserver*")))
+  (let ((proc (get-buffer-process "*djangoserver*"))
+        (working-dir default-directory))
     (if proc
         (message "Django Dev Server already running")
       (if (django-command-exists "runserver_plus")
           (setq command "runserver_plus")
         (setq command "runserver"))
-      (start-process "djangoserver" "*djangoserver*"
-                     (django-manage)
-                     command)))
+      (progn
+        (cd (django-project-root))
+        (start-process "djangoserver" "*djangoserver*"
+                       (django-manage)
+                       command)
+        (cd working-dir))))
   (pop-to-buffer (get-buffer "*djangoserver*")))
 
 (defun django-stopserver()
@@ -150,13 +194,40 @@
   (pop-to-buffer (get-buffer "*djangosh*")))
 
 
-;; Syncdb
+;; Syncdb / South
 (defun django-syncdb()
   "Run Syncdb on the current project"
   (interactive)
   (start-process "djangomigrations" "*djangomigrations*"
                  (django-manage) "syncdb")
   (pop-to-buffer (get-buffer "*djangomigrations*")))
+
+(defun django-south-convert()
+  "Convert an existing app to south"
+  (interactive)
+  (let ((app (read-from-minibuffer "Convert: " (django-get-app))))
+    (django-command-if-exists "djangomigrations"
+                              "convert_to_south" app)))
+
+(defun django-south-schemamigration()
+  "Create migration for modification"
+  (interactive)
+  (let ((app (read-from-minibuffer "Migrate: " (django-get-app))))
+    (if (django-command-exists "schemamigration")
+        (progn
+          (start-process "djangomigrations" "*djangomigrations*"
+                         (django-manage)
+                         "schemamigration" app "--auto")
+          (pop-to-buffer (get-buffer "*djangomigrations*")))
+      (message "South doesn't seem to be installed"))))
+
+(defun django-south-migrate()
+  "Migrate app"
+  (interactive)
+  (let ((app (read-from-minibuffer "Convert: " (django-get-app))))
+    (django-command-if-exists "djangomigrations"
+                              "migrate" app)))
+
 
 ;; Testing
 (defun django-test()
@@ -199,10 +270,18 @@
     (define-key django-minor-mode-map [menu-bar django] (cons "Django " menu-map))
     (define-key menu-map [browser]
       '("Launch project in browser" . django-browser))
-    (define-key menu-map [runserver]
-      '("Run dev server for project" . django-runserver))
     (define-key menu-map [deploy]
       '("Run fabric deploy function" . django-fabric-deploy))
+    (define-key menu-map [syncdb]
+      '("Syncdb" . django-syncdb))
+    (define-key menu-map [south-convert]
+      '("South convert" . django-south-convert))
+    (define-key menu-map [south-schemamigration]
+      '("South Schemamigration --auto" . django-south-schemamigration))
+    (define-key menu-map [south-migrate]
+      '("South migrate" . django-south-migrate))
+    (define-key menu-map [runserver]
+      '("Run dev server for project" . django-runserver))
     (define-key menu-map [shell]
       '("Launch Django shell" . django-shell))
     (define-key menu-map [test]
