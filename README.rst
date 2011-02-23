@@ -18,6 +18,7 @@ Features:
   * Checks for shell_plus
   * If not defaults to shell
 * Fabric integration [C-c C-d f]
+* Startapp and dumpdata on current project within emacs
 
 Fabric Integration
 ------------------

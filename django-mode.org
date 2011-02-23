@@ -34,7 +34,7 @@
 *** User input
 *** flush
 *** reset
-*** startapp
+*** TODO startapp
 *** TODO dumpdata
 *** loaddata
 ** TODO Template mode

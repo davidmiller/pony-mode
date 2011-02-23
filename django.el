@@ -143,6 +143,19 @@
   (let ((setting (read-from-minibuffer "Get setting: " (word-at-point))))
     (message (concat setting " : " (django-get-setting setting)))))
 
+;; Database
+(defstruct django-db-settings engine name user pass host)
+
+(defun django-get-db-settings()
+  "Get Django's database settings"
+  (let ((db-settings
+         :engine (django-get-setting "DATABASE_ENGINE")
+         :sql-name (django-get-setting "DATABASE_NAME")
+         :user (django-get-setting "DATABASE_USER")
+         :pass (django-get-setting "DATABASE_PASSWORD")
+         :host (django-get-setting "DATABASE_HOST")))
+    db-settings))
+
 ;; Fabric
 (defun django-fabric-list-commands()
   "List of all fabric commands for project as strings"
@@ -223,6 +236,13 @@
   (apply 'make-comint "djangosh" (django-manage) nil (list command))
   (pop-to-buffer (get-buffer "*djangosh*")))
 
+;; Startapp
+(defun django-startapp()
+  "Run the django startapp command"
+  (interactive)
+  (let ((app (read-from-minibuffer "App name: ")))
+    (django-command-if-exists "djangomigrations"
+                           "startapp" app)))
 
 ;; Syncdb / South
 (defun django-syncdb()
@@ -312,6 +332,8 @@
       '("South Schemamigration --auto" . django-south-schemamigration))
     (define-key menu-map [south-migrate]
       '("South migrate" . django-south-migrate))
+    (define-key menu-map [startapp]
+      '("South migrate" . django-startapp))
     (define-key menu-map [runserver]
       '("Run dev server for project" . django-runserver))
     (define-key menu-map [shell]
