@@ -64,6 +64,26 @@
       (setq found-command t)
     nil))
 
+(defun django-get-setting(setting)
+  "Get the django settings.py value for `setting`"
+    (let ((curdir default-directory)
+        (max 10)
+        (found nil))
+    (while (and (not found) (> max 0))
+      (progn
+        (if (file-exists-p (concat curdir "settings.py"))
+            (progn
+              (setq found t))
+          (progn
+            (setq curdir (concat curdir "../"))
+            (setq max (- max 1))))))
+    (if found
+        (let ((settings (concat (expand-file-name curdir) "settings.py"))
+              (python-c (concat "import settings; print settings." setting)))))))
+
+
+
+
 ;; Fabric
 (defun django-fabric-deploy()
   "Deploy project with fab deploy"
