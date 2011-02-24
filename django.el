@@ -22,6 +22,22 @@
 
 ;;; Code:
 
+;; Variables
+(defgroup django nil
+  "Djangification for Emacs"
+  :group 'programming
+  :prefix "django-")
+
+(defcustom django-server-host "localhost"
+  "Host to run django dev server"
+  :group 'django
+  :type 'string)
+
+(defcustom django-server-port "8000"
+  "Port to run django dev server"
+  :group 'django
+  :type 'string)
+
 ;; Lisp
 (defun chomp (str)
   "Chomp leading and tailing whitespace www.emacswiki.org/emacs/ElispCookbook"
@@ -149,12 +165,33 @@
 (defun django-get-db-settings()
   "Get Django's database settings"
   (let ((db-settings
-         :engine (django-get-setting "DATABASE_ENGINE")
-         :sql-name (django-get-setting "DATABASE_NAME")
-         :user (django-get-setting "DATABASE_USER")
-         :pass (django-get-setting "DATABASE_PASSWORD")
-         :host (django-get-setting "DATABASE_HOST")))
+         (make-django-db-settings
+          :engine (django-get-setting "DATABASE_ENGINE")
+          :name (django-get-setting "DATABASE_NAME")
+          :user (django-get-setting "DATABASE_USER")
+          :pass (django-get-setting "DATABASE_PASSWORD")
+          :host (django-get-setting "DATABASE_HOST"))))
     db-settings))
+
+(defun django-db-shell()
+  "Run sql-XXX for this project"
+  (interactive)
+  (let ((db (django-get-db-settings)))
+    (progn
+      (setq sql-user (django-db-settings-user db))
+      (setq sql-password (django-db-settings-pass db))
+      (setq sql-database (django-db-settings-name db))
+      (setq sql-server (django-db-settings-host db))
+      (if (equalp (django-db-settings-engine db) "mysql")
+          (sql-connect-mysql)
+        (if (equalp (django-db-settings-engine db) "sqlite3")
+            (sql-connect-sqlite)
+          (if (equalp (substr (django-db-settings-engine db) -9 -1)
+                      "psycopg2")
+              (sql-connect-postgres))))
+      (django-pop "*SQL*")
+      (rename-buffer "*DjangoDbShell*"))))
+
 
 ;; Fabric
 (defun django-fabric-list-commands()
@@ -190,6 +227,7 @@
   (message (concat "Written to " target))))
 
 ;; Server
+
 (defun django-runserver()
   "Start the dev server"
   (interactive)
@@ -204,7 +242,8 @@
         (cd (django-project-root))
         (start-process "djangoserver" "*djangoserver*"
                        (django-manage)
-                       command)
+                       command
+                       (concat django-server-host ":"  django-server-port))
         (cd working-dir))))
   (pop-to-buffer (get-buffer "*djangoserver*")))
 
@@ -308,6 +347,7 @@
   (let ((map (make-keymap)))
     map))
 (define-key django-minor-mode-map "\C-c\C-db" 'django-browser)
+(define-key django-minor-mode-map "\C-c\C-dd" 'django-db-shell)
 (define-key django-minor-mode-map "\C-c\C-df" 'django-fabric)
 (define-key django-minor-mode-map "\C-c\C-dm" 'django-syncdb)
 (define-key django-minor-mode-map "\C-c\C-dr" 'django-runserver)
@@ -320,6 +360,8 @@
     (define-key django-minor-mode-map [menu-bar django] (cons "Django " menu-map))
     (define-key menu-map [browser]
       '("Launch project in browser" . django-browser))
+    (define-key menu-map [dbshell]
+      '("Launch Django db shell" . django-db-shell))
     (define-key menu-map [fabric]
       '("Run fabric function" . django-fabric))
     (define-key menu-map [deploy]

@@ -19,6 +19,7 @@ Features:
   * If not defaults to shell
 * Fabric integration [C-c C-d f]
 * Startapp and dumpdata on current project within emacs
+* Database integration with Emacs sql-mode interactive buffer [C-c C-c d
 
 Fabric Integration
 ------------------
