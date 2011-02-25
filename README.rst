@@ -32,6 +32,12 @@ Buildout Support
 Django mode is aware of buildout, and will use buildout-root/bin/django to
 run management commands when available, manage.py when not.
 
+Tests
+-----
+
+Run tests in in an interactive buffer, allowing you to drop out into ipdb/pdb
+as required.
+
 Installation
 ------------
 

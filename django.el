@@ -226,6 +226,14 @@
     (shell-command (concat (django-manage) " dumpdata " dump " > " target))
   (message (concat "Written to " target))))
 
+;; GoTo
+(defun django-goto-template()
+  "Jump-to-template-at-point"
+  (interactive)
+  (message (replace-regexp-in-string
+            "^.*['\"]\\(:?.*.html\\)" "" (thing-at-point 'line)))
+  )
+
 ;; Server
 
 (defun django-runserver()
@@ -335,11 +343,14 @@
     (if command
         (let ((confirmed-command
                (read-from-minibuffer "test: " command)))
-          (start-process "djangotests" "*tests*"
-                         (django-manage)
-                         "test"
-                         confirmed-command)
-          (pop-to-buffer (get-buffer "*tests*"))))))
+;  (apply 'make-comint "djangosh" (django-manage) nil (list command))
+          (apply 'make-comint "djangotests" (django-manage) nil
+                 (list "test" confirmed-command))
+          ;; (start-process "djangotests" "*tests*"
+          ;;                (django-manage)
+          ;;                "test"
+          ;;                (confirmed-command)
+          (pop-to-buffer (get-buffer "*djangotests*"))))))
 
 ;; Keymaps
 
