@@ -99,7 +99,7 @@
             (setq max (- max 1))))))
     (if found (expand-file-name curdir))))
 
-(defun django-manage()
+(defun django-manage-cmd()
   "Return the current manage command"
   (let (
         (django (concat (django-project-root) "../bin/django"))
@@ -113,7 +113,7 @@
 
 (defun django-command-exists(cmd)
   "Is cmd installed in this app"
-  (if (string-match cmd (shell-command-to-string (django-manage)))
+  (if (string-match cmd (shell-command-to-string (django-manage-cmd)))
       (setq found-command t)
     nil))
 
@@ -124,7 +124,7 @@
         (progn
           (message (concat command " " args))
           (start-process proc-name process-buffer
-                         (django-manage)
+                         (django-manage-cmd)
                          command args)
           (pop-to-buffer (get-buffer process-buffer))))
 
@@ -226,7 +226,7 @@
         (target (expand-file-name (read-file-name
                  "File: "
                  (expand-file-name default-directory)))))
-    (shell-command (concat (django-manage) " dumpdata " dump " > " target))
+    (shell-command (concat (django-manage-cmd) " dumpdata " dump " > " target))
   (message (concat "Written to " target))))
 
 ;; GoTo
@@ -252,7 +252,7 @@
       (progn
         (cd (django-project-root))
         (start-process "djangoserver" "*djangoserver*"
-                       (django-manage)
+                       (django-manage-cmd)
                        command
                        (concat django-server-host ":"  django-server-port))
         (cd working-dir))))
@@ -283,7 +283,7 @@
   (if (django-command-exists "shell_plus")
       (setq command "shell_plus")
     (setq command "shell"))
-  (apply 'make-comint "djangosh" (django-manage) nil (list command))
+  (apply 'make-comint "djangosh" (django-manage-cmd) nil (list command))
   (pop-to-buffer (get-buffer "*djangosh*")))
 
 ;; Startapp
@@ -299,7 +299,7 @@
   "Run Syncdb on the current project"
   (interactive)
   (start-process "djangomigrations" "*djangomigrations*"
-                 (django-manage) "syncdb")
+                 (django-manage-cmd) "syncdb")
   (pop-to-buffer (get-buffer "*djangomigrations*")))
 
 (defun django-south-convert()
@@ -316,7 +316,7 @@
     (if (django-command-exists "schemamigration")
         (progn
           (start-process "djangomigrations" "*djangomigrations*"
-                         (django-manage)
+                         (django-manage-cmd)
                          "schemamigration" app "--auto")
           (pop-to-buffer (get-buffer "*djangomigrations*")))
       (message "South doesn't seem to be installed"))))
@@ -346,7 +346,7 @@
     (if command
         (let ((confirmed-command
                (read-from-minibuffer "test: " command)))
-          (apply 'make-comint "djangotests" (django-manage) nil
+          (apply 'make-comint "djangotests" (django-manage-cmd) nil
                  (list "test" confirmed-command))
           (pop-to-buffer (get-buffer "*djangotests*"))))))
 
