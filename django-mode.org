@@ -28,8 +28,6 @@
 *** TODO startapp
 *** TODO dumpdata
 *** loaddata
-** TODO Template mode
-*** TODO Create in-built template mode.
 * Completed Features
 ** DONE Unit Tests
 *** DONE Run test for app at point
@@ -42,3 +40,5 @@
 *** DONE Acknowledge relevant fabfile and run commands for current project
 ** DONE Shell
    Need to open shell for app.
+** DONE Template mode
+*** DONE Create in-built template mode.

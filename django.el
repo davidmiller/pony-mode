@@ -343,14 +343,15 @@
     (if command
         (let ((confirmed-command
                (read-from-minibuffer "test: " command)))
-;  (apply 'make-comint "djangosh" (django-manage) nil (list command))
           (apply 'make-comint "djangotests" (django-manage) nil
                  (list "test" confirmed-command))
-          ;; (start-process "djangotests" "*tests*"
-          ;;                (django-manage)
-          ;;                "test"
-          ;;                (confirmed-command)
           (pop-to-buffer (get-buffer "*djangotests*"))))))
+
+;; Modes ;;
+
+;; Django-minor-mode
+
+(defvar django-minor-mode-hook nil)
 
 ;; Keymaps
 
@@ -399,16 +400,52 @@
       '("Dumpdata to json" . django-dumpdata)))
 
 
-;; Minor mode
+;; Python Minor mode
 (define-minor-mode django-minor-mode
   "Djangoriffic"
   :initial nil
   :lighter " Django"
   :keymap django-minor-mode-map)
 
+;; Django-tpl-minor-mode
+
+(defvar django-tpl-mode-hook nil)
+
+(defconst django-tpl-font-lock-keywords
+  (append
+   sgml-font-lock-keywords
+   (list
+    '("{% ?comment ?%}\\(\n?.*?\\)+?{% ?endcomment ?%}\\|<!--\\|-->" . font-lock-comment-face)
+    '("{% ?\\(\\(end\\)?\\(extends\\|for\\|cycle\\|filter\\|firstof\\|debug\\|if\\(changed\\|equal\\|notequal\\|\\)\\|include\\|load\\|now\\|regroup\\|spaceless\\|ssi\\|templatetag\\|widthratio\\|block\\|trans\\)\\) ?.*? ?%}" . 1)
+    '("{{ ?\\(.*?\\) ?}}" . (1 font-lock-variable-name-face))
+    '("{%\\|\\%}\\|{{\\|}}" . font-lock-builtin-face)
+    ))
+  "Highlighting for django-tpl-mode")
+
+(define-minor-mode django-tpl-minor-mode
+  "Django-templatin-riffic"
+  :initial nil
+  :lighter " DjangoTpl"
+  :keymap django-minor-mode-map)
+
+(defun django-tpl-mode()
+  "Minor mode for editing django templates"
+  (interactive)
+  (django-tpl-minor-mode t)
+  (run-hooks 'django-tpl-mode-hook)
+  (set (make-local-variable 'font-lock-defaults)
+       '(django-tpl-font-lock-keywords)))
+
 ;; Hooks
 
 (add-hook 'python-mode-hook
           (lambda ()
             (if (django-project-root)
-                (django-minor-mode t))))
+                (progn
+                  (django-minor-mode t)
+                  (run-hooks 'django-minor-mode-hook)))))
+
+(add-hook 'html-mode-hook
+          (lambda ()
+            (if (django-project-root)
+                  (django-tpl-mode))))
