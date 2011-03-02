@@ -1,0 +1,15 @@
+# -*- mode: python; coding: utf-8 -*-
+# name: DjangoTestCase
+# key: testc
+# group: Unit Testing
+# contributor: David Miller <david@deadpansinceity.com>
+# --
+class ${1:Name}TestCase(${2:TestCase}):
+    "${3:Description}"
+    fixtures = [${4:'fixture.json'}]
+
+    def test${5:Something}(self):
+        "${6:TestDesc}"
+        $0pass
+
+

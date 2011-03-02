@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# contributor: David Miller <david@deadpansincerity.com>
+# name : blank null
+# group: django
+# --
+blank=True, null=True$0

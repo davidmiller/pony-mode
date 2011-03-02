@@ -21,6 +21,7 @@ Features:
 * Startapp and dumpdata on current project within emacs
 * Database integration with Emacs sql-mode interactive buffer [C-c C-c d
 * Django Template minor mode with syntax highlighting for django template tags
+* Snippet collection for django
 
 Fabric Integration
 ------------------
@@ -42,7 +43,7 @@ as required.
 Installation
 ------------
 
-1. Download django-mode.el
+1. clone this repo somewhere $ git clone http://github.com/davidmiller/django-mode
 2. Add the following to your .emacs::
 
     (load-library "path/to/django")

@@ -1,0 +1,12 @@
+# -*- coding: utf-8; mode: snippet -*-
+# name: modelForm
+# group: django
+# key: mform
+# contributor: David Miller <david@deadpansinceity.com>
+# --
+class ${1:ClassName}Form( ModelForm ):
+    $0
+
+    class Meta:
+        model = $1
+        exclude = ($2)

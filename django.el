@@ -38,6 +38,9 @@
   :group 'django
   :type 'string)
 
+;; Dependancies and environment sniffing
+(require 'sgml-mode)
+
 ;; Lisp
 (defun chomp (str)
   "Chomp leading and tailing whitespace www.emacswiki.org/emacs/ElispCookbook"
@@ -349,6 +352,17 @@
 
 ;; Modes ;;
 
+;; Snippets
+
+(defvar django-snippet-dir (expand-file-name
+                            (concat (file-name-directory load-file-name)
+                                    "/snippets")))
+(defun django-load-snippets()
+  "Load snippets if yasnippet installed"
+  (interactive)
+  (if (fboundp 'yas/load-directory)
+      (yas/load-directory django-snippet-dir)))
+
 ;; Django-minor-mode
 
 (defvar django-minor-mode-hook nil)
@@ -407,6 +421,13 @@
   :lighter " Django"
   :keymap django-minor-mode-map)
 
+(defun django-mode()
+  "Initialize Django mode"
+  (interactive)
+  (django-minor-mode t)
+  (run-hooks 'django-minor-mode-hook)
+  (django-load-snippets))
+
 ;; Django-tpl-minor-mode
 
 (defvar django-tpl-mode-hook nil)
@@ -415,7 +436,9 @@
   (append
    sgml-font-lock-keywords
    (list
-    '("{% ?comment ?%}\\(\n?.*?\\)+?{% ?endcomment ?%}\\|<!--\\|-->" . font-lock-comment-face)
+    '("{%.*\\(\\bor\\b\\).*%}" . (1 font-lock-builtin-face))
+
+    '("{% ?comment ?%}\\(\n?.*?\\)+?{% ?endcomment ?%}\\|<!--\\(\n?.*?\\)+?-->" . font-lock-comment-face)
     '("{% ?\\(\\(end\\)?\\(extends\\|for\\|cycle\\|filter\\|firstof\\|debug\\|if\\(changed\\|equal\\|notequal\\|\\)\\|include\\|load\\|now\\|regroup\\|spaceless\\|ssi\\|templatetag\\|widthratio\\|block\\|trans\\)\\) ?.*? ?%}" . 1)
     '("{{ ?\\(.*?\\) ?}}" . (1 font-lock-variable-name-face))
     '("{%\\|\\%}\\|{{\\|}}" . font-lock-builtin-face)
@@ -434,16 +457,15 @@
   (django-tpl-minor-mode t)
   (run-hooks 'django-tpl-mode-hook)
   (set (make-local-variable 'font-lock-defaults)
-       '(django-tpl-font-lock-keywords)))
+       '(django-tpl-font-lock-keywords))
+  (django-load-snippets))
 
 ;; Hooks
 
 (add-hook 'python-mode-hook
           (lambda ()
             (if (django-project-root)
-                (progn
-                  (django-minor-mode t)
-                  (run-hooks 'django-minor-mode-hook)))))
+                (django-mode))))
 
 (add-hook 'html-mode-hook
           (lambda ()

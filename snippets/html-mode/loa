@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# contributor: David Miller <david@deadpansincerity.com>
+# group: django
+# name : load
+# --
+{% load ${1:template_lib} %}$0
