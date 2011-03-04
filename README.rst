@@ -22,6 +22,8 @@ Features:
 * Database integration with Emacs sql-mode interactive buffer [C-c C-c d
 * Django Template minor mode with syntax highlighting for django template tags
 * Snippet collection for django
+* generate tags table for project
+* run manage commands in interactive buffer
 
 Fabric Integration
 ------------------

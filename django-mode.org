@@ -10,24 +10,22 @@
 **** DONE Migrate current app
 **** TODO Determine whether we already have migrations for this app
 ** TODO Tags
-*** TODO Create tags file
-*** TODO commit into repo
-*** TODO reload
+*** DONE Create tags file
 ** TODO Docs
 *** TODO Add Django info pages and search at point
 *** TODO Jump to project's active django source tree
 *** TODO Build docs with sphinx
 ** TODO Movement
-*** Jump tp template
-*** Jump to view
-*** jump to model
+*** TODO Jump to template
+*** DONE Jump to view (TAGS does this better)
+*** DONE jump to model (TAGS does this better)
 ** TODO Commands
-*** User input
-*** flush
-*** reset
-*** TODO startapp
-*** TODO dumpdata
-*** loaddata
+*** DONE User input manage command
+*** TODO flush
+*** TODO reset
+*** DONE startapp
+*** DONE dumpdata
+*** TODO loaddata
 * Completed Features
 ** DONE Unit Tests
 *** DONE Run test for app at point

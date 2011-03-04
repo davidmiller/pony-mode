@@ -38,6 +38,11 @@
   :group 'django
   :type 'string)
 
+(defcustom django-etags-command "find . | grep '.py$' | grep -v # | xargs etags"
+  "Command to generate tags table for project"
+  :group 'django
+  :type 'string)
+
 ;; Dependancies and environment sniffing
 (require 'sgml-mode)
 
@@ -49,7 +54,8 @@
 
 (defun django-pop(buffer)
   "Wrap pop-to and get buffer"
-  (pop-to-buffer (get-buffer buffer)))
+  (pop-to-buffer (get-buffer buffer))
+  (django-mode))
 
 ;; Django-mode
 (defun django-reload-mode()
@@ -234,8 +240,28 @@
   "Jump-to-template-at-point"
   (interactive)
   (message (replace-regexp-in-string
-            "^.*['\"]\\(:?.*.html\\)" "" (thing-at-point 'line)))
+            "^.*['\"]\\(:?.*.html\\)" "bye" (thing-at-point 'line)))
   )
+
+;; Manage
+(defun django-list-commands()
+  "List of managment commands for the current project"
+  (interactive)
+  (let ((help-text (shell-command-to-string (django-manage-cmd))))
+    (split-string (replace-regexp-in-string "\\(\\(.*\n\\)*Available subcommands:\\)"                                       ""
+                                       help-text))))
+
+
+(defun django-manage-complete()
+  "Interactively call the django manage command"
+  (interactive)
+  (shell-command (minibuffer-with-setup-hook 'minibuffer-complete
+                   (completing-read "Manage: "
+                                        (django-list-commands)))))
+
+(defun django-manage (command)
+  (interactive "sManage: ")
+  (shell-command (concat (django-manage-cmd) " " command)))
 
 ;; Server
 
@@ -251,10 +277,10 @@
         (setq command "runserver"))
       (progn
         (cd (django-project-root))
-        (start-process "djangoserver" "*djangoserver*"
-                       (django-manage-cmd)
-                       command
-                       (concat django-server-host ":"  django-server-port))
+        (apply 'make-comint "djangoserver"
+               (django-manage-cmd)
+               nil
+               (list command (concat django-server-host ":"  django-server-port)))
         (cd working-dir))))
   (pop-to-buffer (get-buffer "*djangoserver*")))
 
@@ -300,7 +326,7 @@
   (interactive)
   (start-process "djangomigrations" "*djangomigrations*"
                  (django-manage-cmd) "syncdb")
-  (pop-to-buffer (get-buffer "*djangomigrations*")))
+  (django-pop "*djangomigrations*"))
 
 (defun django-south-convert()
   "Convert an existing app to south"
@@ -318,7 +344,7 @@
           (start-process "djangomigrations" "*djangomigrations*"
                          (django-manage-cmd)
                          "schemamigration" app "--auto")
-          (pop-to-buffer (get-buffer "*djangomigrations*")))
+          (django-pop "*djangomigrations*"))
       (message "South doesn't seem to be installed"))))
 
 (defun django-south-migrate()
@@ -328,6 +354,16 @@
     (django-command-if-exists "djangomigrations"
                               "migrate" app)))
 
+;; TAGS
+
+(defun django-tags()
+  "Generate new tags table"
+  (interactive)
+  (message "TAGging... this could take some time")
+  (let ((working-dir default-directory))
+    (cd (django-project-root))
+    (shell-command django-etags-command)
+    (visit-tags-table (concat (django-project-root) "/TAGS"))))
 
 ;; Testing
 (defun django-test()
@@ -375,8 +411,8 @@
 (define-key django-minor-mode-map "\C-c\C-db" 'django-browser)
 (define-key django-minor-mode-map "\C-c\C-dd" 'django-db-shell)
 (define-key django-minor-mode-map "\C-c\C-df" 'django-fabric)
-(define-key django-minor-mode-map "\C-c\C-dm" 'django-syncdb)
 (define-key django-minor-mode-map "\C-c\C-dr" 'django-runserver)
+(define-key django-minor-mode-map "\C-c\C-dm" 'django-syncdb)
 (define-key django-minor-mode-map "\C-c\C-ds" 'django-shell)
 (define-key django-minor-mode-map "\C-c\C-dt" 'django-test)
 (define-key django-minor-mode-map "\C-c\C-d\C-r" 'django-reload-mode)
@@ -388,12 +424,22 @@
       '("Launch project in browser" . django-browser))
     (define-key menu-map [dbshell]
       '("Launch Django db shell" . django-db-shell))
+    (define-key menu-map [dumpdata]
+      '("Dumpdata to json" . django-dumpdata))
     (define-key menu-map [fabric]
       '("Run fabric function" . django-fabric))
     (define-key menu-map [deploy]
       '("Run fabric 'deploy' function" . django-fabric-deploy))
-    (define-key menu-map [syncdb]
-      '("Syncdb" . django-syncdb))
+    (define-key menu-map [manage]
+      '("Run a management command" . django-manage))
+    (define-key menu-map [runserver]
+      '("Run dev server for project" . django-runserver))
+    (define-key menu-map [stopserver]
+      '("Run dev server for project" . django-stopserver))
+    (define-key menu-map [setting]
+      '("Check setting value for project" . django-setting))
+    (define-key menu-map [shell]
+      '("Launch Django shell" . django-shell))
     (define-key menu-map [south-convert]
       '("South convert" . django-south-convert))
     (define-key menu-map [south-schemamigration]
@@ -402,16 +448,10 @@
       '("South migrate" . django-south-migrate))
     (define-key menu-map [startapp]
       '("South migrate" . django-startapp))
-    (define-key menu-map [runserver]
-      '("Run dev server for project" . django-runserver))
-    (define-key menu-map [shell]
-      '("Launch Django shell" . django-shell))
-    (define-key menu-map [test]
-      '("Run tests" . django-test))
-    (define-key menu-map [setting]
-      '("Check setting value for project" . django-setting))
-    (define-key menu-map [dumpdata]
-      '("Dumpdata to json" . django-dumpdata)))
+    (define-key menu-map [syncdb] '("Syncdb" . django-syncdb))
+    (define-key menu-map [tags] '("Generate TAGS file" . django-tags))
+    (define-key menu-map [test] '("Run tests" . django-test))
+)
 
 
 ;; Python Minor mode
