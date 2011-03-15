@@ -64,6 +64,7 @@
 
 (defun django-comint-pop(name command args)
   "Make a comint buffer and pop to it."
+  (ansi-color-for-comint-mode-on)
   (apply 'make-comint name command nil args)
   (django-pop (concat "*" name "*"))
   (django-mode))
@@ -118,14 +119,17 @@
 
 (defun django-manage-cmd()
   "Return the current manage command"
-  (let (
+  (let ((found nil)
+        (buildout (concat (django-project-root) "bin/django"))
         (django (concat (django-project-root) "../bin/django"))
         (manage (concat (django-project-root) "manage.py")))
-    (if (file-exists-p django)
-        (setq found django)
-      (if (and (not found) (file-exists-p manage))
-          (setq found manage)
-        nil))
+    (if (file-exists-p buildout)
+        (setq found buildout)
+      (if (file-exists-p django)
+          (setq found django)
+        (if (and (not found) (file-exists-p manage))
+            (setq found manage)
+          nil)))
     (if found (expand-file-name found))))
 
 (defun django-command-exists(cmd)
@@ -242,7 +246,8 @@
         (target (expand-file-name (read-file-name
                  "File: "
                  (expand-file-name default-directory)))))
-    (shell-command (concat (django-manage-cmd) " dumpdata " dump " > " target))
+    (shell-command (concat
+                    (django-manage-cmd) " dumpdata " dump " > " target))
   (message (concat "Written to " target))))
 
 ;; GoTo
@@ -250,28 +255,32 @@
   "Jump-to-template-at-point"
   (interactive)
   (message (replace-regexp-in-string
-            "^.*['\"]\\(:?.*.html\\)" "bye" (thing-at-point 'line)))
-  )
+            "^.*['\"]\\(:?.*.html\\)" "bye" (thing-at-point 'line))))
 
 ;; Manage
 (defun django-list-commands()
   "List of managment commands for the current project"
   (interactive)
-  (let ((help-text (shell-command-to-string (django-manage-cmd))))
-    (split-string (replace-regexp-in-string "\\(\\(.*\n\\)*Available subcommands:\\)"                                       ""
-                                       help-text))))
+  (with-temp-buffer
+    (insert (shell-command-to-string (django-manage-cmd)))
+    (goto-char (point-min))
+    (if (looking-at
+         "\\(\\(.*\n\\)*Available subcommands:\\)\n\\(\\(.*\n\\)+?\\)Usage:")
+        (split-string (buffer-substring (match-beginning 3) (match-end 3)))
+      nil)))
 
+(defun django-manage-run(args)
+  "Run the django-manage command completed from the minibuffer"
+  (django-comint-pop "djangomanage" (django-manage-cmd) args))
 
-(defun django-manage-complete()
+(defun django-manage()
   "Interactively call the django manage command"
   (interactive)
-  (shell-command (minibuffer-with-setup-hook 'minibuffer-complete
-                   (completing-read "Manage: "
-                                        (django-list-commands)))))
-
-(defun django-manage (command)
-  (interactive "sManage: ")
-  (shell-command (concat (django-manage-cmd) " " command)))
+  (let ((command (minibuffer-with-setup-hook 'minibuffer-complete
+                              (completing-read "Manage: "
+                                               (django-list-commands)))))
+    (django-manage-run (list command
+                             (read-from-minibuffer (concat command ": "))))))
 
 ;; Server
 
