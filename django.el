@@ -62,6 +62,12 @@
   (pop-to-buffer (get-buffer buffer))
   (django-mode))
 
+(defun django-comint-pop(name command args)
+  "Make a comint buffer and pop to it."
+  (apply 'make-comint name command nil args)
+  (django-pop (concat "*" name "*"))
+  (django-mode))
+
 ;; Django-mode
 (defun django-reload-mode()
   (interactive)
@@ -214,8 +220,7 @@
 
 (defun django-fabric-run(cmd)
   "Run fabric command"
-  (start-process "fabric" "*fabric*" "fab" cmd)
-  (django-pop "*fabric*"))
+  (django-comint-pop "fabric" "fab" (list cmd)))
 
 (defun django-fabric()
   "Run a fabric command"
@@ -282,12 +287,11 @@
         (setq command "runserver"))
       (progn
         (cd (django-project-root))
-        (apply 'make-comint "djangoserver"
-               (django-manage-cmd)
-               nil
-               (list command (concat django-server-host ":"  django-server-port)))
-        (cd working-dir))))
-  (pop-to-buffer (get-buffer "*djangoserver*")))
+        (django-comint-pop "djangoserver" (django-manage-cmd)
+               (list command
+                     (concat django-server-host ":"  django-server-port)))
+        (cd working-dir)))))
+
 
 (defun django-stopserver()
   "Stop the dev server"
@@ -314,8 +318,7 @@
   (if (django-command-exists "shell_plus")
       (setq command "shell_plus")
     (setq command "shell"))
-  (apply 'make-comint "djangosh" (django-manage-cmd) nil (list command))
-  (pop-to-buffer (get-buffer "*djangosh*")))
+  (django-comint-pop "djangosh" (django-manage-cmd) (list command)))
 
 ;; Startapp
 (defun django-startapp()
@@ -390,10 +393,8 @@
     (if command
         (let ((confirmed-command
                (read-from-minibuffer "test: " command)))
-          (apply 'make-comint "djangotests" (django-manage-cmd) nil
+          (django-comint-pop "djangotests" (django-manage-cmd)
                  (list "test" failfast confirmed-command))
-          (django-pop "*djangotests*")
-          (django-mode)
           (django-test-extra-keys)))))
 
 (defun django-test-goto-err()
