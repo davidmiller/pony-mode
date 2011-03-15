@@ -69,6 +69,13 @@
   (django-pop (concat "*" name "*"))
   (django-mode))
 
+(defun django-dir-excursion(dir &rest rest)
+  "django-comint-pop where we need to change into `dir` first"
+  (let ((curdir default-directory))
+     (cd dir)
+     (apply 'django-comint-pop rest)
+     (cd curdir)))
+
 ;; Django-mode
 (defun django-reload-mode()
   (interactive)
@@ -183,6 +190,28 @@
   (let ((setting (read-from-minibuffer "Get setting: " (word-at-point))))
     (message (concat setting " : " (django-get-setting setting)))))
 
+;; Buildout
+(defun django-buildout-cmd()
+  "Return the buildout command or nil if we're not in a buildout"
+  (let ((project-root (django-project-root))
+        (buildouts (list "bin/buildout" "../bin/buildout"))
+        (found nil))
+    (loop for loc in buildouts
+          do
+          (if (file-exists-p (expand-file-name (concat project-root loc)))
+            (setq found (concat project-root loc))))
+    (if found
+        found
+      nil)))
+
+(defun django-buildout()
+  "Run buildout again on the current project"
+  (interactive)
+  (let ((buildout (django-buildout-cmd)))
+    (if buildout
+        (django-dir-excursion
+         (django-project-root) "buildout" buildout nil))))
+
 ;; Database
 (defstruct django-db-settings engine name user pass host)
 
@@ -283,8 +312,7 @@
                              (read-from-minibuffer (concat command ": "))))))
 
 ;; Server
-
-(defun django-runserver()
+(defun runserver()
   "Start the dev server"
   (interactive)
   (let ((proc (get-buffer-process "*djangoserver*"))

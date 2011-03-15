@@ -28,7 +28,7 @@
 *** DONE dumpdata
 *** TODO loaddata
 ** TODO Buildout
-*** TODO Re-run buildout
+*** DONE Re-run buildout
 *** TODO Run something from buildout-bin
 * Completed Features
 ** DONE Unit Tests

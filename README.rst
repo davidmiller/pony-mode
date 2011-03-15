@@ -24,6 +24,7 @@ Features:
 * Snippet collection for django
 * generate tags table for project
 * run manage commands in interactive buffer
+* Buildout integration
 
 Fabric Integration
 ------------------
@@ -35,6 +36,8 @@ Buildout Support
 
 Django mode is aware of buildout, and will use buildout-root/bin/django to
 run management commands when available, manage.py when not.
+
+The command M-x django-buildout will re-run buildout for your current project
 
 Tests
 -----
