@@ -28,6 +28,11 @@
   :group 'programming
   :prefix "django-")
 
+(defcustom django-etags-command "find . | grep '.py$' | grep -v # | xargs etags"
+  "Command to generate tags table for project"
+  :group 'django
+  :type 'string)
+
 (defcustom django-server-host "localhost"
   "Host to run django dev server"
   :group 'django
@@ -38,10 +43,10 @@
   :group 'django
   :type 'string)
 
-(defcustom django-etags-command "find . | grep '.py$' | grep -v # | xargs etags"
-  "Command to generate tags table for project"
+(defcustom django-test-failfast t
+  "Run django tests with failfast?"
   :group 'django
-  :type 'string)
+  :type 'bool)
 
 ;; Dependancies and environment sniffing
 (require 'sgml-mode)
@@ -372,7 +377,10 @@
   (let ((func (django-get-func))
         (class (django-get-class))
         (app (django-get-app))
-        (command nil))
+        (command nil)
+        (failfast (if django-test-failfast
+                      "--failfast"
+                    "")))
     (if (and func class app (string= "test" (substring func 0 4)))
         (setq command (concat app "." class "." func))
       (if (and class app)
@@ -383,8 +391,22 @@
         (let ((confirmed-command
                (read-from-minibuffer "test: " command)))
           (apply 'make-comint "djangotests" (django-manage-cmd) nil
-                 (list "test" confirmed-command))
-          (pop-to-buffer (get-buffer "*djangotests*"))))))
+                 (list "test" failfast confirmed-command))
+          (django-pop "*djangotests*")
+          (django-mode)
+          (django-test-extra-keys)))))
+
+(defun django-test-goto-err()
+  "Go to the file and line of the last stack trace in a test buffer"
+  (interactive)
+  (goto-char (search-backward "File"))
+  (if (looking-at "File \"\\([a-z/]+.py\\)\", line \\([0-9]+\\)")
+      (let ((file (buffer-substring (match-beginning 1) (match-end 1)))
+            (line (buffer-substring (match-beginning 2) (match-end 2))))
+        (find-file-other-window file)
+        (goto-line (string-to-number line)))
+    (message "failed")))
+
 
 ;; Modes ;;
 
@@ -405,6 +427,10 @@
 
 ;; Keymaps
 
+(defun django-key(binding function)
+  "Bind function to binding in django-minor-mode-map"
+  (define-key django-minor-mode-map binding function))
+
 (defvar django-minor-mode-map
   (let ((map (make-keymap)))
     map))
@@ -416,6 +442,10 @@
 (define-key django-minor-mode-map "\C-c\C-ds" 'django-shell)
 (define-key django-minor-mode-map "\C-c\C-dt" 'django-test)
 (define-key django-minor-mode-map "\C-c\C-d\C-r" 'django-reload-mode)
+
+(defun django-test-extra-keys()
+  "Extra keys for working with test buffers"
+  (django-key "\C-c\C-g" 'django-test-goto-err))
 
 ;; Menu
 (let ((menu-map (make-sparse-keymap "Django")))

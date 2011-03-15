@@ -42,6 +42,11 @@ Tests
 Run tests in in an interactive buffer, allowing you to drop out into ipdb/pdb
 as required.
 
+Tests will default to --failfast, but you can turn that off with the variable django-test-failfast or set it in
+M-x customize-group django
+
+in a test run buffer, C-c C-g will jump to the last file and line indicated by the traceback.
+
 Installation
 ------------
 
