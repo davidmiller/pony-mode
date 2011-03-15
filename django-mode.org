@@ -27,9 +27,6 @@
 *** DONE startapp
 *** DONE dumpdata
 *** TODO loaddata
-** TODO Buildout
-*** DONE Re-run buildout
-*** TODO Run something from buildout-bin
 * Completed Features
 ** DONE Unit Tests
 *** DONE Run test for app at point
@@ -44,3 +41,6 @@
    Need to open shell for app.
 ** DONE Template mode
 *** DONE Create in-built template mode.
+** DONE Buildout
+*** DONE Re-run buildout
+*** DONE Run something from buildout-bin

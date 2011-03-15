@@ -12,7 +12,8 @@ Features:
 * Jump to current project in browser (start server if required) [C-c C-d b]
 * Run test case at point in buffer [C-c C-d t]
 * Run tests for current app in buffer [C-c C-d t]
-* Run Syncdb on current project [C-c C-d m] (migrate)
+* Run Syncdb on current project
+* Management commands for current project in interactive buffer
 * South integration - run south convert, schemamigration, migrate
 * Run django shell in buffer [C-c C-d s]
   * Checks for shell_plus
@@ -38,6 +39,8 @@ Django mode is aware of buildout, and will use buildout-root/bin/django to
 run management commands when available, manage.py when not.
 
 The command M-x django-buildout will re-run buildout for your current project
+
+M-x django-buildout-bin will run a script from your buildout's bin directory in an interactive buffer
 
 Tests
 -----

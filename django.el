@@ -204,6 +204,10 @@
         found
       nil)))
 
+(defun django-buildout-list-bin()
+  "List the commands available in the buildout bin dir"
+  (directory-files (file-name-directory (django-buildout-cmd))))
+
 (defun django-buildout()
   "Run buildout again on the current project"
   (interactive)
@@ -211,6 +215,17 @@
     (if buildout
         (django-dir-excursion
          (django-project-root) "buildout" buildout nil))))
+
+(defun django-buildout-bin()
+  "Run a script from the buildout bin/ dir"
+  (interactive)
+  (let ((buildout (django-buildout-cmd)))
+    (if buildout
+        (django-comint-pop "buildout"
+                           (minibuffer-with-setup-hook 'minibuffer-complete
+                             (completing-read "bin/: "
+                                              (django-buildout-list-bin)))
+                           nil))))
 
 ;; Database
 (defstruct django-db-settings engine name user pass host)
@@ -472,14 +487,14 @@
 (defvar django-minor-mode-map
   (let ((map (make-keymap)))
     map))
-(define-key django-minor-mode-map "\C-c\C-db" 'django-browser)
-(define-key django-minor-mode-map "\C-c\C-dd" 'django-db-shell)
-(define-key django-minor-mode-map "\C-c\C-df" 'django-fabric)
-(define-key django-minor-mode-map "\C-c\C-dr" 'django-runserver)
-(define-key django-minor-mode-map "\C-c\C-dm" 'django-syncdb)
-(define-key django-minor-mode-map "\C-c\C-ds" 'django-shell)
-(define-key django-minor-mode-map "\C-c\C-dt" 'django-test)
-(define-key django-minor-mode-map "\C-c\C-d\C-r" 'django-reload-mode)
+(django-key "\C-c\C-db" 'django-browser)
+(django-key "\C-c\C-dd" 'django-db-shell)
+(django-key "\C-c\C-df" 'django-fabric)
+(django-key "\C-c\C-dr" 'django-runserver)
+(django-key "\C-c\C-dm" 'django-manage)
+(django-key "\C-c\C-ds" 'django-shell)
+(django-key "\C-c\C-dt" 'django-test)
+(django-key "\C-c\C-d\C-r" 'django-reload-mode)
 
 (defun django-test-extra-keys()
   "Extra keys for working with test buffers"
@@ -490,6 +505,10 @@
     (define-key django-minor-mode-map [menu-bar django] (cons "Django " menu-map))
     (define-key menu-map [browser]
       '("Launch project in browser" . django-browser))
+    (define-key menu-map [buildout]
+      '("Run buildout on project" . django-buildout))
+    (define-key menu-map [buildout-bin]
+      '("Run a script from buildout's bin/" . django-buildout-bin))
     (define-key menu-map [dbshell]
       '("Launch Django db shell" . django-db-shell))
     (define-key menu-map [dumpdata]
