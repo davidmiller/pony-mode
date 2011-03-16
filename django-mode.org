@@ -9,8 +9,6 @@
 **** DONE schemamigration --auto
 **** DONE Migrate current app
 **** TODO Determine whether we already have migrations for this app
-** TODO Tags
-*** DONE Create tags file
 ** TODO Docs
 *** TODO Add Django info pages and search at point
 *** TODO Jump to project's active django source tree
@@ -44,3 +42,5 @@
 ** DONE Buildout
 *** DONE Re-run buildout
 *** DONE Run something from buildout-bin
+** DONE Tags
+*** DONE Create tags file

@@ -28,7 +28,7 @@
   :group 'programming
   :prefix "django-")
 
-(defcustom django-etags-command "find . | grep '.py$' | grep -v # | xargs etags"
+(defcustom django-etags-command "find . | grep .py | xargs etags"
   "Command to generate tags table for project"
   :group 'django
   :type 'string)
@@ -415,15 +415,18 @@
                               "migrate" app)))
 
 ;; TAGS
-
 (defun django-tags()
   "Generate new tags table"
   (interactive)
-  (message "TAGging... this could take some time")
-  (let ((working-dir default-directory))
-    (cd (django-project-root))
-    (shell-command django-etags-command)
-    (visit-tags-table (concat (django-project-root) "/TAGS"))))
+  (let ((working-dir default-directory)
+        (tags-dir (read-directory-name "TAGS location: "
+                                       (django-project-root))))
+    (cd (expand-file-name tags-dir))
+    (message "TAGging... this could take some time")
+    (shell-command django-etags-command )
+    (visit-tags-table (concat tags-dir "TAGS"))
+    (cd working-dir)
+    (message "TAGS table regenerated")))))
 
 ;; Testing
 (defun django-test()

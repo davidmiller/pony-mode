@@ -26,6 +26,7 @@ Features:
 * generate tags table for project
 * run manage commands in interactive buffer
 * Buildout integration
+* Generate TAGS table for project to enable quick navigation
 
 Fabric Integration
 ------------------
@@ -41,6 +42,13 @@ run management commands when available, manage.py when not.
 The command M-x django-buildout will re-run buildout for your current project
 
 M-x django-buildout-bin will run a script from your buildout's bin directory in an interactive buffer
+
+Tags
+----
+
+Generate a TAGS table for your project with M-x django-tags
+The exact command used is customisable through django-etags-command in
+M-x customize-group RET django
 
 Tests
 -----
