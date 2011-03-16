@@ -426,7 +426,7 @@
     (shell-command django-etags-command )
     (visit-tags-table (concat tags-dir "TAGS"))
     (cd working-dir)
-    (message "TAGS table regenerated")))))
+    (message "TAGS table regenerated")))
 
 ;; Testing
 (defun django-test()
@@ -569,7 +569,7 @@
     '("{%.*\\(\\bor\\b\\).*%}" . (1 font-lock-builtin-face))
 
     '("{% ?comment ?%}\\(\n?.*?\\)+?{% ?endcomment ?%}\\|<!--\\(\n?.*?\\)+?-->" . font-lock-comment-face)
-    '("{% ?\\(\\(end\\)?\\(extends\\|for\\|cycle\\|filter\\|firstof\\|debug\\|if\\(changed\\|equal\\|notequal\\|\\)\\|include\\|load\\|now\\|regroup\\|spaceless\\|ssi\\|templatetag\\|widthratio\\|block\\|trans\\)\\) ?.*? ?%}" . 1)
+    '("{% ?\\(\\(end\\)?\\(extends\\|for\\|cache\\|cycle\\|filter\\|firstof\\|debug\\|if\\(changed\\|equal\\|notequal\\|\\)\\|include\\|load\\|now\\|regroup\\|spaceless\\|ssi\\|templatetag\\|widthratio\\|block\\|trans\\)\\) ?.*? ?%}" . 1)
     '("{{ ?\\(.*?\\) ?}}" . (1 font-lock-variable-name-face))
     '("{%\\|\\%}\\|{{\\|}}" . font-lock-builtin-face)
     ))
