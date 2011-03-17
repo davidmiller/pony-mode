@@ -611,3 +611,8 @@
           (lambda ()
             (if (django-project-root)
                   (django-tpl-mode))))
+
+(add-hook 'dired-mode-hook
+          (lambda ()
+            (if (django-project-root)
+                (django-mode))))
