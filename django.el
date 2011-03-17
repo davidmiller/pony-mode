@@ -211,10 +211,20 @@
 (defun django-buildout()
   "Run buildout again on the current project"
   (interactive)
-  (let ((buildout (django-buildout-cmd)))
-    (if buildout
-        (django-dir-excursion
-         (django-project-root) "buildout" buildout nil))))
+  (let ((buildout (django-buildout-cmd))
+        (cfg (concat
+              (expand-file-name "../"
+                                (file-name-directory (django-buildout-cmd)))
+              "buildout.cfg")))
+    (if (not (file-exists-p cfg))
+        (progn
+          (message "couldn't find buildout.cfg")
+          (setq cfg nil)))
+    (if (and buildout cfg)
+        (django-comint-pop
+         "buildout" buildout
+         (list "-c" cfg)))))
+
 
 (defun django-buildout-bin()
   "Run a script from the buildout bin/ dir"
