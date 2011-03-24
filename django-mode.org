@@ -18,7 +18,7 @@
 *** TODO Jump to project's active django source tree
 *** TODO Build docs with sphinx
 ** TODO Movement
-*** TODO Jump to template
+*** DONE Jump to template
 *** DONE Jump to view (TAGS does this better)
 *** DONE jump to model (TAGS does this better)
 *** TODO Open view at point in browser

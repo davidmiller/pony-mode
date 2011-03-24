@@ -27,6 +27,7 @@ Features:
 * run manage commands in interactive buffer
 * Buildout integration
 * Generate TAGS table for project to enable quick navigation
+* Jump to template at point or from editing view [C-c C-d g t]
 
 Fabric Integration
 ------------------
