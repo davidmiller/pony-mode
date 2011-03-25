@@ -309,13 +309,17 @@
 ;; GoTo
 (defun django-template-decorator()
   "Hai"
-  (interactive)
   (save-excursion
+   (progn
     (search-backward-regexp "^def")
     (previous-line)
     (if (looking-at "^@.*['\"]\\([a-z/_.]+html\\).*$")
         (buffer-substring (match-beginning 1) (match-end 1))
-      "lookfail")))
+      "lookfail"))))
+
+(defun django-tpl-msg()
+  (interactive)
+  (message (django-template-decorator)))
 
 (defun django-goto-template()
   "Jump-to-template-at-point"
