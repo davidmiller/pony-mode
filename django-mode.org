@@ -25,6 +25,11 @@
 *** DONE startapp
 *** DONE dumpdata
 *** TODO loaddata
+** TODO Import
+*** TODO Import
+** TODO Templates
+*** TODO Get variables in template from view
+*** TODO Autocomplete block names from extends
 * Completed Features
 ** DONE Unit Tests
 *** DONE Run test for app at point
