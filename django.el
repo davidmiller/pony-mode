@@ -528,20 +528,40 @@
                (read-from-minibuffer "test: " command)))
           (django-comint-pop "djangotests" (django-manage-cmd)
                  (list "test" failfast confirmed-command))
-          (django-test-extra-keys)))))
+          (django-test-extra-keys)
+          (django-test-hl-files)))))
 
-(defun django-test-goto-err()
-  "Go to the file and line of the last stack trace in a test buffer"
+(defun django-test-open ()
+  "Open the file in a traceback at the line specified"
   (interactive)
-  (goto-char (search-backward "File"))
-  (if (looking-at "File \"\\([a-z/]+.py\\)\", line \\([0-9]+\\)")
+  (move-beginning-of-line nil)
+  (if (looking-at ".*File \"\\([a-z/]+.py\\)\", line \\([0-9]+\\)")
       (let ((file (buffer-substring (match-beginning 1) (match-end 1)))
             (line (buffer-substring (match-beginning 2) (match-end 2))))
         (find-file-other-window file)
         (goto-line (string-to-number line)))
     (message "failed")))
 
+(defun django-test-goto-err()
+  "Go to the file and line of the last stack trace in a test buffer"
+  (interactive)
+  (goto-char (search-backward "File"))
+  (django-test-open))
 
+(defun django-test-up()
+  "Move up the traceback one level"
+  (interactive)
+  (search-backward-regexp "File \"\\([a-z/]+.py\\)\"" nil t))
+
+(defun django-test-down()
+  "Move up the traceback one level"
+  (interactive)
+  (search-forward-regexp "File \"\\([a-z/]+.py\\)\"" nil t))
+
+(defun django-test-hl-files ()
+  "Highlight instances of Files in Test buffers"
+  (hi-lock-face-buffer "File \"\\([a-z/]+.py\\)\", line \\([0-9]+\\)"
+                       'hi-blue))
 ;; Modes ;;
 
 ;; Snippets
@@ -581,7 +601,10 @@
 
 (defun django-test-extra-keys()
   "Extra keys for working with test buffers"
-  (django-key "\C-c\C-g" 'django-test-goto-err))
+  (local-set-key "\C-c\C-g" 'django-test-goto-err)
+  (local-set-key "u" 'django-test-up)
+  (local-set-key "d" 'django-test-down)
+  (local-set-key (kbd "<return>") 'django-test-open))
 
 ;; Menu
 (let ((menu-map (make-sparse-keymap "Django")))
