@@ -1,22 +1,4 @@
 * TODOLIST
-** TODO Db
-*** DONE Recognise settings and load sql-XXX
-*** TODO Run sql region on DB
-*** TODO Multiple databases format not supported" returns traceback
-    Try flat import, check for traceback, and then try DATABASES
-** TODO South
-**** DONE Convert app
-**** DONE schemamigration --auto
-**** DONE Migrate current app
-**** TODO Determine whether we already have migrations for this app
-** TODO Docs
-*** TODO Add Django info pages and search at point
-*** TODO Jump to project's active django source tree
-*** TODO Build docs with sphinx
-** TODO Movement
-*** TODO Jump to template
-*** DONE Jump to view (TAGS does this better)
-*** DONE jump to model (TAGS does this better)
 ** TODO Commands
 *** DONE User input manage command
 *** DONE Completion for manage
@@ -25,11 +7,32 @@
 *** DONE startapp
 *** DONE dumpdata
 *** TODO loaddata
+** TODO Db
+*** DONE Recognise settings and load sql-XXX
+*** TODO Run sql region on DB
+*** TODO Multiple databases format not supported" returns traceback
+    Try flat import, check for traceback, and then try DATABASES
+** TODO Docs
+*** TODO Add Django info pages and search at point
+*** TODO Jump to project's active django source tree
+*** TODO Build docs with sphinx
+** TODO Movement
+*** DONE Jump to template
+*** DONE Jump to view (TAGS does this better)
+*** DONE jump to model (TAGS does this better)
+*** TODO Open view at point in browser
 ** TODO Import
 *** TODO Import
 ** TODO Templates
 *** TODO Get variables in template from view
 *** TODO Autocomplete block names from extends
+** TODO South
+**** DONE Convert app
+**** DONE schemamigration --auto
+**** DONE Migrate current app
+**** TODO Determine whether we already have migrations for this app
+** TODO Testing
+*** TODO Re-run last failed test
 * Completed Features
 ** DONE Unit Tests
 *** DONE Run test for app at point
