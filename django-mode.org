@@ -2,12 +2,11 @@
 ** TODO Commands
 *** DONE User input manage command
 *** DONE Completion for manage
-**** TODO flush
+*** TODO flush
 *** TODO reset
 *** DONE startapp
 *** DONE dumpdata
 *** TODO loaddata
-
 ** TODO Db
 *** DONE Recognise settings and load sql-XXX
 *** TODO Run sql region on DB
@@ -22,12 +21,16 @@
 *** DONE Jump to view (TAGS does this better)
 *** DONE jump to model (TAGS does this better)
 *** TODO Open view at point in browser
+** TODO Import
+*** TODO Import
+** TODO Templates
+*** TODO Get variables in template from view
+*** TODO Autocomplete block names from extends
 ** TODO South
 **** DONE Convert app
 **** DONE schemamigration --auto
 **** DONE Migrate current app
 **** TODO Determine whether we already have migrations for this app
-
 ** TODO Testing
 *** TODO Re-run last failed test
 * Completed Features

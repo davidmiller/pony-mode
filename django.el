@@ -83,7 +83,7 @@
 
 ;; Python
 (defun django-get-func()
-  "Get the function currently at point - depends on python-mode"
+  "Get the function currently at point"
   (save-excursion
     (if (search-backward-regexp "\\(def\\)")
         (if (looking-at "[ \t]*[a-z]+[\s]\\([a-z_]+\\)\\>")
@@ -91,7 +91,7 @@
           nil))))
 
 (defun django-get-class()
-  "Get the class at point - depends on python-mode"
+  "Get the class at point"
   (save-excursion
     (if (search-backward-regexp "\\(class\\)")
         (if (looking-at "[ \t]*[a-z]+[\s]\\([a-zA-Z]+\\)\\>")
@@ -100,8 +100,9 @@
 
 (defun django-get-app()
   "Get the name of the django app currently being edited"
+  (setq fname (buffer-file-name))
   (with-temp-buffer
-    (insert (expand-file-name default-directory))
+    (insert fname)
     (goto-char (point-min))
     (if (looking-at (concat (django-project-root) "\\([a-z]+\\).*"))
         (buffer-substring (match-beginning 1) (match-end 1))
@@ -336,6 +337,35 @@
     (if (and filename (file-exists-p filename))
         (find-file filename)
       (message (format "Template %s not found" filename)))))
+
+
+(defun django-reverse-url ()
+  "Get the URL for this view"
+  (interactive)
+  (setq found nil)
+  (setq view (concat (django-get-app) ".views." (django-get-func)))
+  (message view)
+  (dolist
+   (fpath (find-file default-directory "urls.py$"))
+;;    (if (not found)
+;;        (message "not")
+;   (with-temp-buffer
+      (setq mybuffer (get-buffer-create " myTemp"))
+      (switch-to-buffer mybuffer)
+      (insert-file-contents fpath)
+      (search-forward view)))
+
+;;          (if (search-forward view nil t)
+;;              (setq found fpath))))
+;; ;; ;)
+;;   (if found
+;;       (insert found)
+;;     (insert "Whoops?")))
+;; ;; )
+
+   ;; (concat "find . | grep urls.py | xargs grep "
+   ;;  (django-get-app) ".views." (django-get-func))))
+
 
 ;; Manage
 (defun django-list-commands()
