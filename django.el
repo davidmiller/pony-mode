@@ -51,12 +51,26 @@
 ;; Dependancies and environment sniffing
 (require 'sgml-mode)
 
-;; Lisp
+;; Utility
 (defun chomp (str)
   "Chomp leading and tailing whitespace www.emacswiki.org/emacs/ElispCookbook"
   (let ((s (if (symbolp str) (symbol-name str) str)))
     (replace-regexp-in-string "\\(^[[:space:]\n]*\\|[[:space:]\n]*$\\)" "" s)))
 
+(defun django-find-file (path pattern)
+  "Find files matching pattern in or below path"
+  (setq matches (list))
+  (let ((files (list)))
+    (dolist (f-or-d
+             (directory-files path t "^[^\\.]"))
+      (if (file-directory-p f-or-d)
+          (dolist (filename (find-dot f-or-d pattern))
+            (add-to-list 'files filename))
+        (if (string-match pattern f-or-d)
+          (add-to-list 'files f-or-d))))
+    files))
+
+;; Emacs
 (defun django-pop(buffer)
   "Wrap pop-to and get buffer"
   (pop-to-buffer (get-buffer buffer))
@@ -75,6 +89,16 @@
      (cd dir)
      (apply 'django-comint-pop rest)
      (cd curdir)))
+
+(defun django-localise (var func)
+  "Return buffer local varible or get & set it"
+  (if (local-variable-p var)
+      (progn
+        (message "local"))
+    (progn
+      (message "nonlocal")
+        django-this-project-root)
+    (set var (funcall func))))
 
 ;; Django-mode
 (defun django-reload-mode()
@@ -111,19 +135,22 @@
 ;; Environment
 (defun django-project-root()
   "Return the root of the project(dir with manage.py in) or nil"
-  (let ((curdir default-directory)
-        (max 10)
-        (found nil))
-    (while (and (not found) (> max 0))
-      (progn
-        (if (or (file-exists-p (concat curdir "/bin/django")) ; Buildout?
-                (file-exists-p (concat curdir "manage.py")))
-            (progn
-              (setq found t))
+  (django-localise
+   'django-this-project-root
+   '(lambda ()
+      (let ((curdir default-directory)
+            (max 10)
+            (found nil))
+        (while (and (not found) (> max 0))
           (progn
-            (setq curdir (concat curdir "../"))
-            (setq max (- max 1))))))
-    (if found (expand-file-name curdir))))
+            (if (or (file-exists-p (concat curdir "/bin/django")) ; Buildout?
+                    (file-exists-p (concat curdir "manage.py")))
+                (progn
+                  (setq found t))
+              (progn
+                (setq curdir (concat curdir "../"))
+                (setq max (- max 1))))))
+        (if found (expand-file-name curdir))))))
 
 (defun django-manage-cmd()
   "Return the current manage command"
@@ -190,6 +217,9 @@
   (interactive)
   (let ((setting (read-from-minibuffer "Get setting: " (word-at-point))))
     (message (concat setting " : " (django-get-setting setting)))))
+
+(defun django-find-urlconfs ()
+  "Return the Urlconfs below django root")
 
 ;; Buildout
 (defun django-buildout-cmd()
@@ -316,11 +346,7 @@
     (previous-line)
     (if (looking-at "^@.*['\"]\\([a-z/_.]+html\\).*$")
         (buffer-substring (match-beginning 1) (match-end 1))
-      "lookfail"))))
-
-(defun django-tpl-msg()
-  (interactive)
-  (message (django-template-decorator)))
+      nil))))
 
 (defun django-goto-template()
   "Jump-to-template-at-point"
@@ -338,7 +364,6 @@
         (find-file filename)
       (message (format "Template %s not found" filename)))))
 
-
 (defun django-reverse-url ()
   "Get the URL for this view"
   (interactive)
@@ -347,25 +372,10 @@
   (message view)
   (dolist
    (fpath (find-file default-directory "urls.py$"))
-;;    (if (not found)
-;;        (message "not")
-;   (with-temp-buffer
       (setq mybuffer (get-buffer-create " myTemp"))
       (switch-to-buffer mybuffer)
       (insert-file-contents fpath)
       (search-forward view)))
-
-;;          (if (search-forward view nil t)
-;;              (setq found fpath))))
-;; ;; ;)
-;;   (if found
-;;       (insert found)
-;;     (insert "Whoops?")))
-;; ;; )
-
-   ;; (concat "find . | grep urls.py | xargs grep "
-   ;;  (django-get-app) ".views." (django-get-func))))
-
 
 ;; Manage
 (defun django-list-commands()
@@ -575,10 +585,6 @@
   (if (fboundp 'yas/load-directory)
       (yas/load-directory django-snippet-dir)))
 
-;; Django-minor-mode
-
-(defvar django-minor-mode-hook nil)
-
 ;; Keymaps
 
 (defun django-key(binding function)
@@ -648,8 +654,9 @@
     (define-key menu-map [test] '("Run tests" . django-test))
 )
 
+;; Django-minor-mode
+(defvar django-minor-mode-hook nil)
 
-;; Python Minor mode
 (define-minor-mode django-minor-mode
   "Djangoriffic"
   :initial nil
