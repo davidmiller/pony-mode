@@ -538,14 +538,13 @@
                (read-from-minibuffer "test: " command)))
           (django-comint-pop "djangotests" (django-manage-cmd)
                  (list "test" failfast confirmed-command))
-          (django-test-extra-keys)
-          (django-test-hl-files)))))
+          (django-test-mode)))))
 
 (defun django-test-open ()
   "Open the file in a traceback at the line specified"
   (interactive)
   (move-beginning-of-line nil)
-  (if (looking-at ".*File \"\\([a-z/]+.py\\)\", line \\([0-9]+\\)")
+  (if (looking-at ".*File \"\\([a-z/_]+.py\\)\", line \\([0-9]+\\)")
       (let ((file (buffer-substring (match-beginning 1) (match-end 1)))
             (line (buffer-substring (match-beginning 2) (match-end 2))))
         (find-file-other-window file)
@@ -561,16 +560,16 @@
 (defun django-test-up()
   "Move up the traceback one level"
   (interactive)
-  (search-backward-regexp "File \"\\([a-z/]+.py\\)\"" nil t))
+  (search-backward-regexp "File \"\\([a-z_/]+.py\\)\"" nil t))
 
 (defun django-test-down()
   "Move up the traceback one level"
   (interactive)
-  (search-forward-regexp "File \"\\([a-z/]+.py\\)\"" nil t))
+  (search-forward-regexp "File \"\\([a-z_/]+.py\\)\"" nil t))
 
 (defun django-test-hl-files ()
   "Highlight instances of Files in Test buffers"
-  (hi-lock-face-buffer "File \"\\([a-z/]+.py\\)\", line \\([0-9]+\\)"
+  (hi-lock-face-buffer "File \"\\([a-z/_]+.py\\)\", line \\([0-9]+\\)"
                        'hi-blue))
 ;; Modes ;;
 
@@ -591,6 +590,10 @@
   "Bind function to binding in django-minor-mode-map"
   (define-key django-minor-mode-map binding function))
 
+(defun djangot-key (binding function)
+  "Bind for test mode. Hacky as hell"
+  (define-key django-test-minor-mode-map binding function))
+
 (defvar django-minor-mode-map
   (let ((map (make-keymap)))
     map))
@@ -605,12 +608,14 @@
 (django-key "\C-c\C-dt" 'django-test)
 (django-key "\C-c\C-d\C-r" 'django-reload-mode)
 
-(defun django-test-extra-keys()
-  "Extra keys for working with test buffers"
-  (local-set-key "\C-c\C-g" 'django-test-goto-err)
-  (local-set-key "u" 'django-test-up)
-  (local-set-key "d" 'django-test-down)
-  (local-set-key (kbd "<return>") 'django-test-open))
+(defvar django-test-minor-mode-map
+  (let ((map (make-keymap)))
+    map))
+
+(djangot-key "\C-c\C-g" 'django-test-goto-err)
+(djangot-key "\C-p" 'django-test-up)
+(djangot-key "\C-n" 'django-test-down)
+(djangot-key (kbd "M-RET") 'django-test-open)
 
 ;; Menu
 (let ((menu-map (make-sparse-keymap "Django")))
@@ -701,6 +706,20 @@
   (set (make-local-variable 'font-lock-defaults)
        '(django-tpl-font-lock-keywords))
   (django-load-snippets))
+
+;; Django-test minor mode
+
+(define-minor-mode django-test-minor-mode
+  "Django Testin'"
+  :initial nil
+  :lighter " DT"
+  :keymap django-test-minor-mode-map)
+
+(defun django-test-mode ()
+  "Enable Django test minor mode"
+  (interactive)
+  (django-test-minor-mode t)
+  (django-test-hl-files))
 
 ;; Hooks
 
