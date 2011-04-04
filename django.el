@@ -224,16 +224,15 @@
 ;; Buildout
 (defun django-buildout-cmd()
   "Return the buildout command or nil if we're not in a buildout"
-  (let ((project-root (django-project-root))
-        (buildouts (list "bin/buildout" "../bin/buildout"))
-        (found nil))
-    (loop for loc in buildouts
-          do
-          (if (file-exists-p (expand-file-name (concat project-root loc)))
-            (setq found (concat project-root loc))))
-    (if found
-        found
-      nil)))
+  (django-localise
+   'django-this-buildout-root
+   '(lambda ()
+      (let ((root-parent
+             (expand-file-name (concat (django-project-root) "../"))))
+        (if (file-exists-p
+             (expand-file-name (concat root-parent "bin/buildout")))
+            (expand-file-name (concat root-parent "bin/buildout"))
+          nil)))))
 
 (defun django-buildout-list-bin()
   "List the commands available in the buildout bin dir"
@@ -464,9 +463,9 @@
                  (django-manage-cmd) "syncdb")
   (django-pop "*djangomigrations*"))
 
-(defun django-south-get-migrations()
-  "Get a list of migration numbers for the current app"
-)
+;; (defun django-south-get-migrations()
+;;   "Get a list of migration numbers for the current app"
+;; )
 
 (defun django-south-convert()
   "Convert an existing app to south"
@@ -493,14 +492,21 @@
   (let ((app (read-from-minibuffer "Convert: " (django-get-app))))
     (django-command-if-exists "djangomigrations"
                               "migrate" app)))
-(defun django-south-fake ()
-  "Fake a migration for a model"
-  (interactive)
-  (let ((app (read-from-minibuffer "Convert: " (django-get-app)))
-        (migration (read-from-minibuffer "migration: "
-                                         (django-south-get-migrations))))
+;; (defun django-south-fake ()
+;;   "Fake a migration for a model"
+;;   (interactive)
+;;   (let ((app (read-from-minibuffer "Convert: " (django-get-app)))
+;;         (migration (read-from-minibuffer "migration: "
+;;                                          (django-south-get-migrations))))
+;;     (django-command-if-exists "djangomigrations"
+;;                               "migrate" (list app migrations))))
+
+(defun django-south-initial ()
+  "Run the initial south migration for an app"
+  (let ((app (read-from-minibuffer "Initial migration: " (django-get-app))))
     (django-command-if-exists "djangomigrations"
-                              "migrate" (list app migrations))))
+                              "migrate" (list app "--initial"))))
+
 
 ;; TAGS
 (defun django-tags()
