@@ -159,31 +159,30 @@
 
     nil))
 
+(defun django-get-settings-file()
+  "Return the absolute path to the django settings file"
+  (let ((settings (concat (django-project-root) "settings.py"))
+        (isfile nil))
+    (if (not (file-exists-p settings))
+        (message "Settings file not found")
+        (setq isfile t))
+    (if isfile
+        settings
+      nil)))
+
 (defun django-get-setting(setting)
   "Get the django settings.py value for `setting`"
-  (let ((working-dir default-directory)
-        (curdir default-directory)
-        (max 10)
-        (found nil)
-        (value nil))
-    (while (and (not found) (> max 0))
-      (progn
-        (if (file-exists-p (concat curdir "settings.py"))
-            (progn
-              (setq found t))
-          (progn
-            (setq curdir (concat curdir "../"))
-            (setq max (- max 1))))))
-
-    (if found
-        (let ((settings-dir (expand-file-name curdir))
-              (python-c (concat "python -c 'import settings; print settings.'"
-                                setting)))
-          (cd settings-dir)
-          (setq value (chomp (shell-command-to-string python-c)))
-          (cd working-dir))
-      nil)
-    (if value (format "%s" value) nil)))
+  (let ((settings (django-get-settings-file))
+        (python-c "python -c 'import settings; print settings.%s'")
+        (working-dir default-directory)
+        (set-val nil))
+    (if settings
+        (progn
+          (cd (file-name-directory settings))
+          (setq set-val (chomp (shell-command-to-string
+                                (format python-c setting))))
+          (cd working-dir)
+          set-val))))
 
 (defun django-setting()
   "Interactively display a setting value in the minibuffer"
@@ -366,6 +365,10 @@
    ;; (concat "find . | grep urls.py | xargs grep "
    ;;  (django-get-app) ".views." (django-get-func))))
 
+(defun django-goto-settings()
+  (interactive)
+  "Open the settings.py for this project"
+  (find-file (django-get-settings-file)))
 
 ;; Manage
 (defun django-list-commands()
@@ -594,7 +597,8 @@
 (django-key "\C-c\C-db" 'django-browser)
 (django-key "\C-c\C-dd" 'django-db-shell)
 (django-key "\C-c\C-df" 'django-fabric)
-(django-key "\C-c\C-dgt" 'django-goto-template)
+(django-key "\C-c\C-dgs" 'django-goto-template)
+(django-key "\C-c\C-dgt" 'django-goto-settings)
 (django-key "\C-c\C-dr" 'django-runserver)
 (django-key "\C-c\C-dm" 'django-manage)
 (django-key "\C-c\C-ds" 'django-shell)
@@ -678,7 +682,7 @@
    (list
     '("{%.*\\(\\bor\\b\\).*%}" . (1 font-lock-builtin-face))
 
-    '("{% ?comment ?%}\\(\n?.*?\\)+?{% ?endcomment ?%}\\|<!--\\(\n?.*?\\)+?-->" . font-lock-comment-face)
+    '("{% ?comment ?%}\\(\n?.*?\\)+?{% ?endcomment ?%}" . font-lock-comment-face)
     '("{% ?\\(\\(end\\)?\\(extends\\|for\\|cache\\|cycle\\|filter\\|firstof\\|debug\\|if\\(changed\\|equal\\|notequal\\|\\)\\|include\\|load\\|now\\|regroup\\|spaceless\\|ssi\\|templatetag\\|widthratio\\|block\\|trans\\)\\) ?.*? ?%}" . 1)
     '("{{ ?\\(.*?\\) ?}}" . (1 font-lock-variable-name-face))
     '("{%\\|\\%}\\|{{\\|}}" . font-lock-builtin-face)
@@ -698,7 +702,7 @@
   (run-hooks 'django-tpl-mode-hook)
   (set (make-local-variable 'font-lock-defaults)
        '(django-tpl-font-lock-keywords))
-  (django-load-snippets))
+   (django-load-snippets))
 
 ;; Django-test minor mode
 
@@ -722,9 +726,9 @@
                 (django-mode))))
 
 (add-hook 'html-mode-hook
-          (lambda ()
-            (if (django-project-root)
-                  (django-tpl-mode))))
+           (lambda ()
+             (if (django-project-root)
+                   (django-tpl-mode))))
 
 (add-hook 'dired-mode-hook
           (lambda ()
