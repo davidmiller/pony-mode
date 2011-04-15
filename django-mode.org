@@ -2,7 +2,7 @@
 ** TODO Commands
 *** DONE User input manage command
 *** DONE Completion for manage
-*** TODO flush
+*** DONE flush
 *** TODO reset
 *** DONE startapp
 *** DONE dumpdata

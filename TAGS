@@ -1,0 +1,72 @@
+
+django.el,2565
+(defgroup django 26,897
+(defcustom django-etags-command 31,991
+(defcustom django-server-host 36,1139
+(defcustom django-server-port 41,1250
+(defcustom django-test-failfast 46,1356
+(defun chomp 55,1530
+(defun django-pop(60,1763
+(defun django-comint-pop(65,1876
+(defun django-dir-excursion(72,2094
+(defun django-reload-mode(80,2323
+(defun django-get-func(85,2405
+(defun django-get-class(93,2677
+(defun django-get-app(101,2941
+(defun django-project-root(112,3283
+(defun django-manage-cmd(128,3832
+(defun django-command-exists(143,4376
+(defun django-command-if-exists(149,4554
+(defun django-get-setting(162,4999
+(defun django-setting(188,5846
+(defun django-buildout-cmd(195,6101
+(defun django-buildout-list-bin(208,6536
+(defun django-buildout(212,6692
+(defun django-buildout-bin(232,7316
+(defstruct django-db-settings 244,7756
+(defun django-get-db-settings(246,7815
+(defun django-db-shell(257,8232
+(defun django-fabric-list-commands(278,8977
+(defun django-fabric-run(282,9164
+(defun django-fabric(286,9267
+(defun django-fabric-deploy(293,9527
+(defun django-dumpdata(299,9653
+(defun django-template-decorator(311,10070
+(defun django-tpl-msg(321,10335
+(defun django-goto-template(325,10417
+(defun django-find-file 341,10976
+(defun django-find-urlconfs 373,12041
+(defun django-reverse-url 377,12119
+(defun django-list-commands(406,12868
+(defun django-manage-run(417,13264
+(defun django-manage(421,13423
+(defun django-runserver(431,13835
+(defun django-stopserver(449,14437
+(defun django-browser(456,14614
+(defun django-shell(468,14907
+(defun django-startapp(477,15198
+(defun django-syncdb(485,15439
+(defun django-south-get-migrations(492,15658
+(defun django-south-convert(496,15754
+(defun django-south-schemamigration(503,16010
+(defun django-south-migrate(515,16503
+(defun django-south-fake 521,16728
+(defun django-tags(531,17123
+(defun django-test(545,17603
+(defun django-test-open 569,18431
+(defun django-test-goto-err(580,18882
+(defun django-test-up(586,19059
+(defun django-test-down(591,19198
+(defun django-test-hl-files 596,19338
+(defvar django-snippet-dir 604,19548
+(defun django-load-snippets(607,19717
+(defvar django-minor-mode-hook 615,19911
+(defun django-key(619,19960
+(defvar django-minor-mode-map623,20106
+(defun django-test-extra-keys(637,20594
+(define-minor-mode django-minor-mode688,22792
+(defun django-mode(694,22916
+(defvar django-tpl-mode-hook 703,23095
+(defconst django-tpl-font-lock-keywords705,23130
+(define-minor-mode django-tpl-minor-mode718,23785
+(defun django-tpl-mode(724,23927
