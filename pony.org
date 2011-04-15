@@ -1,12 +1,4 @@
 * TODOLIST
-** TODO Commands
-*** DONE User input manage command
-*** DONE Completion for manage
-*** DONE flush
-*** TODO reset
-*** DONE startapp
-*** DONE dumpdata
-*** TODO loaddata
 ** TODO Db
 *** DONE Recognise settings and load sql-XXX
 *** TODO Run sql region on DB
@@ -52,3 +44,10 @@
 *** DONE Run something from buildout-bin
 ** DONE Tags
 *** DONE Create tags file
+** DONE Commands
+*** DONE User input manage command
+*** DONE Completion for manage
+*** DONE flush
+*** DONE startapp
+*** DONE dumpdata
+*** DONE loaddata

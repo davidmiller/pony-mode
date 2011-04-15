@@ -89,15 +89,22 @@
      (apply 'pony-comint-pop rest)
      (cd curdir)))
 
+(defun pony-mini-file(prompt &optional startdir)
+  "Read a file from the minibuffer."
+  (expand-file-name
+   (read-file-name prompt
+                   (or startdir
+                       (expand-file-name default-directory)))))
+
+;; WTF is this actually used for? I forget.
 (defun pony-localise (var func)
   "Return buffer local varible or get & set it"
   (if (local-variable-p var)
-      (progn
-        (message "local"))
-    (progn
-      (message "nonlocal")
-      (let ((the-var (funcall func)))
-        (if the-var
+      (symbol-value var)
+    (let ((the-var (funcall func)))
+      (if the-var
+          (progn
+            (make-local-variable var)
             (set var the-var))))))
 
 ;; Pony-mode
@@ -320,18 +327,6 @@
   (interactive)
   (pony-fabric-run "deploy"))
 
-;; Fixtures
-(defun pony-dumpdata()
-  "Dumpdata to json"
-  (interactive)
-  (let ((dump (read-from-minibuffer "Dumpdata: " (pony-get-app)))
-        (target (expand-file-name (read-file-name
-                 "File: "
-                 (expand-file-name default-directory)))))
-    (shell-command (concat
-                    (pony-manage-cmd) " dumpdata " dump " > " target))
-  (message (concat "Written to " target))))
-
 ;; GoTo
 (defun pony-template-decorator()
   "Hai"
@@ -406,6 +401,24 @@
   "Flush the app"
   (interactive)
   (pony-manage-run "flush"))
+
+;; Fixtures
+(defun pony-dumpdata()
+  "Dumpdata to json"
+  (interactive)
+  (let ((dump (read-from-minibuffer "Dumpdata: " (pony-get-app)))
+        (target (pony-mini-file "File: ")))
+    (shell-command (concat
+                    (pony-manage-cmd) " dumpdata " dump " > " target))
+  (message (concat "Written to " target))))
+
+(defun pony-loaddata ()
+  "Load a fixture into the current project's dev database"
+  (interactive)
+  (let ((fixture (pony-mini-file "Fixture: ")))
+    (pony-comint-pop "ponymanage" (pony-manage-cmd)
+                     (list "loaddata" fixture))
+    (insert (concat "Loaded fixture at " fixture))))
 
 ;; Server
 (defun pony-runserver()
