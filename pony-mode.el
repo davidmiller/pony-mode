@@ -164,7 +164,7 @@
   (let ((found nil)
         (buildout (concat (pony-project-root) "bin/django"))
         (pony (concat (pony-project-root) "../bin/django"))
-        (manage (concat (pony-project-root) "manage.py")))
+        (manage (concat (pony-project-root) " python manage.py")))
     (if (file-exists-p buildout)
         (setq found buildout)
       (if (file-exists-p pony)
