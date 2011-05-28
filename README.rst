@@ -1,4 +1,4 @@
-Django mode for emacs
+Pony Mode -a Django mode for emacs
 =====================
 
 New Django mode for emacs.
@@ -6,19 +6,19 @@ New Django mode for emacs.
 Features:
 ---------
 
-* Run dev server in an emacs buffer [C-c C-d r]
+* Run dev server in an emacs buffer [C-c C-p r]
   * Checks to see if runserver_plus is available
   * If not uses in-built runserver
-* Jump to current project in browser (start server if required) [C-c C-d b]
-* Run test case at point in buffer [C-c C-d t]
-* Run tests for current app in buffer [C-c C-d t]
+* Jump to current project in browser (start server if required) [C-c C-p b]
+* Run test case at point in buffer [C-c C-p t]
+* Run tests for current app in buffer [C-c C-p t]
 * Run Syncdb on current project
 * Management commands for current project in interactive buffer
 * South integration - run south convert, schemamigration, migrate
-* Run django shell in buffer [C-c C-d s]
+* Run django shell in buffer [C-c C-p s]
   * Checks for shell_plus
   * If not defaults to shell
-* Fabric integration [C-c C-d f]
+* Fabric integration [C-c C-p f]
 * Startapp and dumpdata on current project within emacs
 * Database integration with Emacs sql-mode interactive buffer [C-c C-c d
 * Django Template minor mode with syntax highlighting for django template tags
@@ -27,12 +27,12 @@ Features:
 * run manage commands in interactive buffer
 * Buildout integration
 * Generate TAGS table for project to enable quick navigation
-* Jump to template at point or from editing view [C-c C-d g t]
+* Jump to template at point or from editing view [C-c C-p g t]
 
 Fabric Integration
 ------------------
 
-Django-mode will interact with fabric for your current project, building a list of functions to auto-complete, and running commands within a \*fabric\* buffer.
+pony-mode will interact with fabric for your current project, building a list of functions to auto-complete, and running commands within a \*fabric\* buffer.
 
 Buildout Support
 ----------------
@@ -65,13 +65,29 @@ in a test run buffer, C-c C-g will jump to the last file and line indicated by t
 Installation
 ------------
 
-1. clone this repo somewhere $ git clone http://github.com/davidmiller/django-mode
-2. Add the following to your .emacs::
+1. clone this repo somewhere $ git clone http://github.com/davidmiller/pony-mode
+2. Byte-compile the file::
 
-    (load-library "path/to/django")
-3. Start programming
+    M-x byte-compile-file
+3. Add the path to your load-path::
+
+    (add-to-list 'load-path "path/to/pony-mode")
+4. Add to your .emacs::
+
+    (require 'pony-mode)
+5. Enjoy
+
+Bugs
+----
+
+Pony-mode is under active development, so please report any bugs on the github issue tracker
+
+Licence
+-------
+
+Totally GPL
 
 Roadmap
 -------
 
-Check django-mode.org for current todo/wish list
+Check pony-mode.org for current todo/wish list
