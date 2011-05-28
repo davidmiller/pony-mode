@@ -3,7 +3,7 @@ Pony Mode -a Django mode for emacs
 
 New Django mode for emacs.
 
-Features:
+Features (Non-exhaustive):
 ---------
 
 * Run dev server in an emacs buffer [C-c C-p r]
@@ -32,12 +32,12 @@ Features:
 Fabric Integration
 ------------------
 
-pony-mode will interact with fabric for your current project, building a list of functions to auto-complete, and running commands within a \*fabric\* buffer.
+Pony mode will interact with fabric for your current project, building a list of functions to auto-complete, and running commands within a \*fabric\* buffer.
 
 Buildout Support
 ----------------
 
-Django mode is aware of buildout, and will use buildout-root/bin/django to
+Pony mode is aware of buildout, and will use buildout-root/bin/django to
 run management commands when available, manage.py when not.
 
 The command M-x django-buildout will re-run buildout for your current project
