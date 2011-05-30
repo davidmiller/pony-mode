@@ -49,6 +49,7 @@
   :type 'bool)
 
 ;; Dependancies and environment sniffing
+(require 'cl)
 (require 'sgml-mode)
 
 ;; Utility
@@ -110,7 +111,7 @@
 ;; Pony-mode
 (defun pony-reload-mode()
   (interactive)
-  (load-library "pony"))
+  (load-library "pony-mode"))
 
 ;; Python
 (defun pony-get-func()
@@ -160,11 +161,12 @@
         (if found (expand-file-name curdir))))))
 
 (defun pony-manage-cmd()
-  "Return the current manage command"
+  "Return the current manage command
+This command will only work if you run with point in a buffer that is within your project"
   (let ((found nil)
         (buildout (concat (pony-project-root) "bin/django"))
         (pony (concat (pony-project-root) "../bin/django"))
-        (manage (concat (pony-project-root) " python manage.py")))
+        (manage (concat (pony-project-root) "manage.py")))
     (if (file-exists-p buildout)
         (setq found buildout)
       (if (file-exists-p pony)
@@ -172,7 +174,10 @@
         (if (and (not found) (file-exists-p manage))
             (setq found manage)
           nil)))
-    (if found (expand-file-name found))))
+    (if found
+        (if (not (file-executable-p (expand-file-name found)))
+            (message "Please make your django manage.py file executable")
+          (expand-file-name found)))))
 
 (defun pony-command-exists(cmd)
   "Is cmd installed in this app"
