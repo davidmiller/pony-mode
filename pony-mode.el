@@ -191,7 +191,7 @@ This command will only work if you run with point in a buffer that is within you
       (setq found-command t)
     Nil))
 
-(Defun pony-command-if-exists(proc-name command args)
+(defun pony-command-if-exists(proc-name command args)
   "Run `command` if it exists"
   (if (pony-command-exists command)
       (let ((process-buffer (concat "*" proc-name "*")))
