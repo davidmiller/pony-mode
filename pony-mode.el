@@ -160,24 +160,30 @@
                 (setq max (- max 1))))))
         (if found (expand-file-name curdir))))))
 
+(defun pony-rooted-sym-p (symb)
+  "Expand the concatenation of `symb` onto `pony-project-root` and determine whether
+that file exists"
+  (file-exists-p (concat (pony-project-root) (symbol-name symb))))
+
 (defun pony-manage-cmd()
   "Return the current manage command
 This command will only work if you run with point in a buffer that is within your project"
   (let ((found nil)
-        (buildout (concat (pony-project-root) "bin/django"))
-        (pony (concat (pony-project-root) "../bin/django"))
-        (manage (concat (pony-project-root) "manage.py")))
-    (if (file-exists-p buildout)
-        (setq found buildout)
-      (if (file-exists-p pony)
-          (setq found pony)
-        (if (and (not found) (file-exists-p manage))
-            (setq found manage)
-          nil)))
+        (virtualenv '../bin/activate)
+        (cmds (list 'bin/django '../bin/django 'manage.py)))
+    (if (pony-rooted-sym-p virtualenv)
+        ;; This is a virtualenv, we need to return the appropriate management
+        ;; command, via the appropriate Python
+        (concat (expand-file-name (concat (pony-project-root) "bin/python "))
+                (expand-file-name (concat (pony-project-root) "manage.py")))
+      ;; Otherwise, look for buildout, defaulting to the standard manage.py script
+      (dolist (test cmds)
+        (if (pony-rooted-sym-p (symbol-name test))
+            (setq found test)))
     (if found
         (if (not (file-executable-p (expand-file-name found)))
             (message "Please make your django manage.py file executable")
-          (expand-file-name found)))))
+          (expand-file-name (concat (pony-project-root) (symbol-name found))))))))
 
 (defun pony-command-exists(cmd)
   "Is cmd installed in this app"
@@ -305,10 +311,9 @@ This command will only work if you run with point in a buffer that is within you
         (if (equalp (pony-db-settings-engine db) "sqlite3")
             (sql-connect-sqlite)
           (if (equalp (pony-db-settings-engine db) "postgresql_psycopg2")
-              (and (message "postgres") (sql-connect-postgres)))))
+              (sql-connect-postgres))))
       (pony-pop "*SQL*")
-      (rename-buffer "*PonyDbShell*")
-      )))
+      (rename-buffer "*PonyDbShell*"))))
 
 
 ;; Fabric
