@@ -183,9 +183,9 @@ This command will only work if you run with point in a buffer that is within you
   "Is cmd installed in this app"
   (if (string-match cmd (shell-command-to-string (pony-manage-cmd)))
       (setq found-command t)
-    nil))
+    Nil))
 
-(defun pony-command-if-exists(proc-name command args)
+(Defun pony-command-if-exists(proc-name command args)
   "Run `command` if it exists"
   (if (pony-command-exists command)
       (let ((process-buffer (concat "*" proc-name "*")))
@@ -304,11 +304,11 @@ This command will only work if you run with point in a buffer that is within you
           (sql-connect-mysql)
         (if (equalp (pony-db-settings-engine db) "sqlite3")
             (sql-connect-sqlite)
-          (if (equalp (substr (pony-db-settings-engine db) -9 -1)
-                      "psycopg2")
-              (sql-connect-postgres))))
+          (if (equalp (pony-db-settings-engine db) "postgresql_psycopg2")
+              (and (message "postgres") (sql-connect-postgres)))))
       (pony-pop "*SQL*")
-      (rename-buffer "*PonyDbShell*"))))
+      (rename-buffer "*PonyDbShell*")
+      )))
 
 
 ;; Fabric
@@ -443,12 +443,22 @@ This command will only work if you run with point in a buffer that is within you
                      (concat pony-server-host ":"  pony-server-port)))
         (cd working-dir)))))
 
-
 (defun pony-stopserver()
   "Stop the dev server"
   (interactive)
   (let ((proc (get-buffer-process "*ponyserver*")))
     (when proc (kill-process proc t))))
+
+(defun pony-temp-server ()
+  "Relatively regularly during development, I need/want to set up a development
+server instance either on a nonstandard (or second) port, or that will be accessible
+to the outside world for some reason. Meanwhile, i don't want to set my default host to 0.0.0.0
+
+This function allows you to run a server with a 'throwaway' host:port"
+  (interactive)
+  (let ((args (list "runservers" (read-from-minibuffer "host:port "))))
+    (pony-comint-pop "ponytempserver" (pony-manage-cmd)
+                     args)))
 
 ;; View server
 (defun pony-browser()
