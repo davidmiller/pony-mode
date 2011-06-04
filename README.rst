@@ -28,6 +28,7 @@ Features (Non-exhaustive):
 * Buildout integration
 * Generate TAGS table for project to enable quick navigation
 * Jump to template at point or from editing view [C-c C-p g t]
+* Virtualenv integration
 
 Fabric Integration
 ------------------
@@ -61,6 +62,26 @@ Tests will default to --failfast, but you can turn that off with the variable dj
 M-x customize-group django
 
 in a test run buffer, C-c C-g will jump to the last file and line indicated by the traceback.
+
+Virtualenv
+----------
+
+Pony-mode will check to see if your project is inside a virtualenv. If so, it will use the python
+interpreter from the virtualenv to run all django-related management commands.
+
+Virtualenv support assumes that you initialized the virtualenv with something equivalent to
+
+    $ virtualenv my-cool-project [--no-site-packages]
+    $ cd my-cool-project
+    $ django-admin.py startproject awzm
+    $ source ./bin/activate
+    $ cd awzm
+    $ emacs settings.py
+
+If your setup is different to this, then the implicit Virtualenv detection may fail.
+(e.g. if there is not a bin/activate script in the directory above your project's root).
+If this happens, file a bug with the details of your Virtualenv setup and we'll see what we
+can do.
 
 Installation
 ------------
