@@ -72,10 +72,15 @@ interpreter from the virtualenv to run all django-related management commands.
 Virtualenv support assumes that you initialized the virtualenv with something equivalent to
 
     $ virtualenv my-cool-project [--no-site-packages]
+
     $ cd my-cool-project
+
     $ django-admin.py startproject awzm
+
     $ source ./bin/activate
+
     $ cd awzm
+
     $ emacs settings.py
 
 If your setup is different to this, then the implicit Virtualenv detection may fail.
