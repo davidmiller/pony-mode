@@ -177,26 +177,27 @@ This command will only work if you run with point in a buffer that is within you
         (concat (expand-file-name (concat (pony-project-root) "bin/python "))
                 (expand-file-name (concat (pony-project-root) "manage.py")))
       ;; Otherwise, look for buildout, defaulting to the standard manage.py script
-      (dolist (test cmds)
-        (if (pony-rooted-sym-p (symbol-name test))
-            (setq found test)))
-    (if found
-        (if (not (file-executable-p (expand-file-name found)))
-            (message "Please make your django manage.py file executable")
-          (expand-file-name (concat (pony-project-root) (symbol-name found))))))))
+      (progn
+        (dolist (test cmds)
+          (if (and (not found) (pony-rooted-sym-p test))
+              (setq found (expand-file-name
+                           (concat (pony-project-root) (symbol-name test))))))
+        (if found
+            (if (not (file-executable-p found))
+                (message "Please make your django manage.py file executable")
+              found))))))
 
 (defun pony-command-exists(cmd)
   "Is cmd installed in this app"
   (if (string-match cmd (shell-command-to-string (pony-manage-cmd)))
       (setq found-command t)
-    Nil))
+    nil))
 
 (defun pony-command-if-exists(proc-name command args)
   "Run `command` if it exists"
   (if (pony-command-exists command)
       (let ((process-buffer (concat "*" proc-name "*")))
         (progn
-          (message (concat command " " args))
           (start-process proc-name process-buffer
                          (pony-manage-cmd)
                          command args)

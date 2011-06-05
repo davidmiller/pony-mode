@@ -13,8 +13,8 @@
 *** DONE Jump to view (TAGS does this better)
 *** DONE jump to model (TAGS does this better)
 *** TODO Open view at point in browser
-** TODO Import
-*** TODO Import
+** TODO Tools
+*** TODO Paste to http://paste.pocoo.org/
 ** TODO Templates
 *** TODO Get variables in template from view
 *** TODO Autocomplete block names from extends
