@@ -1,8 +1,13 @@
+;;; pony-mode.el --- minor mode for working with Django projects
+
 ;; Copyright (C) 2011 David Miller <david@deadpansincerity.com>
 
-;; Authors: David Miller <david@deadpansincerity.com>
-
+;; Author: David Miller <david@deadpansincerity.com>
+;; Maintainer: David Miller <david@deadpansincerity.com>
+;; Created 2011-02-20
 ;; Keywords: python django
+
+;; This file is NOT part of GNU Emacs
 
 ;;; License
 
