@@ -76,6 +76,23 @@
           (add-to-list 'files f-or-d))))
     files))
 
+(defun pony-locate (filepath)
+  "Essentially duplicates the functionality of `locate-dominating-file'
+but allows paths rather than filenames"
+  (let ((dir (expand-file-name default-directory))
+        (found nil))
+    (message dir)
+    (message "!")
+     (while (and (not (equal "/" dir))
+                 (not found))
+       (message dir)
+       (let ((check (concat dir filepath)))
+         (if (file-exists-p check)
+             (setq found check)))
+       (setq dir (file-name-directory
+                  (directory-file-name dir))))
+     found))
+
 ;; Emacs
 (defun pony-pop(buffer)
   "Wrap pop-to and get buffer"
@@ -83,10 +100,20 @@
   (pony-mode))
 
 (defun pony-comint-pop(name command args)
-  "Make a comint buffer and pop to it."
+  "This is the main entry point for sub-processes in Pony-mode.
+It creates a comint interaction buffer, called `name', running
+`command', called with `args'"
   (ansi-color-for-comint-mode-on)
   (apply 'make-comint name command nil args)
   (pony-pop (concat "*" name "*")))
+
+(defun pony-manage-pop (name command args)
+  "Run manage.py commands in a commint buffer. Intended as a wrapper around
+`pony-commint-pop', this function bypasses the need to construct manage.py
+calling sequences in command functions."
+
+  (let ((python-args (cons command args)))
+    (pony-comint-pop name (pony-active-python) python-args)))
 
 (defun pony-dir-excursion(dir &rest rest)
   "pony-comint-pop where we need to change into `dir` first"
@@ -177,10 +204,7 @@ This command will only work if you run with point in a buffer that is within you
         (virtualenv '../bin/activate)
         (cmds (list 'bin/django '../bin/django 'manage.py)))
     (if (pony-rooted-sym-p virtualenv)
-        ;; This is a virtualenv, we need to return the appropriate management
-        ;; command, via the appropriate Python
-        (concat (expand-file-name (concat (pony-project-root) "bin/python "))
-                (expand-file-name (concat (pony-project-root) "manage.py")))
+        (expand-file-name (concat (pony-project-root) "manage.py"))
       ;; Otherwise, look for buildout, defaulting to the standard manage.py script
       (progn
         (dolist (test cmds)
@@ -191,6 +215,14 @@ This command will only work if you run with point in a buffer that is within you
             (if (not (file-executable-p found))
                 (message "Please make your django manage.py file executable")
               found))))))
+
+(defun pony-active-python ()
+  "Fetch the active Python interpreter for this Django project.
+Be aware of 'clean', buildout, and virtualenv situations"
+  (let ((venv-out (pony-locate "bin/python")))
+    (if venv-out
+        venv-out
+      (executable-find "python"))))
 
 (defun pony-command-exists(cmd)
   "Is cmd installed in this app"
@@ -276,7 +308,6 @@ This command will only work if you run with point in a buffer that is within you
           (pony-comint-pop
            "buildout" buildout
            (list "-c" cfg))))))
-
 
 (defun pony-buildout-bin()
   "Run a script from the buildout bin/ dir"
@@ -449,7 +480,7 @@ This command will only work if you run with point in a buffer that is within you
         (setq command "runserver"))
       (progn
         (cd (pony-project-root))
-        (pony-comint-pop "ponyserver" (pony-manage-cmd)
+        (pony-manage-pop "ponyserver" (pony-manage-cmd)
                (list command
                      (concat pony-server-host ":"  pony-server-port)))
         (cd working-dir)))))
@@ -734,6 +765,12 @@ This function allows you to run a server with a 'throwaway' host:port"
   (pony-minor-mode t)
   (run-hooks 'pony-minor-mode-hook)
   (pony-load-snippets))
+
+;;;###autoload
+(defun pony-mode-disable ()
+  "Turn off pony-mode in this buffer"
+  (interactive)
+  (pony-minor-mode))
 
 ;; Pony-tpl-minor-mode
 

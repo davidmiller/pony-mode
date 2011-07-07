@@ -51,3 +51,7 @@
 *** DONE startapp
 *** DONE dumpdata
 *** DONE loaddata
+* Housekeeping
+** TODO Make dir-excursion a macro.
+** TODO Take a long hard look at all the directory traversal stuff.
+   Do it once, and do it well.
