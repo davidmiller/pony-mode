@@ -56,13 +56,17 @@
 ;; Dependancies and environment sniffing
 (require 'cl)
 (require 'sgml-mode)
+(require 'thingatpt)
 
 ;; Utility
+
+;;;###autoload
 (defun chomp (str)
   "Chomp leading and tailing whitespace www.emacswiki.org/emacs/ElispCookbook"
   (let ((s (if (symbolp str) (symbol-name str) str)))
     (replace-regexp-in-string "\\(^[[:space:]\n]*\\|[[:space:]\n]*$\\)" "" s)))
 
+;;;###autoload
 (defun pony-find-file (path pattern)
   "Find files matching pattern in or below path"
   (setq matches (list))
@@ -76,6 +80,7 @@
           (add-to-list 'files f-or-d))))
     files))
 
+;;;###autoload
 (defun pony-locate (filepath)
   "Essentially duplicates the functionality of `locate-dominating-file'
 but allows paths rather than filenames"
@@ -94,11 +99,14 @@ but allows paths rather than filenames"
      found))
 
 ;; Emacs
+
+;;;###autoload
 (defun pony-pop(buffer)
   "Wrap pop-to and get buffer"
   (pop-to-buffer (get-buffer buffer))
   (pony-mode))
 
+;;;###autoload
 (defun pony-comint-pop(name command args)
   "This is the main entry point for sub-processes in Pony-mode.
 It creates a comint interaction buffer, called `name', running
@@ -107,14 +115,15 @@ It creates a comint interaction buffer, called `name', running
   (apply 'make-comint name command nil args)
   (pony-pop (concat "*" name "*")))
 
+;;;###autoload
 (defun pony-manage-pop (name command args)
   "Run manage.py commands in a commint buffer. Intended as a wrapper around
 `pony-commint-pop', this function bypasses the need to construct manage.py
 calling sequences in command functions."
-
   (let ((python-args (cons command args)))
     (pony-comint-pop name (pony-active-python) python-args)))
 
+;;;###autoload
 (defun pony-dir-excursion(dir &rest rest)
   "pony-comint-pop where we need to change into `dir` first"
   (let ((curdir default-directory))
@@ -122,6 +131,7 @@ calling sequences in command functions."
      (apply 'pony-comint-pop rest)
      (cd curdir)))
 
+;;;###autoload
 (defun pony-mini-file(prompt &optional startdir)
   "Read a file from the minibuffer."
   (expand-file-name
@@ -130,6 +140,7 @@ calling sequences in command functions."
                        (expand-file-name default-directory)))))
 
 ;; WTF is this actually used for? I forget.
+;;;###autoload
 (defun pony-localise (var func)
   "Return buffer local varible or get & set it"
   (if (local-variable-p var)
@@ -141,11 +152,14 @@ calling sequences in command functions."
             (set var the-var))))))
 
 ;; Pony-mode
+;;;###autoload
 (defun pony-reload-mode()
   (interactive)
   (load-library "pony-mode"))
 
 ;; Python
+
+;;;###autoload
 (defun pony-get-func()
   "Get the function currently at point"
   (save-excursion
@@ -154,6 +168,7 @@ calling sequences in command functions."
             (buffer-substring (match-beginning 1) (match-end 1))
           nil))))
 
+;;;###autoload
 (defun pony-get-class()
   "Get the class at point"
   (save-excursion
@@ -162,6 +177,7 @@ calling sequences in command functions."
             (buffer-substring (match-beginning 1) (match-end 1))
           nil))))
 
+;;;###autoload
 (defun pony-get-app()
   "Get the name of the pony app currently being edited"
   (setq fname (buffer-file-name))
@@ -173,6 +189,8 @@ calling sequences in command functions."
       nil)))
 
 ;; Environment
+
+;;;###autoload
 (defun pony-project-root()
   "Return the root of the project(dir with manage.py in) or nil"
   (pony-localise
@@ -192,11 +210,13 @@ calling sequences in command functions."
                 (setq max (- max 1))))))
         (if found (expand-file-name curdir))))))
 
+;;;###autoload
 (defun pony-rooted-sym-p (symb)
   "Expand the concatenation of `symb` onto `pony-project-root` and determine whether
 that file exists"
   (file-exists-p (concat (pony-project-root) (symbol-name symb))))
 
+;;;###autoload
 (defun pony-manage-cmd()
   "Return the current manage command
 This command will only work if you run with point in a buffer that is within your project"
@@ -216,6 +236,7 @@ This command will only work if you run with point in a buffer that is within you
                 (message "Please make your django manage.py file executable")
               found))))))
 
+;;;###autoload
 (defun pony-active-python ()
   "Fetch the active Python interpreter for this Django project.
 Be aware of 'clean', buildout, and virtualenv situations"
@@ -224,12 +245,14 @@ Be aware of 'clean', buildout, and virtualenv situations"
         venv-out
       (executable-find "python"))))
 
+;;;###autoload
 (defun pony-command-exists(cmd)
   "Is cmd installed in this app"
   (if (string-match cmd (shell-command-to-string (pony-manage-cmd)))
       (setq found-command t)
     nil))
 
+;;;###autoload
 (defun pony-command-if-exists(proc-name command args)
   "Run `command` if it exists"
   (if (pony-command-exists command)
@@ -239,9 +262,9 @@ Be aware of 'clean', buildout, and virtualenv situations"
                          (pony-manage-cmd)
                          command args)
           (pop-to-buffer (get-buffer process-buffer))))
-
     nil))
 
+;;;###autoload
 (defun pony-get-settings-file()
   "Return the absolute path to the pony settings file"
   (let ((settings (concat (pony-project-root) "settings.py"))
@@ -253,10 +276,12 @@ Be aware of 'clean', buildout, and virtualenv situations"
         settings
       nil)))
 
+;;;###autoload
 (defun pony-get-setting(setting)
   "Get the pony settings.py value for `setting`"
   (let ((settings (pony-get-settings-file))
-        (python-c "python -c 'import settings; print settings.%s'")
+        (python-c (concat (pony-active-python)
+                          " -c 'import settings; print settings.%s'"))
         (working-dir default-directory)
         (set-val nil))
     (if settings
@@ -267,6 +292,7 @@ Be aware of 'clean', buildout, and virtualenv situations"
           (cd working-dir)
           set-val))))
 
+;;;###autoload
 (defun pony-setting()
   "Interactively display a setting value in the minibuffer"
   (interactive)
@@ -274,6 +300,8 @@ Be aware of 'clean', buildout, and virtualenv situations"
     (message (concat setting " : " (pony-get-setting setting)))))
 
 ;; Buildout
+
+;;;###autoload
 (defun pony-buildout-cmd()
   "Return the buildout command or nil if we're not in a buildout"
   (pony-localise
@@ -286,10 +314,12 @@ Be aware of 'clean', buildout, and virtualenv situations"
             (expand-file-name (concat root-parent "bin/buildout"))
           nil)))))
 
+;;;###autoload
 (defun pony-buildout-list-bin()
   "List the commands available in the buildout bin dir"
   (directory-files (file-name-directory (pony-buildout-cmd))))
 
+;;;###autoload
 (defun pony-buildout()
   "Run buildout again on the current project"
   (interactive)
@@ -309,6 +339,7 @@ Be aware of 'clean', buildout, and virtualenv situations"
            "buildout" buildout
            (list "-c" cfg))))))
 
+;;;###autoload
 (defun pony-buildout-bin()
   "Run a script from the buildout bin/ dir"
   (interactive)
@@ -321,8 +352,10 @@ Be aware of 'clean', buildout, and virtualenv situations"
                            nil))))
 
 ;; Database
+
 (defstruct pony-db-settings engine name user pass host)
 
+;;;###autoload
 (defun pony-get-db-settings()
   "Get Pony's database settings"
   (let ((db-settings
@@ -334,6 +367,7 @@ Be aware of 'clean', buildout, and virtualenv situations"
           :host (pony-get-setting "DATABASE_HOST"))))
     db-settings))
 
+;;;###autoload
 (defun pony-db-shell()
   "Run sql-XXX for this project"
   (interactive)
@@ -354,37 +388,44 @@ Be aware of 'clean', buildout, and virtualenv situations"
 
 
 ;; Fabric
+
+;;;###autoload
 (defun pony-fabric-list-commands()
   "List of all fabric commands for project as strings"
   (split-string (shell-command-to-string "fab --list | awk '{print $1}'|grep -v Available")))
 
+;;;###autoload
 (defun pony-fabric-run(cmd)
   "Run fabric command"
   (pony-comint-pop "fabric" "fab" (list cmd)))
 
+;;;###autoload
 (defun pony-fabric()
   "Run a fabric command"
   (interactive)
   (pony-fabric-run (minibuffer-with-setup-hook 'minibuffer-complete
                        (completing-read "Fabric: "
                                         (pony-fabric-list-commands)))))
-
+;;;###autoload
 (defun pony-fabric-deploy()
   "Deploy project with fab deploy"
   (interactive)
   (pony-fabric-run "deploy"))
 
 ;; GoTo
+
+;;;###autoload
 (defun pony-template-decorator()
   "Hai"
   (save-excursion
    (progn
-    (search-backward-regexp "^def")
+     (search-backward-regexp "^def")
     (previous-line)
     (if (looking-at "^@.*['\"]\\([a-z/_.]+html\\).*$")
         (buffer-substring (match-beginning 1) (match-end 1))
       nil))))
 
+;;;###autoload
 (defun pony-goto-template()
   "Jump-to-template-at-point"
   (interactive)
@@ -401,6 +442,7 @@ Be aware of 'clean', buildout, and virtualenv situations"
         (find-file filename)
       (message (format "Template %s not found" filename)))))
 
+;;;###autoload
 (defun pony-reverse-url ()
   "Get the URL for this view"
   (interactive)
@@ -414,15 +456,17 @@ Be aware of 'clean', buildout, and virtualenv situations"
       (insert-file-contents fpath)
       (search-forward view)))
 
+;;;###autoload
 (defun pony-goto-settings()
   (interactive)
   "Open the settings.py for this project"
   (find-file (pony-get-settings-file)))
 
 ;; Manage
+
+;;;###autoload
 (defun pony-list-commands()
   "List of managment commands for the current project"
-  (interactive)
   (with-temp-buffer
     (insert (shell-command-to-string (pony-manage-cmd)))
     (goto-char (point-min))
@@ -431,10 +475,12 @@ Be aware of 'clean', buildout, and virtualenv situations"
         (split-string (buffer-substring (match-beginning 3) (match-end 3)))
       nil)))
 
+;;;###autoload
 (defun pony-manage-run(args)
   "Run the pony-manage command completed from the minibuffer"
-  (pony-comint-pop "ponymanage" (pony-manage-cmd) args))
+  (pony-manage-pop "ponymanage" (pony-manage-cmd) args))
 
+;;;###autoload
 (defun pony-manage()
   "Interactively call the pony manage command"
   (interactive)
@@ -444,12 +490,15 @@ Be aware of 'clean', buildout, and virtualenv situations"
     (pony-manage-run (list command
                              (read-from-minibuffer (concat command ": "))))))
 
+;;;###autoload
 (defun pony-flush()
   "Flush the app"
   (interactive)
-  (pony-manage-run "flush"))
+  (pony-manage-run (list "flush")))
 
 ;; Fixtures
+
+;;;###autoload
 (defun pony-dumpdata()
   "Dumpdata to json"
   (interactive)
@@ -458,16 +507,18 @@ Be aware of 'clean', buildout, and virtualenv situations"
     (shell-command (concat
                     (pony-manage-cmd) " dumpdata " dump " > " target))
   (message (concat "Written to " target))))
-
+;;;###autoload
 (defun pony-loaddata ()
   "Load a fixture into the current project's dev database"
   (interactive)
   (let ((fixture (pony-mini-file "Fixture: ")))
-    (pony-comint-pop "ponymanage" (pony-manage-cmd)
+    (pony-manage-pop "ponymanage" (pony-manage-cmd)
                      (list "loaddata" fixture))
     (insert (concat "Loaded fixture at " fixture))))
 
 ;; Server
+
+;;;###autoload
 (defun pony-runserver()
   "Start the dev server"
   (interactive)
@@ -485,17 +536,18 @@ Be aware of 'clean', buildout, and virtualenv situations"
                      (concat pony-server-host ":"  pony-server-port)))
         (cd working-dir)))))
 
+;;;###autoload
 (defun pony-stopserver()
   "Stop the dev server"
   (interactive)
   (let ((proc (get-buffer-process "*ponyserver*")))
     (when proc (kill-process proc t))))
 
+;;;###autoload
 (defun pony-temp-server ()
   "Relatively regularly during development, I need/want to set up a development
 server instance either on a nonstandard (or second) port, or that will be accessible
 to the outside world for some reason. Meanwhile, i don't want to set my default host to 0.0.0.0
-
 This function allows you to run a server with a 'throwaway' host:port"
   (interactive)
   (let ((args (list "runservers" (read-from-minibuffer "host:port "))))
@@ -503,6 +555,8 @@ This function allows you to run a server with a 'throwaway' host:port"
                      args)))
 
 ;; View server
+
+;;;###autoload
 (defun pony-browser()
   "Open a tab at the development server"
   (interactive)

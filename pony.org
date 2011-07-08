@@ -25,6 +25,8 @@
 **** TODO Determine whether we already have migrations for this app
 ** TODO Testing
 *** TODO Re-run last failed test
+** TODO Virtualenv
+   Virtualenv bin commands integrated
 * Completed Features
 ** DONE Unit Tests
 *** DONE Run test for app at point
@@ -55,3 +57,21 @@
 ** TODO Make dir-excursion a macro.
 ** TODO Take a long hard look at all the directory traversal stuff.
    Do it once, and do it well.
+
+* Bugs
+** Database settings fails to take account of Django 1.2+ Format
+** Pony-fabric fails unpleasantly with projects that have no Fabfile
+** Pony-list-commands seems broken in emacs -q -- requires further investigation
+** Pony-dumpdata requires port to the new API
+** Pony-temp-server Possibly never worked - surely a typo?
+** Pony-browser shouldn't be a blocking wait.
+* Roadmap
+** 0.2 Release
+*** Blockers
+    1) Database Bug
+    2) Virtualenv Support
+** 0.3 Release...
+*** Desired Features
+   1) Jump to view at point in Browser
+   2) Consolidate all the Management commands into a single macro interface (pony-defmanage "flush")
+   3) Run multiple dev servers from one Emacs instance
