@@ -569,6 +569,8 @@ This function allows you to run a server with a 'throwaway' host:port"
     (browse-url url)))
 
 ;; Shell
+
+;;;###autoload
 (defun pony-shell()
   "Open a shell with the current pony project's context loaded"
   (interactive)
@@ -578,6 +580,8 @@ This function allows you to run a server with a 'throwaway' host:port"
   (pony-comint-pop "ponysh" (pony-manage-cmd) (list command)))
 
 ;; Startapp
+
+;;;###autoload
 (defun pony-startapp()
   "Run the pony startapp command"
   (interactive)
