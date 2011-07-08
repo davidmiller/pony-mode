@@ -65,13 +65,18 @@
 ** Pony-dumpdata requires port to the new API
 ** Pony-temp-server Possibly never worked - surely a typo?
 ** Pony-browser shouldn't be a blocking wait.
+** Syncdb needs new calling conventions
+** Command if exists as a wrapper
 * Roadmap
 ** 0.2 Release
 *** Blockers
     1) Database Bug
     2) Virtualenv Support
+*** Other
+       1) yasnppet to defcustom
 ** 0.3 Release...
 *** Desired Features
    1) Jump to view at point in Browser
    2) Consolidate all the Management commands into a single macro interface (pony-defmanage "flush")
    3) Run multiple dev servers from one Emacs instance
+   4) Test-case-mode backend

@@ -7,6 +7,7 @@
 ;; Created 2011-02-20
 ;; Keywords: python django
 
+
 ;; This file is NOT part of GNU Emacs
 
 ;;; License
@@ -590,6 +591,8 @@ This function allows you to run a server with a 'throwaway' host:port"
                            "startapp" app)))
 
 ;; Syncdb / South
+
+;;;###autoload
 (defun pony-syncdb()
   "Run Syncdb on the current project"
   (interactive)
@@ -601,6 +604,7 @@ This function allows you to run a server with a 'throwaway' host:port"
 ;;   "Get a list of migration numbers for the current app"
 ;; )
 
+;;;###autoload
 (defun pony-south-convert()
   "Convert an existing app to south"
   (interactive)
@@ -608,6 +612,7 @@ This function allows you to run a server with a 'throwaway' host:port"
     (pony-command-if-exists "ponymigrations"
                               "convert_to_south" app)))
 
+;;;###autoload
 (defun pony-south-schemamigration()
   "Create migration for modification"
   (interactive)
@@ -620,6 +625,7 @@ This function allows you to run a server with a 'throwaway' host:port"
           (pony-pop "*ponymigrations*"))
       (message "South doesn't seem to be installed"))))
 
+;;;###autoload
 (defun pony-south-migrate()
   "Migrate app"
   (interactive)
@@ -635,6 +641,7 @@ This function allows you to run a server with a 'throwaway' host:port"
 ;;     (pony-command-if-exists "ponymigrations"
 ;;                               "migrate" (list app migrations))))
 
+;;;###autoload
 (defun pony-south-initial ()
   "Run the initial south migration for an app"
   (let ((app (read-from-minibuffer "Initial migration: " (pony-get-app))))
@@ -643,6 +650,8 @@ This function allows you to run a server with a 'throwaway' host:port"
 
 
 ;; TAGS
+
+;;;###autoload
 (defun pony-tags()
   "Generate new tags table"
   (interactive)
@@ -657,6 +666,8 @@ This function allows you to run a server with a 'throwaway' host:port"
     (message "TAGS table regenerated")))
 
 ;; Testing
+
+;;;###autoload
 (defun pony-test()
   "Run tests here"
   (interactive)
@@ -676,10 +687,11 @@ This function allows you to run a server with a 'throwaway' host:port"
     (if command
         (let ((confirmed-command
                (read-from-minibuffer "test: " command)))
-          (pony-comint-pop "ponytests" (pony-manage-cmd)
+          (pony-manage-pop "ponytests" (pony-manage-cmd)
                  (list "test" failfast confirmed-command))
           (pony-test-mode)))))
 
+;;;###autoload
 (defun pony-test-open ()
   "Open the file in a traceback at the line specified"
   (interactive)
@@ -691,22 +703,26 @@ This function allows you to run a server with a 'throwaway' host:port"
         (goto-line (string-to-number line)))
     (message "failed")))
 
+;;;###autoload
 (defun pony-test-goto-err()
   "Go to the file and line of the last stack trace in a test buffer"
   (interactive)
   (goto-char (search-backward "File"))
   (pony-test-open))
 
+;;;###autoload
 (defun pony-test-up()
   "Move up the traceback one level"
   (interactive)
   (search-backward-regexp "File \"\\([a-z_/]+.py\\)\"" nil t))
 
+;;;###autoload
 (defun pony-test-down()
   "Move up the traceback one level"
   (interactive)
   (search-forward-regexp "File \"\\([a-z_/]+.py\\)\"" nil t))
 
+;;;###autoload
 (defun pony-test-hl-files ()
   "Highlight instances of Files in Test buffers"
   (hi-lock-face-buffer "File \"\\([a-z/_]+.py\\)\", line \\([0-9]+\\)"
@@ -715,9 +731,12 @@ This function allows you to run a server with a 'throwaway' host:port"
 
 ;; Snippets
 
+;;;###autoload
 (defvar pony-snippet-dir (expand-file-name
                             (concat (file-name-directory load-file-name)
                                     "/snippets")))
+
+;;;###autoload
 (defun pony-load-snippets()
   "Load snippets if yasnippet installed"
   (interactive)
