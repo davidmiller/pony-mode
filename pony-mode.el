@@ -390,10 +390,20 @@ Be aware of 'clean', buildout, and virtualenv situations"
 
 ;; Fabric
 
+(defun pony-fabric-p ()
+  "Is this project using fabric?"
+  (let ((cmdlist (pony-fabric-list-commands)))
+    (if (and (equal "Fatal" (first cmdlist))
+             (equal "error:" (second cmdlist)))
+        nil
+      t)))
+
 ;;;###autoload
 (defun pony-fabric-list-commands()
   "List of all fabric commands for project as strings"
-  (split-string (shell-command-to-string "fab --list | awk '{print $1}'|grep -v Available")))
+  (if (pony-fabric-p)
+      (split-string (shell-command-to-string "fab --list | awk '{print $1}'|grep -v Available"))
+    (message "No fabfile found!")))
 
 ;;;###autoload
 (defun pony-fabric-run(cmd)
