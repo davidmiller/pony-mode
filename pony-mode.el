@@ -580,10 +580,8 @@ This function allows you to run a server with a 'throwaway' host:port"
   (let ((url "http://localhost:8000")
         (proc (get-buffer-process "*ponyserver*")))
     (if (not proc)
-        (progn
-          (pony-runserver)
-          (sit-for 2)))
-    (browse-url url)))
+        (pony-runserver))
+    (run-with-timer 2 nil 'browse-url url)))
 
 ;; Shell
 
