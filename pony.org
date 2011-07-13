@@ -63,10 +63,10 @@
 ** DONE Pony-fabric fails unpleasantly with projects that have no Fabfile
 ** DONE Pony-list-commands seems broken in emacs -q -- requires further investigation
 ** DONE Pony-dumpdata requires port to the new API
-** TODO Pony-temp-server Possibly never worked - surely a typo?
+** DONE Pony-temp-server Possibly never worked - surely a typo?
 ** DONE Pony-browser shouldn't be a blocking wait.
-** TODO Syncdb needs new calling conventions
-** TODO Command if exists as a wrapper
+** DONE Syncdb needs new calling conventions
+** DONE Command if exists as a wrapper
 * Roadmap
 ** 0.2 Release
 *** Blockers

@@ -260,6 +260,7 @@ Be aware of 'clean', buildout, and virtualenv situations"
       (let ((process-buffer (concat "*" proc-name "*")))
         (progn
           (start-process proc-name process-buffer
+                         (pony-active-python)
                          (pony-manage-cmd)
                          command args)
           (pop-to-buffer (get-buffer process-buffer))))
@@ -567,8 +568,8 @@ server instance either on a nonstandard (or second) port, or that will be access
 to the outside world for some reason. Meanwhile, i don't want to set my default host to 0.0.0.0
 This function allows you to run a server with a 'throwaway' host:port"
   (interactive)
-  (let ((args (list "runservers" (read-from-minibuffer "host:port "))))
-    (pony-comint-pop "ponytempserver" (pony-manage-cmd)
+  (let ((args (list "runserver" (read-from-minibuffer "host:port "))))
+    (pony-manage-pop "ponytempserver" (pony-manage-cmd)
                      args)))
 
 ;; View server
@@ -611,7 +612,7 @@ This function allows you to run a server with a 'throwaway' host:port"
   "Run Syncdb on the current project"
   (interactive)
   (start-process "ponymigrations" "*ponymigrations*"
-                 (pony-manage-cmd) "syncdb")
+                 (pony-active-python) (pony-manage-cmd) "syncdb")
   (pony-pop "*ponymigrations*"))
 
 ;; (defun pony-south-get-migrations()
@@ -634,7 +635,7 @@ This function allows you to run a server with a 'throwaway' host:port"
     (if (pony-command-exists "schemamigration")
         (progn
           (start-process "ponymigrations" "*ponymigrations*"
-                         (pony-manage-cmd)
+                         (pony-active-python) (pony-manage-cmd)
                          "schemamigration" app "--auto")
           (pony-pop "*ponymigrations*"))
       (message "South doesn't seem to be installed"))))
