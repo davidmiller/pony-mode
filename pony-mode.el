@@ -482,7 +482,8 @@ Be aware of 'clean', buildout, and virtualenv situations"
 (defun pony-list-commands()
   "List of managment commands for the current project"
   (with-temp-buffer
-    (insert (shell-command-to-string (pony-manage-cmd)))
+    (insert (shell-command-to-string
+             (concat (pony-active-python) " " (pony-manage-cmd))))
     (goto-char (point-min))
     (if (looking-at
          "\\(\\(.*\n\\)*Available subcommands:\\)\n\\(\\(.*\n\\)+?\\)Usage:")
@@ -519,8 +520,10 @@ Be aware of 'clean', buildout, and virtualenv situations"
   (let ((dump (read-from-minibuffer "Dumpdata: " (pony-get-app)))
         (target (pony-mini-file "File: ")))
     (shell-command (concat
+                    (pony-active-python) " "
                     (pony-manage-cmd) " dumpdata " dump " > " target))
   (message (concat "Written to " target))))
+
 ;;;###autoload
 (defun pony-loaddata ()
   "Load a fixture into the current project's dev database"
