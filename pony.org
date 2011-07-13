@@ -59,18 +59,18 @@
    Do it once, and do it well.
 
 * Bugs
-** Database settings fails to take account of Django 1.2+ Format
-** Pony-fabric fails unpleasantly with projects that have no Fabfile
-** Pony-list-commands seems broken in emacs -q -- requires further investigation
-** Pony-dumpdata requires port to the new API
-** Pony-temp-server Possibly never worked - surely a typo?
-** Pony-browser shouldn't be a blocking wait.
-** Syncdb needs new calling conventions
-** Command if exists as a wrapper
+** TODO Database settings fails to take account of Django 1.2+ Format
+** DONE Pony-fabric fails unpleasantly with projects that have no Fabfile
+** DONE Pony-list-commands seems broken in emacs -q -- requires further investigation
+** DONE Pony-dumpdata requires port to the new API
+** TODO Pony-temp-server Possibly never worked - surely a typo?
+** DONE Pony-browser shouldn't be a blocking wait.
+** TODO Syncdb needs new calling conventions
+** TODO Command if exists as a wrapper
 * Roadmap
 ** 0.2 Release
 *** Blockers
-    1) Database Bug
+    1) All known bugs
     2) Virtualenv Support
 *** Other
        1) yasnppet to defcustom
@@ -80,3 +80,4 @@
    2) Consolidate all the Management commands into a single macro interface (pony-defmanage "flush")
    3) Run multiple dev servers from one Emacs instance
    4) Test-case-mode backend
+   5) Build system
