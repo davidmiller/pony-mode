@@ -6,6 +6,9 @@
 ;; Maintainer: David Miller <david@deadpansincerity.com>
 ;; Created 2011-02-20
 ;; Keywords: python django
+;;
+;; Version: 0.2rc1
+;;
 
 
 ;; This file is NOT part of GNU Emacs
