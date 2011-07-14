@@ -1,0 +1,53 @@
+0.2
+====
+
+Virtualenv Support
+------------------
+
+Pony-mode now has `native' support for Virtualenv...
+This means that when launching commands or sub-processes, pony-mode will attempt to determine whether your project is in a Virtualenv, and if so, will use the appropriate interpreter/site-packages.
+
+This assumes a project structure along these lines (Where envious is the Virtualenv root):
+
+davidmiller@Dev-pc-14:~/programming/python$ tree -L 2 envious/
+envious/
+├── bin
+│   ├── activate
+│   ├── activate.csh
+│   ├── activate.fish
+│   ├── activate_this.py
+│   ├── django-admin.py
+│   ├── easy_install
+│   ├── easy_install-2.7
+│   ├── pip
+│   ├── pip-2.7
+│   └── python
+├── envious
+│   ├── a.db
+│   ├── __init__.py
+│   ├── manage.py
+│   ├── settings.py
+│   └── urls.py
+├── include
+│   └── python2.7 -> /usr/include/python2.7
+└── lib
+    └── python2.7
+
+If your directories are structured differently and things don't work, file bugs!
+
+New defcustom `pony-sqlite-program'
+-----------------------------------
+
+This variable is the name of the program used by `pony-db-shell' when your project's database is SQLite3. Defaults to "sqlite3".
+Either:
+    M-x customize-group pony
+    (setq pony-db-shell "foobar")
+
+Miscelaneous
+-----------
+
+* M-x pony-fabric will fail elegantly if there is no fabfile for the project
+* M-x pony-temp-server bug fixed for lightweight alternative server host:port instances
+* Numerous functions ported to the new calling API
+* M-x pony-browser now uses callbacks rather than blocking waits for the server to initialize
+* Better failure for pony-get-setting where the setting does not exist
