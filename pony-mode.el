@@ -54,9 +54,16 @@
   :group 'pony
   :type 'bool)
 
+(defcustom pony-sqlite-program "sqlite3"
+  "Name of the executable to use when running a database REPL for Django
+projects using sqlite."
+  :group 'pony
+  :type 'string)
+
 ;; Dependancies and environment sniffing
 (require 'cl)
 (require 'sgml-mode)
+(require 'sql)
 (require 'thingatpt)
 
 ;; Utility
@@ -279,11 +286,19 @@ Be aware of 'clean', buildout, and virtualenv situations"
       nil)))
 
 ;;;###autoload
+(defun pony-setting-p (setting)
+  "Predicate to determine whether a `setting' exists for the current project"
+  (let ((setting? (pony-get-setting setting)))
+    (if (string-match "Traceback" setting?)
+        nil
+      t)))
+
+;;;###autoload
 (defun pony-get-setting(setting)
   "Get the pony settings.py value for `setting`"
   (let ((settings (pony-get-settings-file))
         (python-c (concat (pony-active-python)
-                          " -c 'import settings; print settings.%s'"))
+                          " -c \"import settings; print settings.%s\""))
         (working-dir default-directory)
         (set-val nil))
     (if settings
@@ -361,12 +376,19 @@ Be aware of 'clean', buildout, and virtualenv situations"
 (defun pony-get-db-settings()
   "Get Pony's database settings"
   (let ((db-settings
-         (make-pony-db-settings
-          :engine (pony-get-setting "DATABASE_ENGINE")
-          :name (pony-get-setting "DATABASE_NAME")
-          :user (pony-get-setting "DATABASE_USER")
-          :pass (pony-get-setting "DATABASE_PASSWORD")
-          :host (pony-get-setting "DATABASE_HOST"))))
+         (if (pony-setting-p "DATABASE_ENGINE")
+             (make-pony-db-settings
+              :engine (pony-get-setting "DATABASE_ENGINE")
+              :name (pony-get-setting "DATABASE_NAME")
+              :user (pony-get-setting "DATABASE_USER")
+              :pass (pony-get-setting "DATABASE_PASSWORD")
+              :host (pony-get-setting "DATABASE_HOST"))
+           (make-pony-db-settings
+            :engine (pony-get-setting "DATABASES['default']['ENGINE']")
+            :name (pony-get-setting "DATABASES['default']['NAME']")
+            :user (pony-get-setting "DATABASES['default']['USER']")
+            :pass (pony-get-setting "DATABASES['default']['PASSWORD']")
+            :host (pony-get-setting "DATABASES['default']['HOST']")))))
     db-settings))
 
 ;;;###autoload
@@ -381,8 +403,9 @@ Be aware of 'clean', buildout, and virtualenv situations"
       (setq sql-server (pony-db-settings-host db))
       (if (equalp (pony-db-settings-engine db) "mysql")
           (sql-connect-mysql)
-        (if (equalp (pony-db-settings-engine db) "sqlite3")
-            (sql-connect-sqlite)
+        (if (string-match "sqlite3" (pony-db-settings-engine db))
+            (let ((sql-sqlite-program pony-sqlite-program))
+              (sql-connect-sqlite))
           (if (equalp (pony-db-settings-engine db) "postgresql_psycopg2")
               (sql-connect-postgres))))
       (pony-pop "*SQL*")
