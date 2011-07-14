@@ -59,7 +59,7 @@
    Do it once, and do it well.
 
 * Bugs
-** TODO Database settings fails to take account of Django 1.2+ Format
+** DONE Database settings fails to take account of Django 1.2+ Format
 ** DONE Pony-fabric fails unpleasantly with projects that have no Fabfile
 ** DONE Pony-list-commands seems broken in emacs -q -- requires further investigation
 ** DONE Pony-dumpdata requires port to the new API
@@ -81,3 +81,4 @@
    3) Run multiple dev servers from one Emacs instance
    4) Test-case-mode backend
    5) Build system
+   6) Interactive database decisions for multiple configured dbs
