@@ -76,6 +76,14 @@ projects using sqlite."
   (let ((s (if (symbolp str) (symbol-name str) str)))
     (replace-regexp-in-string "\\(^[[:space:]\n]*\\|[[:space:]\n]*$\\)" "" s)))
 
+(defun get-string-from-file (filePath)
+  "Return FILEPATH's file content."
+  (condition-case nil
+      (chomp (with-temp-buffer
+	(insert-file-contents filePath)
+	(buffer-string)))
+    (error nil)))
+
 ;;;###autoload
 (defun pony-find-file (path pattern)
   "Find files matching pattern in or below path"
@@ -250,10 +258,15 @@ This command will only work if you run with point in a buffer that is within you
 (defun pony-active-python ()
   "Fetch the active Python interpreter for this Django project.
 Be aware of 'clean', buildout, and virtualenv situations"
-  (let ((venv-out (pony-locate "bin/python")))
-    (if venv-out
-        venv-out
-      (executable-find "python"))))
+  (let (
+	(conf-venv-bin (get-string-from-file (concat
+					      (pony-project-root)
+					      "/.ponyrc")))
+	(venv-out (pony-locate "bin/python"))
+	)
+    (cond (conf-venv-bin conf-venv-bin)
+	  (venv-out venv-out)
+	  (t (executable-find "python")))))
 
 ;;;###autoload
 (defun pony-command-exists(cmd)
