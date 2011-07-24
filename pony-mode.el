@@ -161,6 +161,11 @@ calling sequences in command functions."
             (make-local-variable var)
             (set var the-var))))))
 
+;; TODO
+;;;###autoload
+(defun pony-buffers ()
+  "List of buffers within the current Django project")
+
 ;; Pony-mode
 ;;;###autoload
 (defun pony-reload-mode()
@@ -767,6 +772,12 @@ This function allows you to run a server with a 'throwaway' host:port"
   "Highlight instances of Files in Test buffers"
   (hi-lock-face-buffer "File \"\\([a-z/_]+.py\\)\", line \\([0-9]+\\)"
                        'hi-blue))
+;; TODO
+;;;###autoload
+(defun pony-occur ()
+  "multi-occur in buffers under the project root"
+  (interactive))
+
 ;; Modes ;;
 
 ;; Snippets
