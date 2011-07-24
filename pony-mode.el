@@ -108,6 +108,13 @@ but allows paths rather than filenames"
                   (directory-file-name dir))))
      found))
 
+;;;###autoload
+(defun pony-read-file (filepath)
+  "Read the contents of `filepath'"
+  (with-temp-buffer
+    (insert-file-contents filepath)
+    (read (current-buffer))))
+
 ;; Emacs
 
 ;;;###autoload
@@ -162,6 +169,30 @@ calling sequences in command functions."
             (set var the-var))))))
 
 ;; Pony-mode
+
+;;
+;; Config files
+;;
+;; Commentary:
+;;
+;; Allow us to specify things per-project where our local
+;; setup is not one of the ones anticipated...
+;;
+;; We then read in the .ponyrcfile in the `pony-project-root',
+;; which should define a pony-project variable
+;;
+
+(defstruct pony-project python)
+
+;;;###autoload
+(defun pony-configfile-p ()
+  "Establish whether this project has a .ponyrc file in the root"
+  (pony-rooted-sym-p '.ponyrc))
+
+(defun pony-rc ()
+  "Get the settings stored in the .ponyrc file"
+  (eval (pony-read-file (concat (pony-project-root) ".ponyrc"))))
+
 ;;;###autoload
 (defun pony-reload-mode()
   (interactive)
@@ -249,11 +280,14 @@ This command will only work if you run with point in a buffer that is within you
 ;;;###autoload
 (defun pony-active-python ()
   "Fetch the active Python interpreter for this Django project.
-Be aware of 'clean', buildout, and virtualenv situations"
-  (let ((venv-out (pony-locate "bin/python")))
-    (if venv-out
-        venv-out
-      (executable-find "python"))))
+Be aware of .ponyrc configfiles, 'clean', buildout, and
+ virtualenv situations"
+  (if (pony-configfile-p)
+      (pony-project-python (pony-rc))
+    (let ((venv-out (pony-locate "bin/python")))
+      (if venv-out
+          venv-out
+        (executable-find "python")))))
 
 ;;;###autoload
 (defun pony-command-exists(cmd)
@@ -618,7 +652,7 @@ This function allows you to run a server with a 'throwaway' host:port"
   (if (pony-command-exists "shell_plus")
       (setq command "shell_plus")
     (setq command "shell"))
-  (pony-comint-pop "ponysh" (pony-manage-cmd) (list command)))
+  (pony-manage-pop "ponysh" (pony-manage-cmd) (list command)))
 
 ;; Startapp
 
