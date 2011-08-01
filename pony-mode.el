@@ -7,7 +7,7 @@
 ;; Created 2011-02-20
 ;; Keywords: python django
 ;;
-;; Version: 0.2rc1
+;; Version: 0.2
 ;;
 
 ;; This file is NOT part of GNU Emacs

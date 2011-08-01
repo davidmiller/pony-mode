@@ -1,10 +1,10 @@
 Pony Mode -a Django mode for emacs
-=====================
+==================================
 
 New Django mode for emacs.
 
 Features (Non-exhaustive):
----------
+--------------------------
 
 * Run dev server in an emacs buffer [C-c C-p r]
   * Checks to see if runserver_plus is available
@@ -84,9 +84,14 @@ Virtualenv support assumes that you initialized the virtualenv with something eq
     $ emacs settings.py
 
 If your setup is different to this, then the implicit Virtualenv detection may fail.
-(e.g. if there is not a bin/activate script in the directory above your project's root).
-If this happens, file a bug with the details of your Virtualenv setup and we'll see what we
-can do.
+
+Fear not though! if you add a .ponyrc file to your project root (e.g. the directory with your manage.py in) then you can specify the python interpreter you would like to use for this project.
+
+The file should look something like this:
+
+    ;; Pony mode config for the megacorp project
+    (pony-make-project
+        :python "/home/david/virtualenvs/megacorp/production/bin/python")
 
 Installation
 ------------
