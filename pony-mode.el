@@ -7,7 +7,7 @@
 ;; Created 2011-02-20
 ;; Keywords: python django
 ;;
-;; Version: 0.2
+;; Version: 0.3a
 ;;
 
 ;; This file is NOT part of GNU Emacs
@@ -621,6 +621,15 @@ Be aware of .ponyrc configfiles, 'clean', buildout, and
     (when proc (kill-process proc t))))
 
 ;;;###autoload
+(defun pony-restart-server ()
+  "Restart the pony Django dev server.
+Django extras does this better with the Werkzeug server, but sometimes
+you can't have nice things."
+  (interactive)
+  (pony-stopserver)
+  (run-with-timer 1 nil 'pony-runserver))
+
+;;;###autoload
 (defun pony-temp-server ()
   "Relatively regularly during development, I need/want to set up a development
 server instance either on a nonstandard (or second) port, or that will be accessible
@@ -868,6 +877,7 @@ This function allows you to run a server with a 'throwaway' host:port"
          ;; Server
          ["Run dev server for project" pony-runserver]
          ["Stop dev server for project" pony-stopserver]
+         ["Restart the dev server" pony-restart-server]
          ["Launch project in browser" pony-browser]
          "-"
          ("Models"
