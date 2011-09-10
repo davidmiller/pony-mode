@@ -2,8 +2,8 @@ VERSION=$(shell grep -P -o '(?<=Version: )[0-9.]+' pony-mode.el)
 RELEASEDIR=pony-mode-$(VERSION)
 BUILDDIR=build/$(RELEASEDIR)
 
-release: clean package
-# tag
+release: clean package tag
+
 all:
 	@echo "What do you want from me?"
 
