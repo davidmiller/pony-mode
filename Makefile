@@ -17,5 +17,6 @@ package:
 	-@ mkdir -p $(BUILDDIR)
 	-@ cp pony-mode.el $(BUILDDIR)
 	-@ cp pony-mode-pkg.el $(BUILDDIR)
+	-@ cp -ra snippets $(BUILDDIR)
 	-@ cp README.rst $(BUILDDIR)/README
 	-@ cd build && tar -cf pony-mode-$(VERSION).tar $(RELEASEDIR)
