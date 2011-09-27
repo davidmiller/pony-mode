@@ -4,9 +4,9 @@
 
 ;; Author: David Miller <david@deadpansincerity.com>
 ;; Maintainer: David Miller <david@deadpansincerity.com>
-;; Created 2011-02-20
+;; Created: 2011-02-20
 ;; Keywords: python django
-;;
+;; URL: https://github.com/davidmiller/pony-mode
 ;; Version: 0.2
 ;;
 
@@ -989,3 +989,4 @@ This function allows you to run a server with a 'throwaway' host:port"
                 (pony-mode))))
 
 (provide 'pony-mode)
+;;; pony-mode.el ends here
