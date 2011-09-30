@@ -9,5 +9,5 @@ class ${1:ClassName}(models.Model):
     """
     $3
 
-    def __unicode__( self ):
+    def __unicode__(self):
         return self
