@@ -69,6 +69,8 @@ projects using sqlite."
   :group 'pony
   :type 'string)
 
+(defvar pony-filesystem-ceiling (if (eq 'windows-nt system-type)
+                                    "c:/" "/"))
 
 ;; Dependancies and environment sniffing
 (require 'cl)
@@ -106,9 +108,8 @@ but allows paths rather than filenames"
         (found nil))
     (message dir)
     (message "!")
-     (while (and (not (equal "/" dir))
+     (while (and (not (equal pony-filesystem-ceiling dir))
                  (not found))
-       (message dir)
        (let ((check (concat dir filepath)))
          (if (file-exists-p check)
              (setq found check)))
@@ -281,9 +282,9 @@ This command will only work if you run with point in a buffer that is within you
               (setq found (expand-file-name
                            (concat (pony-project-root) (symbol-name test))))))
         (if found
-            (if (not (file-executable-p found))
-                (message "Please make your django manage.py file executable")
-              found))))))
+            ;; (if (not (file-executable-p found))
+            ;;     (message "Please make your django manage.py file executable")
+              found)))));)
 
 ;;;###autoload
 (defun pony-active-python ()
@@ -300,7 +301,7 @@ Be aware of .ponyrc configfiles, 'clean', buildout, and
 ;;;###autoload
 (defun pony-command-exists(cmd)
   "Is cmd installed in this app"
-  (if (string-match cmd (shell-command-to-string (pony-manage-cmd)))
+  (if (string-match cmd (shell-command-to-string (concat (pony-active-python) " " (pony-manage-cmd))))
       (setq found-command t)
     nil))
 
