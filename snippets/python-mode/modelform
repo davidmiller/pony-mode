@@ -4,7 +4,7 @@
 # key: mform
 # contributor: David Miller <david@deadpansinceity.com>
 # --
-class ${1:ClassName}Form( ModelForm ):
+class ${1:ClassName}Form(ModelForm):
     $0
 
     class Meta:
