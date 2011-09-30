@@ -3,7 +3,7 @@
 ;; level of cognitive dissonance incurred when firing up configuration-lite
 ;; instances of Emacs for testing purposes
 
-(add-to-list 'load-path "~/emacs/pony-mode")
+(add-to-list 'load-path "~/emacs/site-packages/pony-mode")
 (require 'pony-mode)
 
 (global-set-key [M-left] 'windmove-left) ; move to left windnow

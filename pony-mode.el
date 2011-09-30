@@ -7,7 +7,7 @@
 ;; Created: 2011-02-20
 ;; Keywords: python django
 ;; URL: https://github.com/davidmiller/pony-mode
-;; Version: 0.2
+;; Version: 0.3b
 ;;
 
 ;; This file is NOT part of GNU Emacs
@@ -61,6 +61,14 @@
 projects using sqlite."
   :group 'pony
   :type 'string)
+
+(defcustom pony-snippet-dir (expand-file-name
+                            (concat (file-name-directory load-file-name)
+                                    "/snippets"))
+  "Directory in which to locate Yasnippet snippets for Pony Mode"
+  :group 'pony
+  :type 'string)
+
 
 ;; Dependancies and environment sniffing
 (require 'cl)
@@ -806,9 +814,6 @@ This function allows you to run a server with a 'throwaway' host:port"
 ;; Snippets
 
 ;;;###autoload
-(defvar pony-snippet-dir (expand-file-name
-                            (concat (file-name-directory load-file-name)
-                                    "/snippets")))
 
 ;;;###autoload
 (defun pony-load-snippets()
@@ -923,39 +928,8 @@ This function allows you to run a server with a 'throwaway' host:port"
   (interactive)
   (pony-minor-mode))
 
-;; Pony-tpl-minor-mode
-
-(defvar pony-tpl-mode-hook nil)
-
-(defconst pony-tpl-font-lock-keywords
-  (append
-   sgml-font-lock-keywords
-   (list
-    '("{%.*\\(\\bor\\b\\).*%}" . (1 font-lock-builtin-face))
-
-    '("{% ?comment ?%}\\(\n?.*?\\)+?{% ?endcomment ?%}" . font-lock-comment-face)
-    '("{% ?\\(\\(end\\)?\\(extends\\|for\\|cache\\|cycle\\|filter\\|firstof\\|debug\\|if\\(changed\\|equal\\|notequal\\|\\)\\|include\\|load\\|now\\|regroup\\|spaceless\\|ssi\\|templatetag\\|widthratio\\|block\\|trans\\)\\) ?.*? ?%}" . 1)
-    '("{{ ?\\(.*?\\) ?}}" . (1 font-lock-variable-name-face))
-    '("{%\\|\\%}\\|{{\\|}}" . font-lock-builtin-face)
-    ))
-  "Highlighting for pony-tpl-mode")
-
-(define-minor-mode pony-tpl-minor-mode
-  "Pony-templatin-riffic"
-  :initial nil
-  :lighter " PonyTpl"
-  :keymap pony-minor-mode-map)
-
-(defun pony-tpl-mode()
-  "Minor mode for editing pony templates"
-  (interactive)
-  (pony-tpl-minor-mode t)
-  (run-hooks 'pony-tpl-mode-hook)
-  (set (make-local-variable 'font-lock-defaults)
-       '(pony-tpl-font-lock-keywords))
-   (pony-load-snippets))
-
-;; Pony-test minor mode
+;;; ###pony-tmpl
+(load-file "pony-tpl.el")
 
 (define-minor-mode pony-test-minor-mode
   "Pony Testin'"
