@@ -930,7 +930,7 @@ This function allows you to run a server with a 'throwaway' host:port"
   (pony-minor-mode))
 
 ;;; ###pony-tmpl
-(load-file "pony-tpl.el")
+(load-file (concat (file-name-directory load-file-name) "/pony-tpl.el"))
 
 (define-minor-mode pony-test-minor-mode
   "Pony Testin'"
