@@ -90,8 +90,10 @@ Fear not though! if you add a .ponyrc file to your project root (e.g. the direct
 The file should look something like this:
 
     ;; Pony mode config for the megacorp project
+    
     (make-pony-project
-        :python "/home/david/virtualenvs/megacorp/production/bin/python")
+        :python "/home/david/virtualenvs/megacorp/production/bin/python"
+	:settings "local_settings_file")
 
 Installation
 ------------
