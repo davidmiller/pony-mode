@@ -51,6 +51,11 @@
   :group 'pony
   :type 'string)
 
+(defcustom pony-settings-file-basename "settings"
+  "Settings file to use with manage.py"
+  :group 'pony
+  :type 'string)
+
 (defcustom pony-test-failfast t
   "Run pony tests with failfast?"
   :group 'pony
@@ -143,10 +148,12 @@ It creates a comint interaction buffer, called `name', running
 
 ;;;###autoload
 (defun pony-manage-pop (name command args)
-  "Run manage.py commands in a commint buffer. Intended as a wrapper around
-`pony-commint-pop', this function bypasses the need to construct manage.py
-calling sequences in command functions."
-  (let ((python-args (cons command args)))
+  "Run manage.py commands in a commint buffer. Intended as a
+wrapper around `pony-commint-pop', this function bypasses the
+need to construct manage.py calling sequences in command
+functions."
+  (let ((python-args
+	 (cons command (append args (list (concat "--settings=" (pony-get-settings-file-basename)))))))
     (pony-comint-pop name (pony-active-python) python-args)))
 
 ;;;###autoload
@@ -191,7 +198,7 @@ calling sequences in command functions."
 ;; which should define a pony-project variable
 ;;
 
-(defstruct pony-project python)
+(defstruct pony-project python settings)
 
 ;;;###autoload
 (defun pony-configfile-p ()
@@ -319,9 +326,18 @@ Be aware of .ponyrc configfiles, 'clean', buildout, and
     nil))
 
 ;;;###autoload
+(defun pony-get-settings-file-basename()
+  "Return the name of the settings file to use for this
+project. By default this is 'settings', but it can be changed
+locally with .ponyrc."
+  (if (pony-configfile-p)
+      (pony-project-settings (pony-rc))
+    pony-settings-file-basename))
+
 (defun pony-get-settings-file()
   "Return the absolute path to the pony settings file"
-  (let ((settings (concat (pony-project-root) "settings.py"))
+  (let ((settings
+	 (concat (pony-project-root) (concat (pony-get-settings-file-basename) ".py")))
         (isfile nil))
     (if (not (file-exists-p settings))
         (message "Settings file not found")
@@ -619,7 +635,8 @@ Be aware of .ponyrc configfiles, 'clean', buildout, and
         (cd (pony-project-root))
         (pony-manage-pop "ponyserver" (pony-manage-cmd)
                (list command
-                     (concat pony-server-host ":"  pony-server-port)))
+                     ;(concat pony-server-host ":"  pony-server-port)))
+		     (concat pony-server-host ":"  pony-server-port)))
         (cd working-dir)))))
 
 ;;;###autoload
