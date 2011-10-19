@@ -68,13 +68,20 @@
 ** DONE Syncdb needs new calling conventions
 ** DONE Command if exists as a wrapper
 * Roadmap
-** 0.2 Release
-*** Blockers
+** DONE 0.2 Release
+*** DONE Blockers
     1) All known bugs
     2) Virtualenv Support
-*** Other
+*** DONE Other
        1) yasnppet to defcustom
-** 0.3 Release...
+** IN PROGRESS 0.3 Release...
+*** Required Features
+**** Use Dir locals instead of ponyrc
+     Provide interactive M-x make-project and edit project to 
+     edit the pony-project struct.
+
+     We should keep support for .ponnyrc until a 1.0 release, emitting
+     a message that suggests moving to dir-locals.el and not      documenting the functionality.
 *** Desired Features
    1) Jump to view at point in Browser
    2) Consolidate all the Management commands into a single macro interface (pony-defmanage "flush")

@@ -124,7 +124,9 @@ but allows paths rather than filenames"
     (insert-file-contents filepath)
     (read (current-buffer))))
 
+;;
 ;; Emacs
+;;
 
 ;;;###autoload
 (defun pony-pop(buffer)
@@ -187,27 +189,38 @@ calling sequences in command functions."
 ;; Allow us to specify things per-project where our local
 ;; setup is not one of the ones anticipated...
 ;;
-;; We then read in the .ponyrcfile in the `pony-project-root',
+;; We then read in the .ponyrc file in the `pony-project-root',
 ;; which should define a pony-project variable
 ;;
 
 (defstruct pony-project python)
+
+
 
 ;;;###autoload
 (defun pony-configfile-p ()
   "Establish whether this project has a .ponyrc file in the root"
   (pony-rooted-sym-p '.ponyrc))
 
+;;;###autoload
 (defun pony-rc ()
   "Get the settings stored in the .ponyrc file"
-  (eval (pony-read-file (concat (pony-project-root) ".ponyrc"))))
+  (let ((settings nil))
+  (eval (pony-read-file (concat (pony-project-root) ".ponyrc")))))
 
 ;;;###autoload
 (defun pony-reload-mode()
   (interactive)
   (load-library "pony-mode"))
 
+;;
 ;; Python
+;;
+;; Commentary:
+;;
+;; Functions for getting contextually aware information
+;; about the code near point
+;;
 
 ;;;###autoload
 (defun pony-get-func()
@@ -282,9 +295,7 @@ This command will only work if you run with point in a buffer that is within you
               (setq found (expand-file-name
                            (concat (pony-project-root) (symbol-name test))))))
         (if found
-            ;; (if (not (file-executable-p found))
-            ;;     (message "Please make your django manage.py file executable")
-              found)))));)
+              found)))))
 
 ;;;###autoload
 (defun pony-active-python ()
