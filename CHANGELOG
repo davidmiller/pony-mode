@@ -1,3 +1,11 @@
+0.3
+===
+
+Alternative settings files
+--------------------------
+
+Pony-mode now supports setting an alternative settings file to use, either globally or on a per project basis through the pony-project call in .ponyrc
+
 0.2
 ====
 

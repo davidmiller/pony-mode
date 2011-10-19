@@ -76,6 +76,7 @@
        1) yasnppet to defcustom
 ** IN PROGRESS 0.3 Release...
 *** Required Features
+**** Use syntax table for Tpl-mode comment highlighting
 **** Use Dir locals instead of ponyrc
      Provide interactive M-x make-project and edit project to 
      edit the pony-project struct.
@@ -89,3 +90,4 @@
    4) Test-case-mode backend
    5) Build system
    6) Interactive database decisions for multiple configured dbs
+   7) Tab indentation for django template tags.
