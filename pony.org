@@ -83,6 +83,7 @@
 
      We should keep support for .ponnyrc until a 1.0 release, emitting
      a message that suggests moving to dir-locals.el and not      documenting the functionality.
+
 *** Desired Features
    1) Jump to view at point in Browser
    2) Consolidate all the Management commands into a single macro interface (pony-defmanage "flush")

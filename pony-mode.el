@@ -202,18 +202,27 @@ functions."
 
 (defstruct pony-project python settings)
 
-
-
 ;;;###autoload
 (defun pony-configfile-p ()
   "Establish whether this project has a .ponyrc file in the root"
-  (pony-rooted-sym-p '.ponyrc))
+  (if (or
+       (dir-locals-find-file (buffer-file-name))
+       (pony-rooted-sym-p '.ponyrc))
+  t nil))
 
 ;;;###autoload
 (defun pony-rc ()
-  "Get the settings stored in the .ponyrc file"
-  (let ((settings nil))
-  (eval (pony-read-file (concat (pony-project-root) ".ponyrc")))))
+  "Get The settings for the current project.
+
+Read the current pony-project variable from the current buffer's .dir-locals.el"
+  (let ((settings
+         (if (memq 'pony-settings
+                   (mapcar 'first dir-local-variables-alist))
+             (cdr (find-if (lambda (x) (equal (first x) 'pony-settings))
+                           dir-local-variables-alist))
+           ;; For backwards compatibility we also allow ourselves to use .ponyrc
+           (eval (pony-read-file (concat (pony-project-root) ".ponyrc"))))))
+    (eval settings)))
 
 ;;;###autoload
 (defun pony-reload-mode()
