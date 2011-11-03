@@ -9,18 +9,6 @@
 
 ;; pony-tpl-minor-mode begins
 
-;;
-;; Indentation of Django tags
-;;
-;; Commentary:
-;;
-;; By default sgml-mode's `sgml-indent-line' indents html files by checking the lexical
-;; context of `point' and if this is deemed to be text, uses a somewhat inflexible
-;; (while (looking-at "</") BODY) to determine the correct indentation level. There is no
-;; `sane' way to override this regexp, so we wrap `sgml-indent-line' here, as well as
-;; providing context-determining functions
-;;
-
 (defgroup pony-tpl nil
   "Djangification for Templates in Emacs"
   :group 'pony
@@ -32,10 +20,47 @@
   :group 'pony-tpl
   :type 'string)
 
-(defun pony-tpl-block-p nil
-  "Is `point' inside a {% %} block?"
-  (save-excursion
-    (while (looking-at "{%[ ]+?endblock"))))
+(defcustom pony-tpl-inent-start
+  "\{% ?block ?[a-zA-Z]?+ ?%\}"
+  "Regexp to match the opening tag of a pair that should mark indentation in a Django template"
+  :group 'pony-tpl
+  :type 'string)
+
+(defcustom pony-tpl-inent-end
+  "\{% ?endblock ?[a-zA-Z]?+ ?%\}"
+  "Regexp to match the end tag of a pair that should mark indentation in a Django template"
+  :group 'pony-tpl
+  :type 'string)
+
+;;
+;; Indentation of Django tags
+;;
+;; Commentary:
+;;
+;; By default sgml-mode's `sgml-indent-line' indents html files by checking the lexical
+;; context of `point' and if this is deemed to be text, uses a somewhat inflexible
+;; (while (looking-at "</") BODY) to determine the correct indentation level. There is no
+;; `sane' way to override this regexp, so we wrap `sgml-indent-line' here.
+;;
+
+(defun pony-tpl-indent-level nil
+  "Calculate the number of indentation levels that Django Template syntax
+dictates should be added to the HTML indentation level at `point`.
+
+The heuristic here is fairly simple - we only interpret template tags with both
+opening and closing tags as requiring indentation, and then subtract the number of 
+closing tags from opening tags before point.
+
+The precise nature of what is interpreted as an indent-worthy tag can be overidden
+with the values of `pony-tpl-indent-start' and `pony-tpl-indent-end'."
+  (let ((pony-indent (- (count-matches pony-tpl-indent-start 0 (point)) 
+                        (count-matches pony-tpl-indent-end 0 (point))))
+        (sgml-indent (sgml-calculate-indent))))
+  (+ sgml-indent (* sgml-basic-offset pony-indent)))
+
+(defun pony-indent nil
+  "The buffer-local indent-line function for pony-tpl buffers."
+  (indent-line-to (pony-tpl-indent-level)))
 
 ;; (defadvise sgml-iqndent-line after BODY)
 
