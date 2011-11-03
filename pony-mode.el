@@ -51,7 +51,7 @@
   :group 'pony
   :type 'string)
 
-(defcustom pony-settings-file-basename "settings"
+(defcustom pony-settings-module "settings"
   "Settings file to use with manage.py"
   :group 'pony
   :type 'string)
@@ -79,6 +79,7 @@ projects using sqlite."
 
 ;; Dependancies and environment sniffing
 (require 'cl)
+(require 'dired-aux)
 (require 'files-x)
 (require 'sgml-mode)
 (require 'sql)
@@ -224,17 +225,19 @@ Read the current pony-project variable from the current buffer's .dir-locals.el"
     (eval settings)))
 
 ;;;###autoload
-(defun pony-define-project
+(defun pony-define-project ()
   "Create or alter the pony-project settings for the current project"
   (interactive)
-  (let* ((current (if (pony-configfile-p)
+  (let* ((localsfile (concat (pony-project-root) ".dir-locals.el"))
+         (current (if (pony-configfile-p)
                       (pony-rc)
                     (make-pony-project)))
          (interpreter (read-from-minibuffer "Python: " (pony-project-python current)))
-         (settings (read-from-minibuffer "Settings module"
-                                          (or (pony-project-settings)
+         (settings (read-from-minibuffer "Settings module: "
+                                          (or (pony-project-settings current)
                                               pony-settings-module))))
-    ; (Check for existance of file here)
+    (if (not (file-exists-p localsfile))
+             (dired-do-touch localsfile))
     (modify-dir-local-variable nil 'pony-settings '(write list here) 'delete)))
 
 ;;;###autoload
