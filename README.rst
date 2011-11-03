@@ -85,16 +85,23 @@ Virtualenv support assumes that you initialized the virtualenv with something eq
 
 If your setup is different to this, then the implicit Virtualenv detection may fail.
 
-Fear not though! if you add a .ponyrc file to your project root (e.g. the directory with your manage.py in) then you can specify the python interpreter you would like to use for this project.
+Fear not though! - you can customise the interpreter used by Pony-mode with a pony-project.
+
+Projects
+--------
+Pony projects are defined in the .dir-locals.el file at the root of your current project.
 
 The file should look something like this:
 
     ;; Pony mode config for the megacorp project
+    ((nil ;; This applies these settings regardless of major mode
     
-    (make-pony-project
-        :python "/home/david/virtualenvs/megacorp/production/bin/python"
-	:settings "local_settings_file")
+      (pony-settings . (make-pony-project
+                        :python "/home/david/virtualenvs/megacorp/production/bin/python"
+                        :settings "local_settings_file")
+    )
 
+    
 Installation
 ------------
 

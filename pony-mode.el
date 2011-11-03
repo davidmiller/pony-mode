@@ -79,6 +79,7 @@ projects using sqlite."
 
 ;; Dependancies and environment sniffing
 (require 'cl)
+(require 'files-x)
 (require 'sgml-mode)
 (require 'sql)
 (require 'thingatpt)
@@ -111,8 +112,6 @@ projects using sqlite."
 but allows paths rather than filenames"
   (let ((dir (expand-file-name default-directory))
         (found nil))
-    (message dir)
-    (message "!")
      (while (and (not (equal pony-filesystem-ceiling dir))
                  (not found))
        (let ((check (concat dir filepath)))
@@ -223,6 +222,20 @@ Read the current pony-project variable from the current buffer's .dir-locals.el"
            ;; For backwards compatibility we also allow ourselves to use .ponyrc
            (eval (pony-read-file (concat (pony-project-root) ".ponyrc"))))))
     (eval settings)))
+
+;;;###autoload
+(defun pony-define-project
+  "Create or alter the pony-project settings for the current project"
+  (interactive)
+  (let* ((current (if (pony-configfile-p)
+                      (pony-rc)
+                    (make-pony-project)))
+         (interpreter (read-from-minibuffer "Python: " (pony-project-python current)))
+         (settings (read-from-minibuffer "Settings module"
+                                          (or (pony-project-settings)
+                                              pony-settings-module))))
+    ; (Check for existance of file here)
+    (modify-dir-local-variable nil 'pony-settings '(write list here) 'delete)))
 
 ;;;###autoload
 (defun pony-reload-mode()
@@ -352,7 +365,7 @@ project. By default this is 'settings', but it can be changed
 locally with .ponyrc."
   (if (pony-configfile-p)
       (pony-project-settings (pony-rc))
-    pony-settings-file-basename))
+    pony-settings-module))
 
 (defun pony-get-settings-file()
   "Return the absolute path to the pony settings file"
