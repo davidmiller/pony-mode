@@ -306,6 +306,32 @@ Read the current pony-project variable from the current buffer's .dir-locals.el"
         (if found (expand-file-name curdir))))))
 
 ;;;###autoload
+(defun pony-project-package-root()
+  "Return the root of the project packege(dir with project settings.py in) or nil"
+  (pony-localise
+   'pony-this-project-package-root
+   '(lambda ()
+      (let ((settings-file
+	     (concat (pony-project-root)
+		     (pony-get-settings-file-basename) ".py"))
+	    (diffsettings nil)
+	    (package-root ""))
+	(if (file-exists-p settings-file)
+	    ;; old type project structure
+	    (setq package-root (file-name-directory settings-file))
+	  ;; new type project structure
+	  (progn
+	    (setq diffsettings
+			(shell-command-to-string
+			 (concat (pony-active-python) " "
+				 (pony-manage-cmd) " "
+				 "diffsettings")))
+	    (if (string-match "SETTINGS_MODULE = '\\([^'.]+\\)" diffsettings)
+		(setq package-root (match-string 1 diffsettings)))
+	    (expand-file-name (concat package-root "/")
+			      (pony-project-root))))))))
+
+;;;###autoload
 (defun pony-rooted-sym-p (symb)
   "Expand the concatenation of `symb` onto `pony-project-root` and determine whether
 that file exists"
@@ -373,7 +399,7 @@ locally with .ponyrc."
 (defun pony-get-settings-file()
   "Return the absolute path to the pony settings file"
   (let ((settings
-	 (concat (pony-project-root) (concat (pony-get-settings-file-basename) ".py")))
+	 (concat (pony-project-package-root) (concat (pony-get-settings-file-basename) ".py")))
         (isfile nil))
     (if (not (file-exists-p settings))
         (message "Settings file not found")
