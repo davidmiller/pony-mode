@@ -154,8 +154,12 @@ It creates a comint interaction buffer, called `name', running
 wrapper around `pony-commint-pop', this function bypasses the
 need to construct manage.py calling sequences in command
 functions."
-  (let ((python-args
-	 (cons command (append args (list (concat "--settings=" (pony-get-settings-file-basename)))))))
+  (let* ((settings (if (pony-project-newstructure-p)
+		       (concat (pony-project-package) "."
+			       (pony-get-settings-file-basename))
+		     (pony-get-settings-file-basename)))
+	(python-args
+	 (cons command (append args (list (concat "--settings=" settings))))))
     (pony-comint-pop name (pony-active-python) python-args)))
 
 ;;;###autoload
