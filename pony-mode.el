@@ -306,20 +306,27 @@ Read the current pony-project variable from the current buffer's .dir-locals.el"
         (if found (expand-file-name curdir))))))
 
 ;;;###autoload
-(defun pony-project-package-root()
-  "Return the root of the project packege(dir with project settings.py in) or nil"
+(defun pony-project-newstructure-p()
+  "Predicate to determine whether project has new structure.
+
+In django ver. => 1.4 manage.py is in upper directory relative to
+project module."
+  (let ((settings-file
+	 (concat (pony-project-root)
+		 (pony-get-settings-file-basename) ".py")))
+    (not (file-exists-p settings-file))))
+
+;;;###autoload
+(defun pony-project-package()
+  "Return the project packege name."
   (pony-localise
-   'pony-this-project-package-root
+   'pony-this-project-package
    '(lambda ()
-      (let ((settings-file
-	     (concat (pony-project-root)
-		     (pony-get-settings-file-basename) ".py"))
-	    (diffsettings nil)
-	    (package-root ""))
-	(if (file-exists-p settings-file)
-	    ;; old type project structure
-	    (setq package-root (file-name-directory settings-file))
-	  ;; new type project structure
+      (let ((diffsettings nil)
+	    (package ""))
+	(if (not (pony-project-newstructure-p))
+	    (setq package (file-name-nondirectory
+			   (directory-file-name (pony-project-root))))
 	  (progn
 	    (setq diffsettings
 			(shell-command-to-string
@@ -327,10 +334,23 @@ Read the current pony-project variable from the current buffer's .dir-locals.el"
 				 (pony-manage-cmd) " "
 				 "diffsettings")))
 	    (if (string-match "SETTINGS_MODULE = '\\([^'.]+\\)" diffsettings)
-		(setq package-root (match-string 1 diffsettings)))
-	    (expand-file-name (concat package-root "/")
-			      (pony-project-root))))))))
+		(setq package (match-string 1 diffsettings)))))))))
 
+;;;###autoload
+(defun pony-project-package-root()
+  "Return the root of the project packege (dir with project
+settings.py in) or nil"
+  (pony-localise
+   'pony-this-project-package-root
+   '(lambda ()
+      (let ((package-root nil))
+	(if (not (pony-project-newstructure-p))
+	    (setq package-root (pony-project-root))
+	  (progn
+	    (setq package-root (pony-project-package))
+	    (if package-root
+		(expand-file-name (file-name-as-directory package-root)
+			      (pony-project-root)))))))))
 ;;;###autoload
 (defun pony-rooted-sym-p (symb)
   "Expand the concatenation of `symb` onto `pony-project-root` and determine whether
