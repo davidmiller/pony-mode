@@ -607,7 +607,7 @@ locally with .ponyrc."
       (insert (shell-command-to-string command))
       (goto-char (point-min))
       (if (looking-at
-	   "\\(\\(.*\n\\)*Available subcommands:\\)\n\\(\\(.*\n\\)+?\\)Usage:")
+	   "\\(\\(.*\n\\)*Available subcommands:\\)\n\\(\\([^:]*\n\\)+?\\)")
 	  (split-string (buffer-substring (match-beginning 3) (match-end 3)))
 	nil))))
 
