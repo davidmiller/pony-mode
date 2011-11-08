@@ -602,14 +602,15 @@ locally with .ponyrc."
 ;;;###autoload
 (defun pony-list-commands()
   "List of managment commands for the current project"
-  (with-temp-buffer
-    (insert (shell-command-to-string
-             (concat (pony-active-python) " " (pony-manage-cmd))))
-    (goto-char (point-min))
-    (if (looking-at
-         "\\(\\(.*\n\\)*Available subcommands:\\)\n\\(\\(.*\n\\)+?\\)Usage:")
-        (split-string (buffer-substring (match-beginning 3) (match-end 3)))
-      nil)))
+  (let ((command (concat (pony-active-python) " " (pony-manage-cmd))))
+    (with-temp-buffer
+      (insert (shell-command-to-string command))
+      (goto-char (point-min))
+      (if (looking-at
+	   "\\(\\(.*\n\\)*Available subcommands:\\)\n\\(\\(.*\n\\)+?\\)Usage:")
+	  (split-string (buffer-substring (match-beginning 3) (match-end 3)))
+	nil))))
+
 
 ;;;###autoload
 (defun pony-manage-run(args)
