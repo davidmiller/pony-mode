@@ -699,7 +699,7 @@ This function allows you to run a server with a 'throwaway' host:port"
 (defun pony-browser()
   "Open a tab at the development server"
   (interactive)
-  (let ((url "http://localhost:8000")
+  (let ((url (concat "http://" pony-server-host ":"  pony-server-port))
         (proc (get-buffer-process "*ponyserver*")))
     (if (not proc)
         (pony-runserver))
