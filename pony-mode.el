@@ -602,7 +602,7 @@ locally with .ponyrc."
 ;;;###autoload
 (defun pony-list-commands()
   "List of managment commands for the current project"
-  (let ((command (concat (pony-active-python) " " (pony-manage-cmd))))
+  (let ((command (concat (pony-active-python) " " (pony-manage-cmd) " --help")))
     (with-temp-buffer
       (insert (shell-command-to-string command))
       (goto-char (point-min))
