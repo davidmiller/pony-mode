@@ -621,11 +621,12 @@ locally with .ponyrc."
 (defun pony-manage()
   "Interactively call the pony manage command"
   (interactive)
-  (let ((command (minibuffer-with-setup-hook 'minibuffer-complete
+  (let* ((command (minibuffer-with-setup-hook 'minibuffer-complete
                               (completing-read "Manage: "
-                                               (pony-list-commands)))))
-    (pony-manage-run (list command
-                             (read-from-minibuffer (concat command ": "))))))
+                                               (pony-list-commands))))
+	(args (split-string-and-unquote
+		     (read-from-minibuffer (concat command ": ")))))
+    (pony-manage-run (cons command args))))
 
 ;;;###autoload
 (defun pony-flush()
