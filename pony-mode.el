@@ -701,8 +701,15 @@ This function allows you to run a server with a 'throwaway' host:port"
   (interactive)
   (let ((url (concat "http://" pony-server-host ":"  pony-server-port))
         (proc (get-buffer-process "*ponyserver*")))
-    (if (not proc)
-        (pony-runserver))
+    ;; use actual url if process is already running
+    (if proc
+	(save-excursion
+	  (progn
+	    (set-buffer "*ponyserver*")
+	    (goto-char (point-max))
+	    (if (search-backward-regexp "Development server is running at \\(.+\\)\n")
+		(setq url (match-string-no-properties 1)))))
+      (pony-runserver))
     (run-with-timer 2 nil 'browse-url url)))
 
 ;; Shell
