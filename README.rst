@@ -130,4 +130,7 @@ Totally GPL
 Roadmap
 -------
 
-Check pony-mode.org for current todo/wish list
+Check the org-mode file pony.org for current todo/wish list
+
+(If you can stand the org-to-github-markdown transition:
+https://github.com/davidmiller/pony-mode/blob/master/pony.org )hs
