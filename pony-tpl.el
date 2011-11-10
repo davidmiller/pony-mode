@@ -20,13 +20,13 @@
   :group 'pony-tpl
   :type 'string)
 
-(defcustom pony-tpl-inent-start
+(defcustom pony-tpl-indent-start
   "\{% ?block ?[a-zA-Z]?+ ?%\}"
   "Regexp to match the opening tag of a pair that should mark indentation in a Django template"
   :group 'pony-tpl
   :type 'string)
 
-(defcustom pony-tpl-inent-end
+(defcustom pony-tpl-indent-end
   "\{% ?endblock ?[a-zA-Z]?+ ?%\}"
   "Regexp to match the end tag of a pair that should mark indentation in a Django template"
   :group 'pony-tpl
@@ -53,10 +53,11 @@ closing tags from opening tags before point.
 
 The precise nature of what is interpreted as an indent-worthy tag can be overidden
 with the values of `pony-tpl-indent-start' and `pony-tpl-indent-end'."
-  (let ((pony-indent (- (count-matches pony-tpl-indent-start 0 (point)) 
-                        (count-matches pony-tpl-indent-end 0 (point))))
-        (sgml-indent (sgml-calculate-indent))))
-  (+ sgml-indent (* sgml-basic-offset pony-indent)))
+  (save-excursion
+    (let ((pony-indent (- (count-matches pony-tpl-indent-start 0 (point)) 
+                          (count-matches pony-tpl-indent-end 0 (point))))
+          (sgml-indent (sgml-calculate-indent)))
+      (+ sgml-indent (* sgml-basic-offset pony-indent)))))
 
 (defun pony-indent nil
   "The buffer-local indent-line function for pony-tpl buffers."
@@ -92,6 +93,7 @@ with the values of `pony-tpl-indent-start' and `pony-tpl-indent-end'."
   (run-hooks 'pony-tpl-mode-hook)
   (set (make-local-variable 'font-lock-defaults)
        '(pony-tpl-font-lock-keywords))
+  (set (make-local-variable 'indent-line-function) 'pony-indent)
    (pony-load-snippets))
 
 ;; pony-tpl-minor-mode ends
