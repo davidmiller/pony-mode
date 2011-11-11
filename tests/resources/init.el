@@ -3,7 +3,10 @@
 ;; level of cognitive dissonance incurred when firing up configuration-lite
 ;; instances of Emacs for testing purposes
 
-(add-to-list 'load-path "~/emacs/site-packages/pony-mode")
+(add-to-list 'load-path
+             (expand-file-name
+              (concat (file-name-directory load-file-name)
+                      "../../")))
 (require 'pony-mode)
 
 (global-set-key [M-left] 'windmove-left) ; move to left windnow
