@@ -155,7 +155,8 @@ wrapper around `pony-commint-pop', this function bypasses the
 need to construct manage.py calling sequences in command
 functions."
   (let ((python-args
-	 (cons command (append args (list (concat "--settings=" (pony-get-settings-file-basename)))))))
+         (cons command (append args (list (concat "--settings="
+                                                  (pony-get-settings-file-basename)))))))
     (pony-comint-pop name (pony-active-python) python-args)))
 
 ;;;###autoload
@@ -344,7 +345,8 @@ Be aware of .ponyrc configfiles, 'clean', buildout, and
 ;;;###autoload
 (defun pony-command-exists(cmd)
   "Is cmd installed in this app"
-  (if (string-match cmd (shell-command-to-string (concat (pony-active-python) " " (pony-manage-cmd))))
+  (if (string-match cmd (shell-command-to-string (concat (pony-active-python)
+                                                         " " (pony-manage-cmd))))
       (setq found-command t)
     nil))
 
@@ -373,7 +375,7 @@ locally with .ponyrc."
 (defun pony-get-settings-file()
   "Return the absolute path to the pony settings file"
   (let ((settings
-	 (concat (pony-project-root) (concat (pony-get-settings-file-basename) ".py")))
+         (concat (pony-project-root) (concat (pony-get-settings-file-basename) ".py")))
         (isfile nil))
     (if (not (file-exists-p settings))
         (message "Settings file not found")
@@ -508,7 +510,6 @@ locally with .ponyrc."
       (pony-pop "*SQL*")
       (rename-buffer "*PonyDbShell*"))))
 
-
 ;; Fabric
 
 ;;;###autoload
@@ -524,7 +525,6 @@ locally with .ponyrc."
 (defun pony-fabric-list-commands()
   "List of all fabric commands for project as strings"
   (split-string (shell-command-to-string "fab --list | awk '{print $1}'|grep -v Available")))
-
 
 ;;;###autoload
 (defun pony-fabric-run(cmd)
@@ -607,9 +607,9 @@ locally with .ponyrc."
       (insert (shell-command-to-string command))
       (goto-char (point-min))
       (if (looking-at
-	   "\\(\\(.*\n\\)*Available subcommands:\\)\n\\(\\([^:]*\n\\)+?\\)")
-	  (split-string (buffer-substring (match-beginning 3) (match-end 3)))
-	nil))))
+           "\\(\\(.*\n\\)*Available subcommands:\\)\n\\(\\([^:]*\n\\)+?\\)")
+          (split-string (buffer-substring (match-beginning 3) (match-end 3)))
+        nil))))
 
 
 ;;;###autoload
@@ -622,15 +622,15 @@ locally with .ponyrc."
   "Interactively call the pony manage command.
 
 Second string that is read from minibuffer may be an actual
-list of space separated arguments for previously chosen management
+list of space separated arguments for the previously chosen management
 command. If some of the arguments contain space itself they should be quoted
 with double quotes like \"...\"."
   (interactive)
   (let* ((command (minibuffer-with-setup-hook 'minibuffer-complete
                               (completing-read "Manage: "
                                                (pony-list-commands))))
-	(args (split-string-and-unquote
-		     (read-from-minibuffer (concat command ": ")))))
+         (args (split-string-and-unquote
+                (read-from-minibuffer (concat command ": ")))))
     (pony-manage-run (cons command args))))
 
 ;;;###autoload
@@ -678,8 +678,7 @@ with double quotes like \"...\"."
         (cd (pony-project-root))
         (pony-manage-pop "ponyserver" (pony-manage-cmd)
                (list command
-                     ;(concat pony-server-host ":"  pony-server-port)))
-		     (concat pony-server-host ":"  pony-server-port)))
+                     (concat pony-server-host ":"  pony-server-port)))
         (cd working-dir)))))
 
 ;;;###autoload
