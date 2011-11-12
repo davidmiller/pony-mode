@@ -154,8 +154,12 @@ It creates a comint interaction buffer, called `name', running
 wrapper around `pony-commint-pop', this function bypasses the
 need to construct manage.py calling sequences in command
 functions."
-  (let ((python-args
-	 (cons command (append args (list (concat "--settings=" (pony-get-settings-file-basename)))))))
+  (let* ((settings (if (pony-project-newstructure-p)
+		       (concat (pony-project-package) "."
+			       (pony-get-settings-file-basename))
+		     (pony-get-settings-file-basename)))
+	(python-args
+	 (cons command (append args (list (concat "--settings=" settings))))))
     (pony-comint-pop name (pony-active-python) python-args)))
 
 ;;;###autoload
@@ -306,6 +310,52 @@ Read the current pony-project variable from the current buffer's .dir-locals.el"
         (if found (expand-file-name curdir))))))
 
 ;;;###autoload
+(defun pony-project-newstructure-p()
+  "Predicate to determine whether project has new structure.
+
+In django ver. => 1.4 manage.py is in upper directory relative to
+project module."
+  (let ((settings-file
+	 (concat (pony-project-root)
+		 (pony-get-settings-file-basename) ".py")))
+    (not (file-exists-p settings-file))))
+
+;;;###autoload
+(defun pony-project-package()
+  "Return the project packege name."
+  (pony-localise
+   'pony-this-project-package
+   '(lambda ()
+      (let ((diffsettings nil)
+	    (package ""))
+	(if (not (pony-project-newstructure-p))
+	    (setq package (file-name-nondirectory
+			   (directory-file-name (pony-project-root))))
+	  (progn
+	    (setq diffsettings
+			(shell-command-to-string
+			 (concat (pony-active-python) " "
+				 (pony-manage-cmd) " "
+				 "diffsettings")))
+	    (if (string-match "SETTINGS_MODULE = '\\([^'.]+\\)" diffsettings)
+		(setq package (match-string 1 diffsettings)))))))))
+
+;;;###autoload
+(defun pony-project-package-root()
+  "Return the root of the project packege (dir with project
+settings.py in) or nil"
+  (pony-localise
+   'pony-this-project-package-root
+   '(lambda ()
+      (let ((package-root nil))
+	(if (not (pony-project-newstructure-p))
+	    (setq package-root (pony-project-root))
+	  (progn
+	    (setq package-root (pony-project-package))
+	    (if package-root
+		(expand-file-name (file-name-as-directory package-root)
+			      (pony-project-root)))))))))
+;;;###autoload
 (defun pony-rooted-sym-p (symb)
   "Expand the concatenation of `symb` onto `pony-project-root` and determine whether
 that file exists"
@@ -373,7 +423,7 @@ locally with .ponyrc."
 (defun pony-get-settings-file()
   "Return the absolute path to the pony settings file"
   (let ((settings
-	 (concat (pony-project-root) (concat (pony-get-settings-file-basename) ".py")))
+	 (concat (pony-project-package-root) (concat (pony-get-settings-file-basename) ".py")))
         (isfile nil))
     (if (not (file-exists-p settings))
         (message "Settings file not found")
