@@ -68,8 +68,8 @@ projects using sqlite."
   :type 'string)
 
 (defcustom pony-snippet-dir (expand-file-name
-                            (concat (file-name-directory load-file-name)
-                                    "/snippets"))
+                             (concat (file-name-directory load-file-name)
+                                     "/snippets"))
   "Directory in which to locate Yasnippet snippets for Pony Mode"
   :group 'pony
   :type 'string)
@@ -104,7 +104,7 @@ projects using sqlite."
           (dolist (filename (find-dot f-or-d pattern))
             (add-to-list 'files filename))
         (if (string-match pattern f-or-d)
-          (add-to-list 'files f-or-d))))
+            (add-to-list 'files f-or-d))))
     files))
 
 ;;;###autoload
@@ -113,14 +113,14 @@ projects using sqlite."
 but allows paths rather than filenames"
   (let ((dir (expand-file-name default-directory))
         (found nil))
-     (while (and (not (equal pony-filesystem-ceiling dir))
-                 (not found))
-       (let ((check (concat dir filepath)))
-         (if (file-exists-p check)
-             (setq found check)))
-       (setq dir (file-name-directory
-                  (directory-file-name dir))))
-     found))
+    (while (and (not (equal pony-filesystem-ceiling dir))
+                (not found))
+      (let ((check (concat dir filepath)))
+        (if (file-exists-p check)
+            (setq found check)))
+      (setq dir (file-name-directory
+                 (directory-file-name dir))))
+    found))
 
 ;;;###autoload
 (defun pony-read-file (filepath)
@@ -155,20 +155,20 @@ wrapper around `pony-commint-pop', this function bypasses the
 need to construct manage.py calling sequences in command
 functions."
   (let* ((settings (if (pony-project-newstructure-p)
-		       (concat (pony-project-package) "."
-			       (pony-get-settings-file-basename))
-		     (pony-get-settings-file-basename)))
-	(python-args
-	 (cons command (append args (list (concat "--settings=" settings))))))
+                       (concat (pony-project-package) "."
+                               (pony-get-settings-file-basename))
+                     (pony-get-settings-file-basename)))
+         (python-args
+          (cons command (append args (list (concat "--settings=" settings))))))
     (pony-comint-pop name (pony-active-python) python-args)))
 
 ;;;###autoload
 (defun pony-dir-excursion(dir &rest rest)
   "pony-comint-pop where we need to change into `dir` first"
   (let ((curdir default-directory))
-     (cd dir)
-     (apply 'pony-comint-pop rest)
-     (cd curdir)))
+    (cd dir)
+    (apply 'pony-comint-pop rest)
+    (cd curdir)))
 
 ;;;###autoload
 (defun pony-mini-file(prompt &optional startdir)
@@ -212,7 +212,7 @@ functions."
   (if (or
        (dir-locals-find-file (buffer-file-name))
        (pony-rooted-sym-p '.ponyrc))
-  t nil))
+      t nil))
 
 ;;;###autoload
 (defun pony-rc ()
@@ -238,10 +238,10 @@ Read the current pony-project variable from the current buffer's .dir-locals.el"
                     (make-pony-project)))
          (interpreter (read-from-minibuffer "Python: " (pony-project-python current)))
          (settings (read-from-minibuffer "Settings module: "
-                                          (or (pony-project-settings current)
-                                              pony-settings-module))))
+                                         (or (pony-project-settings current)
+                                             pony-settings-module))))
     (if (not (file-exists-p localsfile))
-             (dired-do-touch localsfile))
+        (dired-do-touch localsfile))
     (modify-dir-local-variable nil 'pony-settings '(write list here) 'delete)))
 
 ;;;###autoload
@@ -316,8 +316,8 @@ Read the current pony-project variable from the current buffer's .dir-locals.el"
 In django ver. => 1.4 manage.py is in upper directory relative to
 project module."
   (let ((settings-file
-	 (concat (pony-project-root)
-		 (pony-get-settings-file-basename) ".py")))
+         (concat (pony-project-root)
+                 (pony-get-settings-file-basename) ".py")))
     (not (file-exists-p settings-file))))
 
 ;;;###autoload
@@ -327,18 +327,18 @@ project module."
    'pony-this-project-package
    '(lambda ()
       (let ((diffsettings nil)
-	    (package ""))
-	(if (not (pony-project-newstructure-p))
-	    (setq package (file-name-nondirectory
-			   (directory-file-name (pony-project-root))))
-	  (progn
-	    (setq diffsettings
-			(shell-command-to-string
-			 (concat (pony-active-python) " "
-				 (pony-manage-cmd) " "
-				 "diffsettings")))
-	    (if (string-match "SETTINGS_MODULE = '\\([^'.]+\\)" diffsettings)
-		(setq package (match-string 1 diffsettings)))))))))
+            (package ""))
+        (if (not (pony-project-newstructure-p))
+            (setq package (file-name-nondirectory
+                           (directory-file-name (pony-project-root))))
+          (progn
+            (setq diffsettings
+                  (shell-command-to-string
+                   (concat (pony-active-python) " "
+                           (pony-manage-cmd) " "
+                           "diffsettings")))
+            (if (string-match "SETTINGS_MODULE = '\\([^'.]+\\)" diffsettings)
+                (setq package (match-string 1 diffsettings)))))))))
 
 ;;;###autoload
 (defun pony-project-package-root()
@@ -348,13 +348,13 @@ settings.py in) or nil"
    'pony-this-project-package-root
    '(lambda ()
       (let ((package-root nil))
-	(if (not (pony-project-newstructure-p))
-	    (setq package-root (pony-project-root))
-	  (progn
-	    (setq package-root (pony-project-package))
-	    (if package-root
-		(expand-file-name (file-name-as-directory package-root)
-			      (pony-project-root)))))))))
+        (if (not (pony-project-newstructure-p))
+            (setq package-root (pony-project-root))
+          (progn
+            (setq package-root (pony-project-package))
+            (if package-root
+                (expand-file-name (file-name-as-directory package-root)
+                                  (pony-project-root)))))))))
 ;;;###autoload
 (defun pony-rooted-sym-p (symb)
   "Expand the concatenation of `symb` onto `pony-project-root` and determine whether
@@ -377,7 +377,7 @@ This command will only work if you run with point in a buffer that is within you
               (setq found (expand-file-name
                            (concat (pony-project-root) (symbol-name test))))))
         (if found
-              found)))))
+            found)))))
 
 ;;;###autoload
 (defun pony-active-python ()
@@ -423,11 +423,11 @@ locally with .ponyrc."
 (defun pony-get-settings-file()
   "Return the absolute path to the pony settings file"
   (let ((settings
-	 (concat (pony-project-package-root) (concat (pony-get-settings-file-basename) ".py")))
+         (concat (pony-project-package-root) (concat (pony-get-settings-file-basename) ".py")))
         (isfile nil))
     (if (not (file-exists-p settings))
         (message "Settings file not found")
-        (setq isfile t))
+      (setq isfile t))
     (if isfile
         settings
       nil)))
@@ -510,10 +510,10 @@ locally with .ponyrc."
   (let ((buildout (pony-buildout-cmd)))
     (if buildout
         (pony-comint-pop "buildout"
-                           (minibuffer-with-setup-hook 'minibuffer-complete
-                             (completing-read "bin/: "
-                                              (pony-buildout-list-bin)))
-                           nil))))
+                         (minibuffer-with-setup-hook 'minibuffer-complete
+                           (completing-read "bin/: "
+                                            (pony-buildout-list-bin)))
+                         nil))))
 
 ;; Database
 
@@ -603,12 +603,12 @@ locally with .ponyrc."
 (defun pony-template-decorator()
   "Hai"
   (save-excursion
-   (progn
-     (search-backward-regexp "^def")
-    (previous-line)
-    (if (looking-at "^@.*['\"]\\([a-z/_.]+html\\).*$")
-        (buffer-substring (match-beginning 1) (match-end 1))
-      nil))))
+    (progn
+      (search-backward-regexp "^def")
+      (previous-line)
+      (if (looking-at "^@.*['\"]\\([a-z/_.]+html\\).*$")
+          (buffer-substring (match-beginning 1) (match-end 1))
+        nil))))
 
 ;;;###autoload
 (defun pony-goto-template()
@@ -635,11 +635,11 @@ locally with .ponyrc."
   (setq view (concat (pony-get-app) ".views." (pony-get-func)))
   (message view)
   (dolist
-   (fpath (find-file default-directory "urls.py$"))
-      (setq mybuffer (get-buffer-create " myTemp"))
-      (switch-to-buffer mybuffer)
-      (insert-file-contents fpath)
-      (search-forward view)))
+      (fpath (find-file default-directory "urls.py$"))
+    (setq mybuffer (get-buffer-create " myTemp"))
+    (switch-to-buffer mybuffer)
+    (insert-file-contents fpath)
+    (search-forward view)))
 
 ;;;###autoload
 (defun pony-goto-settings()
@@ -671,10 +671,10 @@ locally with .ponyrc."
   "Interactively call the pony manage command"
   (interactive)
   (let ((command (minibuffer-with-setup-hook 'minibuffer-complete
-                              (completing-read "Manage: "
-                                               (pony-list-commands)))))
+                   (completing-read "Manage: "
+                                    (pony-list-commands)))))
     (pony-manage-run (list command
-                             (read-from-minibuffer (concat command ": "))))))
+                           (read-from-minibuffer (concat command ": "))))))
 
 ;;;###autoload
 (defun pony-flush()
@@ -693,7 +693,7 @@ locally with .ponyrc."
     (shell-command (concat
                     (pony-active-python) " "
                     (pony-manage-cmd) " dumpdata " dump " > " target))
-  (message (concat "Written to " target))))
+    (message (concat "Written to " target))))
 
 ;;;###autoload
 (defun pony-loaddata ()
@@ -720,9 +720,9 @@ locally with .ponyrc."
       (progn
         (cd (pony-project-root))
         (pony-manage-pop "ponyserver" (pony-manage-cmd)
-               (list command
-                     ;(concat pony-server-host ":"  pony-server-port)))
-		     (concat pony-server-host ":"  pony-server-port)))
+                         (list command
+                                        ;(concat pony-server-host ":"  pony-server-port)))
+                               (concat pony-server-host ":"  pony-server-port)))
         (cd working-dir)))))
 
 ;;;###autoload
