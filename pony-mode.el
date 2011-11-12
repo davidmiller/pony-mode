@@ -619,13 +619,19 @@ locally with .ponyrc."
 
 ;;;###autoload
 (defun pony-manage()
-  "Interactively call the pony manage command"
+  "Interactively call the pony manage command.
+
+Second string that is read from minibuffer may be an actual
+list of space separated arguments for previously chosen management
+command. If some of the arguments contain space itself they should be quoted
+with double quotes like \"...\"."
   (interactive)
-  (let ((command (minibuffer-with-setup-hook 'minibuffer-complete
+  (let* ((command (minibuffer-with-setup-hook 'minibuffer-complete
                               (completing-read "Manage: "
-                                               (pony-list-commands)))))
-    (pony-manage-run (list command
-                             (read-from-minibuffer (concat command ": "))))))
+                                               (pony-list-commands))))
+	(args (split-string-and-unquote
+		     (read-from-minibuffer (concat command ": ")))))
+    (pony-manage-run (cons command args))))
 
 ;;;###autoload
 (defun pony-flush()
