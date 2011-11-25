@@ -1091,6 +1091,7 @@ If the project has the django_extras package installed, then use the excellent
          ["Run tests" pony-test]
          ;; Goto
          "-"
+         ["Goto the view file for a given url (Beta)" pony-resolve]
          ["Goto settings file for project" pony-goto-settings]
          ["Goto template for view or at point" pony-goto-template]
          "-"
