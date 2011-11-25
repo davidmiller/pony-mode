@@ -648,19 +648,52 @@ locally with .dir-locals.el."
         (find-file filename)
       (message (format "Template %s not found" filename)))))
 
+;; TODO
+;;;###autoload?
+;; (defun pony-reverse-url ()
+;;   "Get the URL for this view"
+;;   (interactive)
+;;   (setq found nil)
+;;   (setq view (concat (pony-get-app) ".views." (pony-get-func)))
+;;   (message view)
+;;   (dolist
+;;       (fpath (find-file default-directory "urls.py$"))
+;;     (setq mybuffer (get-buffer-create " myTemp"))
+;;     (switch-to-buffer mybuffer)
+;;     (insert-file-contents fpath)
+;;     (search-forward view)))
+
 ;;;###autoload
-(defun pony-reverse-url ()
-  "Get the URL for this view"
-  (interactive)
-  (setq found nil)
-  (setq view (concat (pony-get-app) ".views." (pony-get-func)))
-  (message view)
-  (dolist
-      (fpath (find-file default-directory "urls.py$"))
-    (setq mybuffer (get-buffer-create " myTemp"))
-    (switch-to-buffer mybuffer)
-    (insert-file-contents fpath)
-    (search-forward view)))
+(defun pony-resolve (url)
+  "Jump to the view file that URL resolves to
+
+This feature is somewhat experimental and known to break in some cases.
+
+Bug reports welcome. Patches even more so :)"
+  (interactive "sUrl: ")
+  (let* ((workdir default-directory)
+         (program
+          (progn
+            (cd (pony-project-root))
+            (format (concat "python -c '"
+                            (mapconcat 'identity
+                                       '("import os"
+                                         "os.environ[\"DJANGO_SETTINGS_MODULE\"]=\"settings\""
+                                         "from django.core.urlresolvers import resolve"
+                                         "from django.utils.importlib import import_module"
+                                         "f=resolve(\"%s\")[0]"
+                                         "path=import_module(f.__module__).__file__"
+                                         "path=path[-1]==\"c\" and path[:-1] or path"
+                                         "print f.__name__, path")
+                                       "; ")
+                            "'") url)))
+         (output (shell-command-to-string program))
+         (fun (first (split-string output)))
+         (file (car (last (split-string output)))))
+    (cd workdir)
+    (find-file file)
+    ;; TODO Search for file. This currently doesn't work because of decorators
+    ))
 
 ;;;###autoload
 (defun pony-goto-settings()
