@@ -135,10 +135,21 @@ but allows paths rather than filenames"
 ;;
 
 ;;;###autoload
-(defun pony-pop(buffer)
-  "Wrap pop-to and get buffer"
-  (pop-to-buffer (get-buffer buffer))
-  (pony-mode))
+(defun* pony-pop(buffer &key dirlocals)
+  "Wrap pop-to and get buffer.
+
+If the optional argument DIR-LOCALS happens to be non-nil then set the
+variable `dir-local-variables-alist' in the target buffer to be
+equal to the value in the buffer we are popping to.
+
+This is useful because comint buffers without filenames associated
+will otherwise not pick up things like project settings in .dir-locals.el"
+  (let ((dlocals (if dirlocals
+                     dir-local-variables-alist)))
+    (pop-to-buffer (get-buffer buffer))
+    (pony-mode)
+    (if dlocals
+        (pony-local! 'dir-local-variables-alist dlocals))))
 
 ;;;###autoload
 (defun pony-comint-pop(name command args)
@@ -147,7 +158,7 @@ It creates a comint interaction buffer, called `name', running
 `command', called with `args'"
   (ansi-color-for-comint-mode-on)
   (apply 'make-comint name command nil args)
-  (pony-pop (concat "*" name "*")))
+  (pony-pop (concat "*" name "*") :dirlocals t))
 
 ;;;###autoload
 (defun pony-manage-pop (name command args)
@@ -179,7 +190,13 @@ functions."
                    (or startdir
                        (expand-file-name default-directory)))))
 
-;; WTF is this actually used for? I forget.
+;;;###autoload
+(defun pony-local! (var val)
+  "Set the buffer-local variable VAR to VAL.
+Destructive function with no state checking - see `pony-localise' for a
+more conservative local-var manipulation."
+  (set (make-local-variable var) val))
+
 ;;;###autoload
 (defun pony-localise (var func)
   "Return buffer local varible or get & set it"
@@ -211,7 +228,7 @@ functions."
 (defun pony-configfile-p ()
   "Establish whether this project has a .ponyrc file in the root"
   (if (or
-       (dir-locals-find-file (buffer-file-name))
+       (dir-locals-find-file (pony-project-root))
        (pony-rooted-sym-p '.ponyrc))
       t nil))
 
@@ -417,9 +434,12 @@ Be aware of .ponyrc configfiles, 'clean', buildout, and
 (defun pony-get-settings-file-basename()
   "Return the name of the settings file to use for this
 project. By default this is 'settings', but it can be changed
-locally with .ponyrc."
+locally with .dir-locals.el."
   (if (pony-configfile-p)
-      (pony-project-settings (pony-rc))
+      (let ((settings (pony-project-settings (pony-rc))))
+        (if settings
+            settings
+          pony-settings-module))
     pony-settings-module))
 
 (defun pony-get-settings-file()
@@ -662,7 +682,6 @@ locally with .ponyrc."
           (split-string (buffer-substring (match-beginning 3) (match-end 3)))
         nil))))
 
-
 ;;;###autoload
 (defun pony-manage-run(args)
   "Run the pony-manage command completed from the minibuffer"
@@ -716,21 +735,38 @@ with double quotes like \"...\"."
 
 ;;;###autoload
 (defun pony-runserver()
-  "Start the dev server"
+  "Start the Django development server.
+
+If the server is currently running, just switch to the buffer.
+
+If you are currently in the *ponyserver* buffer, restart the server"
   (interactive)
-  (let ((proc (get-buffer-process "*ponyserver*"))
-        (working-dir default-directory))
+  (let* ((buffname "*ponyserver*")
+         (proc (get-buffer-process buffname))
+         (buff (get-buffer buffname))
+         (working-dir default-directory))
     (if proc
-        (message "Pony Dev Server already running")
-      (if (pony-command-exists "runserver_plus")
-          (setq command "runserver_plus")
-        (setq command "runserver"))
-      (progn
-        (cd (pony-project-root))
-        (pony-manage-pop "ponyserver" (pony-manage-cmd)
-               (list command
-                     (concat pony-server-host ":"  pony-server-port)))
-        (cd working-dir)))))
+        (progn
+          (message "Pony Dev Server already running")
+          (if (and buff (equalp buff (current-buffer)))
+              (pony-restart-server)
+            (pony-pop buffname)))
+      (pony-startserver))))
+
+(defun pony-startserver ()
+  "Start the Django development server.
+
+If the project has django_extras installed and the excellent `runserver_plus'
+command is available, use that, otherwise fall back to manage.py runserver."
+  (if (pony-command-exists "runserver_plus")
+      (setq command "runserver_plus")
+    (setq command "runserver"))
+  (progn
+    (cd (pony-project-root))
+    (pony-manage-pop "ponyserver" (pony-manage-cmd)
+                     (list command
+                           (concat pony-server-host ":"  pony-server-port)))
+    (cd working-dir)))
 
 ;;;###autoload
 (defun pony-stopserver()
@@ -746,7 +782,7 @@ Django extras does this better with the Werkzeug server, but sometimes
 you can't have nice things."
   (interactive)
   (pony-stopserver)
-  (run-with-timer 1 nil 'pony-runserver))
+  (run-with-timer 1 nil 'pony-startserver))
 
 ;;;###autoload
 (defun pony-temp-server ()
@@ -782,7 +818,10 @@ This function allows you to run a server with a 'throwaway' host:port"
 
 ;;;###autoload
 (defun pony-shell()
-  "Open a shell with the current pony project's context loaded"
+  "Open a Python shell with the current pony project's context loaded.
+
+If the project has the django_extras package installed, then use the excellent
+`shell_plus' command. Otherwise, fall back to manage.py shell "
   (interactive)
   (if (pony-command-exists "shell_plus")
       (setq command "shell_plus")
