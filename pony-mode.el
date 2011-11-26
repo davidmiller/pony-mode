@@ -81,7 +81,8 @@ projects using sqlite."
 ;; Dependancies and environment sniffing
 (require 'cl)
 (require 'dired-aux)
-(require 'files-x)
+(ignore-errors ; files-x gets stripped from some Debian packages
+  (require 'files-x))
 (require 'sgml-mode)
 (require 'sql)
 (require 'thingatpt)
@@ -246,21 +247,23 @@ Read the current pony-project variable from the current buffer's .dir-locals.el"
            (eval (pony-read-file (concat (pony-project-root) ".ponyrc"))))))
     (eval settings)))
 
+(when (featurep 'files-x)
 ;;;###autoload
-(defun pony-define-project ()
-  "Create or alter the pony-project settings for the current project"
-  (interactive)
-  (let* ((localsfile (concat (pony-project-root) ".dir-locals.el"))
-         (current (if (pony-configfile-p)
-                      (pony-rc)
-                    (make-pony-project)))
-         (interpreter (read-from-minibuffer "Python: " (pony-project-python current)))
-         (settings (read-from-minibuffer "Settings module: "
-                                         (or (pony-project-settings current)
-                                             pony-settings-module))))
-    (if (not (file-exists-p localsfile))
-        (dired-do-touch localsfile))
-    (modify-dir-local-variable nil 'pony-settings '(write list here) 'delete)))
+  (defun pony-define-project ()
+    "Create or alter the pony-project settings for the current project"
+    (interactive)
+    (let* ((localsfile (concat (pony-project-root) ".dir-locals.el"))
+           (current (if (pony-configfile-p)
+                        (pony-rc)
+                      (make-pony-project)))
+           (interpreter (read-from-minibuffer "Python: " (pony-project-python current)))
+           (settings (read-from-minibuffer "Settings module: "
+                                           (or (pony-project-settings current)
+                                               pony-settings-module))))
+      (if (not (file-exists-p localsfile))
+          (dired-do-touch localsfile))
+      (modify-dir-local-variable nil 'pony-settings '(write list here) 'delete)))
+  )
 
 ;;;###autoload
 (defun pony-reload-mode()
