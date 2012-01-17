@@ -48,12 +48,12 @@
 dictates should be added to the HTML indentation level at `point`.
 
 The heuristic here is fairly simple - we only interpret template tags with both
-opening and closing tags as requiring indentation, and then subtract the number of 
+opening and closing tags as requiring indentation, and then subtract the number of
 closing tags from opening tags before point.
 
 The precise nature of what is interpreted as an indent-worthy tag can be overidden
 with the values of `pony-tpl-indent-start' and `pony-tpl-indent-end'."
-  (let ((pony-indent (- (count-matches pony-tpl-indent-start 0 (point)) 
+  (let ((pony-indent (- (count-matches pony-tpl-indent-start 0 (point))
                         (count-matches pony-tpl-indent-end 0 (point))))
         (sgml-indent (sgml-calculate-indent))))
   (+ sgml-indent (* sgml-basic-offset pony-indent)))
@@ -73,7 +73,7 @@ with the values of `pony-tpl-indent-start' and `pony-tpl-indent-end'."
     '("{%.*\\(\\bor\\b\\).*%}" . (1 font-lock-builtin-face))
     ;'("{% ?comment ?%}\\(\n?.*?\\)+?{% ?endcomment ?%}" . font-lock-comment-face)
     '("{#.*#}" . font-lock-comment-face)
-    '("{% ?\\(\\(end\\)?\\(extends\\|for\\|cache\\|cycle\\|filter\\|firstof\\|debug\\|if\\(changed\\|equal\\|notequal\\|\\)\\|include\\|load\\|now\\|regroup\\|spaceless\\|ssi\\|templatetag\\|widthratio\\|block\\|trans\\)\\) ?.*? ?%}" . 1)
+    '("{% +?\\(\\(end\\)?\\(extends\\|for\\|cache\\|cycle\\|filter\\|firstof\\|debug\\|if\\(changed\\|equal\\|notequal\\|\\)\\|include\\|load\\|now\\|regroup\\|spaceless\\|ssi\\|templatetag\\|widthratio\\|block\\|trans\\)\\) ?.*? ?%}" . 1)
     '("{{ ?\\(.*?\\) ?}}" . (1 font-lock-variable-name-face))
     '("{%\\|\\%}\\|{{\\|}}" . font-lock-builtin-face)
     ))
