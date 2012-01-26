@@ -20,14 +20,20 @@
   :group 'pony-tpl
   :type 'string)
 
-(defcustom pony-tpl-indent-start
-  "\{% ?block ?[a-zA-Z]?+ ?%\}"
+(defcustom
+;;  (setq
+   pony-tpl-indent-start
+   "\{% ?block\\|for\\|ifequal ?[a-zA-Z \"]?+ ?%\}"
+   ;; )
   "Regexp to match the opening tag of a pair that should mark indentation in a Django template"
   :group 'pony-tpl
   :type 'string)
 
-(defcustom pony-tpl-indent-end
-  "\{% ?endblock ?[a-zA-Z]?+ ?%\}"
+(defcustom
+  ;; (setq
+   pony-tpl-indent-end
+   "\{% ?endblock\\|endfor\\|endifequal ?[a-zA-Z]?+ ?%\}"
+   ;; )
   "Regexp to match the end tag of a pair that should mark indentation in a Django template"
   :group 'pony-tpl
   :type 'string)
@@ -48,15 +54,27 @@
 dictates should be added to the HTML indentation level at `point`.
 
 The heuristic here is fairly simple - we only interpret template tags with both
-opening and closing tags as requiring indentation, and then subtract the number of 
+opening and closing tags as requiring indentation, and then subtract the number of
 closing tags from opening tags before point.
 
 The precise nature of what is interpreted as an indent-worthy tag can be overidden
 with the values of `pony-tpl-indent-start' and `pony-tpl-indent-end'."
   (save-excursion
-    (let ((pony-indent (- (count-matches pony-tpl-indent-start 0 (point)) 
-                          (count-matches pony-tpl-indent-end 0 (point))))
-          (sgml-indent (sgml-calculate-indent)))
+    (let* ((eol (save-excursion (end-of-line) (point)))
+          (bol (save-excursion (beginning-of-line) (point)))
+          (pony-blocks (- (count-matches pony-tpl-indent-start 0 bol)
+                          ;; This needs to take into account opening & closing
+                          ;; blocks on the current line e.g.
+                          ;; (point) block foo endblock
+                          (count-matches pony-tpl-indent-end 0 eol)))
+          (pony-indent (let ((starts (count-matches pony-tpl-indent-start bol eol))
+                             (ends (count-matches pony-tpl-indent-end bol eol)))
+                         (if (and
+                              (> starts 0)
+                              (equal starts ends))
+                             (+ pony-blocks 1)
+                           pony-blocks)))
+          (sgml-indent (save-excursion (sgml-calculate-indent))))
       (+ sgml-indent (* sgml-basic-offset pony-indent)))))
 
 (defun pony-indent nil
