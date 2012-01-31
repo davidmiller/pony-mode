@@ -155,7 +155,7 @@ wrapper around `pony-commint-pop', this function bypasses the
 need to construct manage.py calling sequences in command
 functions."
   (let ((python-args
-	 (cons command (append args (list (concat "--settings=" (pony-get-settings-file-basename)))))))
+         (cons command (append args (list (concat "--settings=" (pony-get-settings-file-basename)))))))
     (pony-comint-pop name (pony-active-python) python-args)))
 
 ;;;###autoload
@@ -205,10 +205,12 @@ functions."
 ;;;###autoload
 (defun pony-configfile-p ()
   "Establish whether this project has a .ponyrc file in the root"
-  (if (or
-       (dir-locals-find-file (buffer-file-name))
-       (pony-rooted-sym-p '.ponyrc))
-  t nil))
+  (if (equal 'dired-mode major-mode)
+      "YAY"
+    (if (or
+         (dir-locals-find-file (buffer-file-name))
+         (pony-rooted-sym-p '.ponyrc))
+        t nil)))
 
 ;;;###autoload
 (defun pony-rc ()
@@ -672,8 +674,7 @@ locally with .ponyrc."
         (cd (pony-project-root))
         (pony-manage-pop "ponyserver" (pony-manage-cmd)
                (list command
-                     ;(concat pony-server-host ":"  pony-server-port)))
-		     (concat pony-server-host ":"  pony-server-port)))
+                     (concat pony-server-host ":"  pony-server-port)))
         (cd working-dir)))))
 
 ;;;###autoload
