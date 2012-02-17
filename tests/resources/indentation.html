@@ -1,0 +1,18 @@
+# -*- mode: html; mode: pony-tpl -*-
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    {% block title %}
+      Test Fixture with tags
+    {% endblock %}
+  </head>
+  <body>
+    {% ifequal 2 1 %}
+      Wrong Universe
+      {% block universe %}
+	Current Universe is {{unuiverse}}
+      {% endblock universe %}
+      {% endifequal %}
+      
+  </body>
+</html>
+

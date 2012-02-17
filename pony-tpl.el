@@ -23,7 +23,7 @@
 (defcustom
 ;;  (setq
    pony-tpl-indent-start
-   "\{% ?block\\|for\\|ifequal ?[a-zA-Z \"]?+ ?%\}"
+   "\{% ?block\\|ifchanged\\|ifnotequal\\|for\\|\\(ifequal\\) ?[a-zA-Z0-9 \"]?+ ?%\}"
    ;; )
   "Regexp to match the opening tag of a pair that should mark indentation in a Django template"
   :group 'pony-tpl
@@ -32,7 +32,8 @@
 (defcustom
   ;; (setq
    pony-tpl-indent-end
-   "\{% ?endblock\\|endfor\\|endifequal ?[a-zA-Z]?+ ?%\}"
+   "\{% ?endblock\\|endifequal\\|endifchanged\\|endifnotequal\\|endfor ?[a-zA-Z]?+ ?%\}"
+
    ;; )
   "Regexp to match the end tag of a pair that should mark indentation in a Django template"
   :group 'pony-tpl
