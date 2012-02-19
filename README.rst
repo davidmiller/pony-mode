@@ -95,17 +95,17 @@ The file should look something like this:
 
     ;; Pony mode config for the megacorp project
     ((nil ;; This applies these settings regardless of major mode
-    
+
       (pony-settings . (make-pony-project
                         :python "/home/david/virtualenvs/megacorp/production/bin/python"
                         :settings "local_settings_file")
     )
 
-    
+
 Installation
 ------------
 
-1. clone this repo somewhere $ git clone http://github.com/davidmiller/pony-mode
+1. clone this repo somewhere $ git clone https://github.com/davidmiller/pony-mode
 2. Byte-compile the file::
 
     M-x byte-compile-file
