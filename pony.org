@@ -18,13 +18,13 @@
 ** TODO Templates
 *** TODO Get variables in template from view
 *** TODO Autocomplete block names from extends
-*** DONE Tag indentation
+*** IN PROGRESS Tag indentation
 **** DONE block
 **** DONE for
 **** TODO if/elif/else/endif
 **** IN PROGRESS ifchanged
-**** IN PROGRESS ifequal
-**** IN PROGRESS ifnotequal
+**** DONE ifequal
+**** DONE ifnotequal
 ** TODO South
 **** DONE Convert app
 **** DONE schemamigration --auto

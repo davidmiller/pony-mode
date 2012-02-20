@@ -1,4 +1,4 @@
-# -*- mode: html; mode: pony-tpl -*-
+# -*- mode:pony-tpl; mode: html; -*-
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
   <head>
     {% block title %}
@@ -9,10 +9,19 @@
     {% ifequal 2 1 %}
       Wrong Universe
       {% block universe %}
-	Current Universe is {{unuiverse}}
+	Current Universe is {{universe}}
       {% endblock universe %}
-      {% endifequal %}
-      
+    {% endifequal %}
+    {% ifnotequal "This" "that" %}
+      <p>
+	Phew
+      </p>
+    {%endifnotequal%}
+    {%ifchanged universe%}
+      <div>
+	What?
+      </div>
+      {% endifchanged %}
   </body>
 </html>
 
