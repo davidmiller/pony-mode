@@ -1,4 +1,3 @@
-# -*- mode:pony-tpl; mode: html; -*-
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
   <head>
     {% block title %}
@@ -12,16 +11,23 @@
 	Current Universe is {{universe}}
       {% endblock universe %}
     {% endifequal %}
-    {% ifnotequal "This" "that" %}
+    {% ifnotequal 1 2 %}
       <p>
 	Phew
       </p>
-    {%endifnotequal%}
-    {%ifchanged universe%}
+    {% endifnotequal%}
+    {% ifchanged universe %}
       <div>
 	What?
       </div>
-      {% endifchanged %}
+    {% endifchanged %}
+    {% if great %}
+      You're {{ great}}
+    {% elif dylan %}
+      Wait - you're {{dylan}}? What does that even mean?      
+    {% else %}
+      You're UNSPECIFIED!      
+    {% endif %}      
   </body>
-</html>
+</html> 
 

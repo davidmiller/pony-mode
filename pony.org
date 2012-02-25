@@ -21,8 +21,8 @@
 *** IN PROGRESS Tag indentation
 **** DONE block
 **** DONE for
-**** TODO if/elif/else/endif
-**** IN PROGRESS ifchanged
+**** DONE if/elif/else/endif
+**** DONE ifchanged
 **** DONE ifequal
 **** DONE ifnotequal
 ** TODO South

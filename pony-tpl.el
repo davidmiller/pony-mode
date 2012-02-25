@@ -14,75 +14,79 @@
   :group 'pony
   :prefix "pony-tpl-")
 
-(defcustom pony-tpl-block-re
-  "\{% ?block ?[a-zA-Z]?+ ?%\}"
-  "Regexp to match blocks in Django templates"
-  :group 'pony-tpl
-  :type 'string)
-
-(defcustom
-;;  (setq
-   pony-tpl-indent-start
-   "\{% ?\\(block\\|ifchanged\\|ifnotequal\\|for\\|ifequal\\) ?[a-zA-Z0-9 \"]?+ ?%\}"
-   ;; )
-  "Regexp to match the opening tag of a pair that should mark indentation in a Django template"
-  :group 'pony-tpl
-  :type 'string)
-
-(defcustom
-  ;; (setq
-   pony-tpl-indent-end
-   "\{% ?\\(endblock\\|endifequal\\|endifchanged\\|endifnotequal\\|endfor\\) ?[a-zA-Z]?+ ?%\}"
-
-   ;; )
-  "Regexp to match the end tag of a pair that should mark indentation in a Django template"
-  :group 'pony-tpl
-  :type 'string)
-
 ;;
 ;; Indentation of Django tags
 ;;
 ;; Commentary:
 ;;
-;; By default sgml-mode's `sgml-indent-line' indents html files by checking the lexical
-;; context of `point' and if this is deemed to be text, uses a somewhat inflexible
-;; (while (looking-at "</") BODY) to determine the correct indentation level. There is no
-;; `sane' way to override this regexp, so we wrap `sgml-indent-line' here.
+;; This implementation "borrows" (read: Steals Liberally) from Florian Mounier's Jinja2 Mode
+;; https://github.com/paradoxxxzero/jinja2-mode
+;;
+;; All we really do here is redefine the relevant functions, alter the keywords and
+;; make sure that TAB doesn't affect (point)
 ;;
 
-(defun pony-tpl-indent-level nil
-  "Calculate the number of indentation levels that Django Template syntax
-dictates should be added to the HTML indentation level at `point`.
+(defun pony-indenting-keywords ()
+  '("if" "for" "block" "else" "elif"))
 
-The heuristic here is fairly simple - we only interpret template tags with both
-opening and closing tags as requiring indentation, and then subtract the number of
-closing tags from opening tags before point.
+(defun sgml-indent-line-num ()
+  "Indent the current line as SGML."
+  (let* ((savep (point))
+         (indent-col
+          (save-excursion
+            (back-to-indentation)
+            (if (>= (point) savep) (setq savep nil))
+            (sgml-calculate-indent))))
+    (if (null indent-col)
+        0
+      (if savep
+          (save-excursion indent-col)
+        indent-col))))
 
-The precise nature of what is interpreted as an indent-worthy tag can be overidden
-with the values of `pony-tpl-indent-start' and `pony-tpl-indent-end'."
+(defun pony-calculate-indent-backward (default)
+  "Return indent column based on previous lines"
+  (let ((indent-width sgml-basic-offset) (default (sgml-indent-line-num)))
+    (forward-line -1)
+    (if (looking-at "^[ \t]*{%-? *end") ; Don't indent after end
+        (current-indentation)
+      (if (looking-at (concat "^[ \t]*{%-? *.*?{%-? *end" (regexp-opt (pony-indenting-keywords))))
+          (current-indentation)
+        (if (looking-at (concat "^[ \t]*{%-? *" (regexp-opt (pony-indenting-keywords)))) ; Check start tag
+            (+ (current-indentation) indent-width)
+          (if (looking-at "^[ \t]*<") ; Assume sgml block trust sgml
+              default
+            (if (bobp)
+                0
+              (pony-calculate-indent-backward default))))))))
+
+(defun pony-calculate-indent ()
+  "Return indent column"
+  (if (bobp)  ; Check begining of buffer
+      0
+    (let ((indent-width sgml-basic-offset) (default (sgml-indent-line-num)))
+      (if (looking-at "^[ \t]*{%-? *e\\(nd\\|lse\\|lif\\)") ; Check close tag
+          (save-excursion
+            (forward-line -1)
+            (if
+                (and
+                 (looking-at (concat "^[ \t]*{%-? *" (regexp-opt (pony-indenting-keywords))))
+                 (not (looking-at (concat "^[ \t]*{%-? *.*?{% *end" (regexp-opt (pony-indenting-keywords))))))
+                (current-indentation)
+              (- (current-indentation) indent-width)))
+        (if (looking-at "^[ \t]*</") ; Assume sgml end block trust sgml
+            default
+          (save-excursion
+            (pony-calculate-indent-backward default)))))))
+
+(defun pony-indent ()
+  "Indent current line as Jinja code"
+  (interactive)
   (save-excursion
-    (let* ((eol (save-excursion (end-of-line) (point)))
-          (bol (save-excursion (beginning-of-line) (point)))
-          (pony-blocks (- (count-matches pony-tpl-indent-start 0 bol)
-                          ;; This needs to take into account opening & closing
-                          ;; blocks on the current line e.g.
-                          ;; (point) block foo endblock
-                          (count-matches pony-tpl-indent-end 0 eol)))
-          (pony-indent (let ((starts (count-matches pony-tpl-indent-start bol eol))
-                             (ends (count-matches pony-tpl-indent-end bol eol)))
-                         (if (and
-                              (> starts 0)
-                              (equal starts ends))
-                             (+ pony-blocks 1)
-                           pony-blocks)))
-          (sgml-indent (save-excursion (sgml-calculate-indent))))
-      (+ sgml-indent (* sgml-basic-offset pony-indent)))))
-
-(defun pony-indent nil
-  "The buffer-local indent-line function for pony-tpl buffers."
-  (indent-line-to (pony-tpl-indent-level)))
-
-;; (defadvise sgml-iqndent-line after BODY)
+    (beginning-of-line)
+    (let ((indent (pony-calculate-indent)))
+      (if (< indent 0)
+          (setq indent 0))
+      (indent-line-to indent))))
 
 (defvar pony-tpl-mode-hook nil)
 
