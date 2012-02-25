@@ -8,7 +8,7 @@
               (concat (file-name-directory load-file-name)
                       "../../")))
 (require 'pony-mode)
-
+(setq tab-width 4)
 (global-set-key [M-left] 'windmove-left) ; move to left windnow
 (global-set-key [M-right] 'windmove-right) ; move to right window
 (global-set-key [M-up] 'windmove-up) ; move to upper window

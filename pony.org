@@ -18,6 +18,13 @@
 ** TODO Templates
 *** TODO Get variables in template from view
 *** TODO Autocomplete block names from extends
+*** IN PROGRESS Tag indentation
+**** DONE block
+**** DONE for
+**** DONE if/elif/else/endif
+**** DONE ifchanged
+**** DONE ifequal
+**** DONE ifnotequal
 ** TODO South
 **** DONE Convert app
 **** DONE schemamigration --auto
@@ -78,11 +85,11 @@
 *** Required Features
 **** Use syntax table for Tpl-mode comment highlighting
 **** Use Dir locals instead of ponyrc
-     Provide interactive M-x make-project and edit project to 
+     Provide interactive M-x make-project and edit project to
      edit the pony-project struct.
 
      We should keep support for .ponnyrc until a 1.0 release, emitting
-     a message that suggests moving to dir-locals.el and not      documenting the functionality.
+     a message that suggests moving to dir-locals.el and not documenting the functionality.
 
 *** Desired Features
    1) Jump to view at point in Browser
