@@ -167,6 +167,8 @@ It creates a comint interaction buffer, called `name', running
 wrapper around `pony-commint-pop', this function bypasses the
 need to construct manage.py calling sequences in command
 functions."
+  ;; !!! This API is utterly stupid. call (pony-manage-cmd)
+  ;; here rather than in the caller.
   (let* ((settings (if (pony-project-newstructure-p)
                        (concat (pony-project-package) "."
                                (pony-get-settings-file-basename))
@@ -174,6 +176,14 @@ functions."
          (python-args
           (cons command (append args (list (concat "--settings=" settings))))))
     (pony-comint-pop name (pony-active-python) python-args)))
+
+;;;###autoload
+(defun pony-manage-popif (name command args)
+  "This wrapper around `pony-manage-pop' will check to see if COMMAND exists
+before attempting the manage-pop"
+  (if (pony-command-exists-p command)
+      (pony-manage-pop name (pony-manage-cmd) (cons command args))
+    (message "The Django command %s doesn't seem to be installed" command)))
 
 ;;;###autoload
 (defun pony-dir-excursion(dir &rest rest)
@@ -413,17 +423,18 @@ Be aware of .ponyrc configfiles, 'clean', buildout, and
         (executable-find "python")))))
 
 ;;;###autoload
-(defun pony-command-exists(cmd)
+(defun pony-command-exists-p(cmd)
   "Is cmd installed in this app"
-  (if (string-match cmd (shell-command-to-string (concat (pony-active-python)
-                                                         " " (pony-manage-cmd))))
-      (setq found-command t)
+  (if (string-match cmd
+                    (shell-command-to-string (concat (pony-active-python)
+                                                     " " (pony-manage-cmd))))
+      t
     nil))
 
 ;;;###autoload
 (defun pony-command-if-exists(proc-name command args)
   "Run `command` if it exists"
-  (if (pony-command-exists command)
+  (if (pony-command-exists-p command)
       (let ((process-buffer (concat "*" proc-name "*")))
         (progn
           (start-process proc-name process-buffer
@@ -794,7 +805,7 @@ If you are currently in the *ponyserver* buffer, restart the server"
 
 If the project has django_extras installed and the excellent `runserver_plus'
 command is available, use that, otherwise fall back to manage.py runserver."
-  (if (pony-command-exists "runserver_plus")
+  (if (pony-command-exists-p "runserver_plus")
       (setq command "runserver_plus")
     (setq command "runserver"))
   (progn
@@ -859,10 +870,9 @@ This function allows you to run a server with a 'throwaway' host:port"
 If the project has the django_extras package installed, then use the excellent
 `shell_plus' command. Otherwise, fall back to manage.py shell "
   (interactive)
-  (if (pony-command-exists "shell_plus")
-      (setq command "shell_plus")
-    (setq command "shell"))
-  (pony-manage-pop "ponysh" (pony-manage-cmd) (list command)))
+  (let ((command (if (pony-command-exists-p "shell_plus")
+                     "shell_plus" "shell")))
+       (pony-manage-pop "ponysh" (pony-manage-cmd) (list command))))
 
 ;; Startapp
 
@@ -880,9 +890,7 @@ If the project has the django_extras package installed, then use the excellent
 (defun pony-syncdb()
   "Run Syncdb on the current project"
   (interactive)
-  (start-process "ponymigrations" "*ponymigrations*"
-                 (pony-active-python) (pony-manage-cmd) "syncdb")
-  (pony-pop "*ponymigrations*"))
+  (pony-manage-pop "ponymigrations" (pony-manage-cmd) (list "syncdb")))
 
 ;; (defun pony-south-get-migrations()
 ;;   "Get a list of migration numbers for the current app"
@@ -893,29 +901,23 @@ If the project has the django_extras package installed, then use the excellent
   "Convert an existing app to south"
   (interactive)
   (let ((app (read-from-minibuffer "Convert: " (pony-get-app))))
-    (pony-command-if-exists "ponymigrations"
-                              "convert_to_south" app)))
+    (pony-manage-popif "ponymigrations" "convert_to_south" (list app))))
 
 ;;;###autoload
 (defun pony-south-schemamigration()
   "Create migration for modification"
   (interactive)
-  (let ((app (read-from-minibuffer "Migrate: " (pony-get-app))))
-    (if (pony-command-exists "schemamigration")
-        (progn
-          (start-process "ponymigrations" "*ponymigrations*"
-                         (pony-active-python) (pony-manage-cmd)
-                         "schemamigration" app "--auto")
-          (pony-pop "*ponymigrations*"))
-      (message "South doesn't seem to be installed"))))
+  (let ((app (read-from-minibuffer "Schema Migration: " (pony-get-app))))
+    (pony-manage-popif "ponymigrations" "schemamigration"
+                       (list app "--auto"))))
 
 ;;;###autoload
 (defun pony-south-migrate()
   "Migrate app"
   (interactive)
-  (let ((app (read-from-minibuffer "Convert: " (pony-get-app))))
-    (pony-command-if-exists "ponymigrations"
-                              "migrate" app)))
+  (let ((app (read-from-minibuffer "Migrate: " (pony-get-app))))
+    (pony-manage-popif "ponymigrations" "migrate" (list app))))
+
 ;; (defun pony-south-fake ()
 ;;   "Fake a migration for a model"
 ;;   (interactive)
@@ -928,9 +930,9 @@ If the project has the django_extras package installed, then use the excellent
 ;;;###autoload
 (defun pony-south-initial ()
   "Run the initial south migration for an app"
+  (interactive)
   (let ((app (read-from-minibuffer "Initial migration: " (pony-get-app))))
-    (pony-command-if-exists "ponymigrations"
-                              "migrate" (list app "--initial"))))
+    (pony-manage-popif "ponymigrations" "schemamigration" (list app "--initial"))))
 
 
 ;; TAGS
