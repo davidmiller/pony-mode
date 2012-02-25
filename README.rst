@@ -122,6 +122,13 @@ Bugs
 
 Pony-mode is under active development, so please report any bugs on the github issue tracker
 
+Help
+----
+Turns out that there is a mailing list at https://groups.google.com/group/pony-mode .
+
+Low frequency, high helpfulness. Feel free to stop by for helps & chats...
+
+
 Licence
 -------
 
