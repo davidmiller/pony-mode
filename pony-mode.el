@@ -245,17 +245,12 @@ more conservative local-var manipulation."
 
 ;;;###autoload
 (defun pony-rc ()
-  "Get The settings for the current project.
+  "Return the settings for the current project.
 
-Read the current pony-project variable from the current buffer's .dir-locals.el"
-  (let ((settings
-         (if (memq 'pony-settings
-                   (mapcar 'first dir-local-variables-alist))
-             (cdr (find-if (lambda (x) (equal (first x) 'pony-settings))
-                           dir-local-variables-alist))
-           ;; For backwards compatibility we also allow ourselves to use .ponyrc
-           (eval (pony-read-file (concat (pony-project-root) ".ponyrc"))))))
-    (eval settings)))
+Evaluate the pony-settings variable from the directory-local
+variables; if not found, evaluate .ponyrc instead."
+  (eval (cdr (or (assq 'pony-settings dir-local-variables-alist)
+                 (cons nil (pony-read-file (concat (pony-project-root) ".ponyrc")))))))
 
 (when (featurep 'files-x)
 ;;;###autoload
