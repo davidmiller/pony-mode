@@ -940,11 +940,10 @@ If the project has the django_extras package installed, then use the excellent
           (func (let ((f (second defuns))) (and f (string-match "^test" f) f)))
           (app (pony-get-app))
           (default-command
-            (concat app (and app class ".") class (and class func ".") func))
-          (failfast (if pony-test-failfast "--failfast" "")))
+            (concat app (and app class ".") class (and class func ".") func)))
      (list (read-string "Test: " default-command))))
   (pony-manage-pop "ponytests" (pony-manage-cmd)
-                   (list "test" failfast command))
+                   (list "test" (if pony-test-failfast "--failfast" "") command))
   (pony-test-mode))
 
 ;;;###autoload
