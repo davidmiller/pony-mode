@@ -83,6 +83,7 @@ projects using sqlite."
 (require 'dired-aux)
 (ignore-errors ; files-x gets stripped from some Debian packages
   (require 'files-x))
+(require 'python)
 (require 'sgml-mode)
 (require 'sql)
 (require 'thingatpt)
@@ -245,17 +246,12 @@ more conservative local-var manipulation."
 
 ;;;###autoload
 (defun pony-rc ()
-  "Get The settings for the current project.
+  "Return the settings for the current project.
 
-Read the current pony-project variable from the current buffer's .dir-locals.el"
-  (let ((settings
-         (if (memq 'pony-settings
-                   (mapcar 'first dir-local-variables-alist))
-             (cdr (find-if (lambda (x) (equal (first x) 'pony-settings))
-                           dir-local-variables-alist))
-           ;; For backwards compatibility we also allow ourselves to use .ponyrc
-           (eval (pony-read-file (concat (pony-project-root) ".ponyrc"))))))
-    (eval settings)))
+Evaluate the pony-settings variable from the directory-local
+variables; if not found, evaluate .ponyrc instead."
+  (eval (cdr (or (assq 'pony-settings dir-local-variables-alist)
+                 (cons nil (pony-read-file (concat (pony-project-root) ".ponyrc")))))))
 
 (when (featurep 'files-x)
 ;;;###autoload
@@ -288,24 +284,6 @@ Read the current pony-project variable from the current buffer's .dir-locals.el"
 ;; Functions for getting contextually aware information
 ;; about the code near point
 ;;
-
-;;;###autoload
-(defun pony-get-func()
-  "Get the function currently at point"
-  (save-excursion
-    (if (search-backward-regexp "\\(def\\)")
-        (if (looking-at "[ \t]*[a-z]+[\s]\\([a-z_]+\\)\\>")
-            (buffer-substring (match-beginning 1) (match-end 1))
-          nil))))
-
-;;;###autoload
-(defun pony-get-class()
-  "Get the class at point"
-  (save-excursion
-    (if (search-backward-regexp "\\(class\\)")
-        (if (looking-at "[ \t]*[a-z]+[\s]\\([a-zA-Z]+\\)\\>")
-            (buffer-substring (match-beginning 1) (match-end 1))
-          nil))))
 
 ;;;###autoload
 (defun pony-get-app()
@@ -954,28 +932,20 @@ If the project has the django_extras package installed, then use the excellent
 ;; Testing
 
 ;;;###autoload
-(defun pony-test()
-  "Run tests here"
-  (interactive)
-  (let ((func (pony-get-func))
-        (class (pony-get-class))
-        (app (pony-get-app))
-        (command nil)
-        (failfast (if pony-test-failfast
-                      "--failfast"
-                    "")))
-    (if (and func class app (string= "test" (substring func 0 4)))
-        (setq command (concat app "." class "." func))
-      (if (and class app)
-          (setq command (concat app "." class))
-        (if app
-            (setq command app))))
-    (if command
-        (let ((confirmed-command
-               (read-from-minibuffer "test: " command)))
-          (pony-manage-pop "ponytests" (pony-manage-cmd)
-                 (list "test" failfast confirmed-command))
-          (pony-test-mode)))))
+(defun pony-test (command)
+  "Run the test(s) given by `command'."
+  (interactive
+   (let* ((defuns (subseq (split-string (python-current-defun) "\\.") 0 2))
+          (class (first defuns))
+          (func (let ((f (second defuns))) (and f (string-match "^test" f) f)))
+          (app (pony-get-app))
+          (default-command
+            (concat app (and app class ".") class (and class func ".") func))
+          (failfast (if pony-test-failfast "--failfast" "")))
+     (list (read-string "Test: " default-command))))
+  (pony-manage-pop "ponytests" (pony-manage-cmd)
+                   (list "test" failfast command))
+  (pony-test-mode))
 
 ;;;###autoload
 (defun pony-test-open ()
