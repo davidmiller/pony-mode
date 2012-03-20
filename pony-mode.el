@@ -556,8 +556,8 @@ locally with .dir-locals.el."
                (sql-password (db-setting "PASSWORD"))
                (sql-database (db-setting "NAME"))
                (sql-server (db-setting "HOST")))
-          (sql-product-interactive)
-          (when (pony-pop "*SQL*")
+          (save-excursion (sql-product-interactive))
+          (when (pony-pop "*SQL*" :dirlocals t)
             (rename-buffer buffer-name t)))))))
 
 ;; Fabric
