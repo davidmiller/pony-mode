@@ -287,16 +287,13 @@ variables; if not found, evaluate .ponyrc instead."
 ;; about the code near point
 ;;
 
-;;;###autoload
-(defun pony-get-app()
-  "Get the name of the pony app currently being edited"
-  (setq fname (buffer-file-name))
-  (with-temp-buffer
-    (insert fname)
-    (goto-char (point-min))
-    (if (looking-at (concat (pony-project-root) "\\([a-z]+\\).*"))
-        (buffer-substring (match-beginning 1) (match-end 1))
-      nil)))
+(defun pony-get-app ()
+  "Return the name of the current app, or nil if no app found."
+  (let* ((root (pony-project-root))
+         (re (concat "^" (regexp-quote root) "\\([A-Za-z_]+\\)/"))
+         (path (or buffer-file-name (expand-file-name default-directory))))
+    (when (string-match re path)
+      (match-string 1 path))))
 
 ;; Environment
 
