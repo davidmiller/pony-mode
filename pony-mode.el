@@ -136,22 +136,24 @@ but allows paths rather than filenames"
 ;; Emacs
 ;;
 
-;;;###autoload
-(defun* pony-pop(buffer &key dirlocals)
-  "Wrap pop-to and get buffer.
+(defun* pony-pop (buffer-or-name &key dirlocals)
+  "Select `buffer-or-name' in some window, as for `pop-to-buffer'.
+Return the selected buffer if successful, or `nil' otherwise.
 
-If the optional argument DIR-LOCALS happens to be non-nil then set the
+If the optional keyword argument `:dirlocals' is non-nil, set the
 variable `dir-local-variables-alist' in the target buffer to be
-equal to the value in the buffer we are popping to.
-
-This is useful because comint buffers without filenames associated
-will otherwise not pick up things like project settings in .dir-locals.el"
-  (let ((dlocals (if dirlocals
-                     dir-local-variables-alist)))
-    (pop-to-buffer (get-buffer buffer))
-    (pony-mode)
-    (if dlocals
-        (pony-local! 'dir-local-variables-alist dlocals))))
+equal to the value in the current buffer.  This is useful because
+comint buffers without filenames associated will otherwise not
+pick up directory-local settings."
+  (let ((buffer (get-buffer buffer-or-name))
+        (current-locals dir-local-variables-alist))
+    (when buffer
+      (pop-to-buffer buffer)
+      (pony-mode)
+      (and dirlocals
+           current-locals
+           (pony-local! 'dir-local-variables-alist current-locals)))
+    buffer))
 
 ;;;###autoload
 (defun pony-comint-pop(name command args)
@@ -532,46 +534,34 @@ locally with .dir-locals.el."
 
 ;; Database
 
-(defstruct pony-db-settings engine name user pass host)
-
 ;;;###autoload
-(defun pony-get-db-settings()
-  "Get Pony's database settings"
-  (let ((db-settings
-         (if (pony-setting-p "DATABASE_ENGINE")
-             (make-pony-db-settings
-              :engine (pony-get-setting "DATABASE_ENGINE")
-              :name (pony-get-setting "DATABASE_NAME")
-              :user (pony-get-setting "DATABASE_USER")
-              :pass (pony-get-setting "DATABASE_PASSWORD")
-              :host (pony-get-setting "DATABASE_HOST"))
-           (make-pony-db-settings
-            :engine (pony-get-setting "DATABASES['default']['ENGINE']")
-            :name (pony-get-setting "DATABASES['default']['NAME']")
-            :user (pony-get-setting "DATABASES['default']['USER']")
-            :pass (pony-get-setting "DATABASES['default']['PASSWORD']")
-            :host (pony-get-setting "DATABASES['default']['HOST']")))))
-    db-settings))
-
-;;;###autoload
-(defun pony-db-shell()
-  "Run sql-XXX for this project"
+(defun pony-db-shell ()
+  "Run interpreter for this project's default database as an inferior process."
   (interactive)
-  (let ((db (pony-get-db-settings)))
-    (progn
-      (setq sql-user (pony-db-settings-user db))
-      (setq sql-password (pony-db-settings-pass db))
-      (setq sql-database (pony-db-settings-name db))
-      (setq sql-server (pony-db-settings-host db))
-      (if (equalp (pony-db-settings-engine db) "mysql")
-          (sql-connect-mysql)
-        (if (string-match "sqlite3" (pony-db-settings-engine db))
-            (let ((sql-sqlite-program pony-sqlite-program))
-              (sql-connect-sqlite))
-          (if (equalp (pony-db-settings-engine db) "postgresql_psycopg2")
-              (sql-connect-postgres))))
-      (pony-pop "*SQL*")
-      (rename-buffer "*PonyDbShell*"))))
+  (let ((buffer-name "*pony-db-shell*")
+        (db-format (if (pony-setting-p "DATABASE_ENGINE") "DATABASE_%s"
+                     "DATABASES['default']['%s']")))
+    (if (comint-check-proc buffer-name)
+        (pop-to-buffer buffer-name)
+      (flet ((db-setting (name) (pony-get-setting (format db-format name)))
+             ;; Rebind sql-get-login so that sql-product-interactive
+             ;; doesn't try to prompt the user.
+             (sql-get-login (&rest what)))
+        (let* ((db-engine (db-setting "ENGINE"))
+               (engine (car (last (split-string db-engine "\\."))))
+               (sql-product
+                (loop for product in sql-product-alist
+                      if (search (symbol-name (car product)) engine)
+                      return (car product)
+                      finally do
+                      (error "Don't know how to connect to %s" engine)))
+               (sql-user (db-setting "USER"))
+               (sql-password (db-setting "PASSWORD"))
+               (sql-database (db-setting "NAME"))
+               (sql-server (db-setting "HOST")))
+          (sql-product-interactive)
+          (when (pony-pop "*SQL*")
+            (rename-buffer buffer-name t)))))))
 
 ;; Fabric
 
