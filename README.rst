@@ -99,7 +99,7 @@ The file should look something like this:
       (pony-settings . (make-pony-project
                         :python "/home/david/virtualenvs/megacorp/production/bin/python"
                         :settings "local_settings_file")
-    ))
+    )))
 
 
 Installation
