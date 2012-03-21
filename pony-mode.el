@@ -317,18 +317,17 @@ variables; if not found, evaluate .ponyrc instead."
                 (setq max (- max 1))))))
         (if found (expand-file-name curdir))))))
 
-;;;###autoload
 (defun pony-project-newstructure-p()
   "Predicate to determine whether the project has new structure.
 
 In django ver. => 1.4 manage.py is in an upper directory relative to the
 project module."
-  (let ((settings-file
+  (let ((settings-base
          (concat (pony-project-root)
-                 (pony-get-settings-file-basename) ".py")))
-    (not (file-exists-p settings-file))))
+                 (pony-get-settings-file-basename))))
+    (not (or (file-exists-p (concat settings-base ".py"))
+              (file-exists-p settings-base)))))
 
-;;;###autoload
 (defun pony-project-package()
   "Return the project package name."
   (pony-localise
@@ -348,7 +347,6 @@ project module."
             (if (string-match "SETTINGS_MODULE = '\\([^'.]+\\)" diffsettings)
                 (setq package (match-string 1 diffsettings)))))))))
 
-;;;###autoload
 (defun pony-project-package-root()
   "Return the root of the project packege (dir with project
 settings.py in) or nil"
@@ -433,31 +431,32 @@ locally with .dir-locals.el."
           pony-settings-module))
     pony-settings-module))
 
-(defun pony-get-settings-file()
+(defun pony-get-settings-module()
   "Return the absolute path to the pony settings file"
-  (let ((settings
-         (concat (pony-project-package-root)
-                 (concat (pony-get-settings-file-basename) ".py")))
-        (isfile nil))
-    (if (not (file-exists-p settings))
-        (message "Settings file not found")
-      (setq isfile t))
-    (if isfile
-        settings
-      nil)))
+  (let* ((basename (concat (pony-project-package-root)
+                           (pony-get-settings-file-basename)))
+         (pyfile (concat basename ".py"))
+         (exists (or (and (file-exists-p basename) basename)
+                     (and (file-exists-p pyfile) pyfile))))
+    (if exists
+        exists
+      (progn
+         (message "Settings file not found")
+        nil))))
 
 ;;;###autoload
 (defun pony-setting-p (setting)
   "Predicate to determine whether a `setting' exists for the current project"
   (let ((setting? (pony-get-setting setting)))
-    (if (string-match "Traceback" setting?)
-        nil
-      t)))
+    (and setting?
+         (if (string-match "Traceback" setting?)
+             nil
+           t))))
 
 ;;;###autoload
 (defun pony-get-setting(setting)
   "Get the pony settings.py value for `setting`"
-  (let ((settings (pony-get-settings-file))
+  (let ((settings (pony-get-settings-module))
         (python-c (concat (pony-active-python)
                           " -c \"import settings; print settings.%s\""))
         (working-dir default-directory)
@@ -678,7 +677,7 @@ Bug reports welcome. Patches even more so :)"
 (defun pony-goto-settings()
   (interactive)
   "Open the settings.py for this project"
-  (find-file (pony-get-settings-file)))
+  (find-file (pony-get-settings-module)))
 
 ;; Manage
 
