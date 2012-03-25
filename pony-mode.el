@@ -610,21 +610,34 @@ locally with .dir-locals.el."
         nil))))
 
 ;;;###autoload
+(defun pony-convert-string-sequence(python-string)
+  "Convert a python sequence of strings to its lisp equivalent"
+  (split-string
+   (replace-regexp-in-string "[\][\(\)'\"]" "" python-string) ", ?"))
+
+;;;###autoload
+(defun pony-find-file-in-path(file path)
+  "Find FILE if it exists in one the directories in PATH"
+  (dolist (dir path)
+    (let ((file-absolute (expand-file-name file dir)))
+      (if (file-exists-p file-absolute)
+          (return (find-file file-absolute))))))
+
+;;;###autoload
 (defun pony-goto-template()
   "Jump-to-template-at-point"
   (interactive)
-  (let ((filename nil)
-        (template
-         (if (looking-at "^.*['\"]\\([a-z/_.]+html\\).*$")
-             (buffer-substring (match-beginning 1) (match-end 1))
-           (pony-template-decorator))))
-    (if template
-        (setq filename
-              (expand-file-name
-               template (pony-get-setting "TEMPLATE_DIRS"))))
-    (if (and filename (file-exists-p filename))
-        (find-file filename)
-      (message (format "Template %s not found" filename)))))
+  (save-excursion
+    (beginning-of-line)
+    (let ((template
+           (if (looking-at "^.*['\"]\\([a-z/_.]+html\\).*$")
+               (buffer-substring (match-beginning 1) (match-end 1))
+             (pony-template-decorator))))
+      (unless (and template
+                   (pony-find-file-in-path
+                    template (pony-convert-string-sequence
+                              (pony-get-setting "TEMPLATE_DIRS"))))
+        (message (format "Template %s not found" template))))))
 
 ;; TODO
 ;;;###autoload?
