@@ -1,7 +1,7 @@
 Pony Mode -a Django mode for emacs
 ==================================
 
-New Django mode for emacs.
+A Django mode for emacs.
 
 Features (Non-exhaustive):
 --------------------------
