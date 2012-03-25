@@ -613,7 +613,7 @@ locally with .dir-locals.el."
 (defun pony-convert-string-sequence(python-string)
   "Convert a python sequence of strings to its lisp equivalent"
   (split-string
-   (replace-regexp-in-string "[\][\(\)'\"]" "" python-string) ", ?"))
+   (replace-regexp-in-string "[][()'\"]" "" python-string) ", ?"))
 
 ;;;###autoload
 (defun pony-find-file-in-path(file path)
