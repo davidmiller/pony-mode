@@ -598,9 +598,15 @@ locally with .dir-locals.el."
 
 ;; GoTo
 
-;;;###autoload
 (defun pony-template-decorator()
-  "Hai"
+  "Return either the name of a template from within a decorator around a view
+or nil. E.G. the following pattern:
+
+@renders_to('some_template.html')
+def my_view(request):
+    return 'HAI'
+
+"
   (save-excursion
     (progn
       (search-backward-regexp "^def")
@@ -609,13 +615,12 @@ locally with .dir-locals.el."
           (buffer-substring (match-beginning 1) (match-end 1))
         nil))))
 
-;;;###autoload
 (defun pony-convert-string-sequence(python-string)
-  "Convert a python sequence of strings to its lisp equivalent"
+  "Convert the string representatin of a python list/tuple of strings
+to its lisp equivalent"
   (split-string
    (replace-regexp-in-string "[][()'\"]" "" python-string) ", ?"))
 
-;;;###autoload
 (defun pony-find-file-in-path(file path)
   "Find FILE if it exists in one the directories in PATH"
   (dolist (dir path)
@@ -694,7 +699,6 @@ Bug reports welcome. Patches even more so :)"
 
 ;; Manage
 
-;;;###autoload
 (defun pony-list-commands()
   "List of managment commands for the current project"
   (let ((command (concat (pony-active-python) " " (pony-manage-cmd) " --help")))
@@ -706,7 +710,6 @@ Bug reports welcome. Patches even more so :)"
           (split-string (buffer-substring (match-beginning 3) (match-end 3)))
         nil))))
 
-;;;###autoload
 (defun pony-manage-run(args)
   "Run the pony-manage command completed from the minibuffer"
   (pony-manage-pop "ponymanage" (pony-manage-cmd) args))
