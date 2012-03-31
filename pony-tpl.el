@@ -60,7 +60,7 @@
     (forward-line -1)
     (if (looking-at "^[ \t]*{%-? *end") ; Don't indent after end
         (current-indentation)
-      (if (looking-at (concat "^[ \t]*{%-? *.*?{%-? *end" pony-indenting-tags-regexp) "\\>")
+      (if (looking-at (concat "^[ \t]*{%-? *.*?{%-? *end" pony-indenting-tags-regexp "\\>"))
           (current-indentation)
         (if (looking-at (concat "^[ \t]*{%-? *" pony-indenting-tags-regexp "\\>")) ; Check start tag
             (+ (current-indentation) indent-width)
