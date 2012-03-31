@@ -26,8 +26,19 @@
 ;; make sure that TAB doesn't affect (point)
 ;;
 
-(defun pony-indenting-keywords ()
-  '("if" "for" "block" "else" "elif"))
+(defvar pony-nonindenting-tags
+  '("cache" "csrf_token" "cycle" "debug" "extends" "firstof" "include" "load" "now"
+    "regroup" "ssi" "templatetag" "trans" "url" "widthratio")
+  "List of tags that do not imply indentation (or require an end tag).")
+
+(defvar pony-indenting-tags
+  '("autoescape" "block" "blocktrans" "comment" "elif" "else" "empty"
+    "filter" "for" "if" "ifchanged" "ifequal" "ifnotequal" "spaceless" "with")
+  "List of template tags that imply indentation.")
+
+(defvar pony-indenting-tags-regexp
+  (regexp-opt pony-indenting-tags)
+  "Regular expression matching a template tag that implies indentation.")
 
 (defun sgml-indent-line-num ()
   "Indent the current line as SGML."
@@ -49,9 +60,9 @@
     (forward-line -1)
     (if (looking-at "^[ \t]*{%-? *end") ; Don't indent after end
         (current-indentation)
-      (if (looking-at (concat "^[ \t]*{%-? *.*?{%-? *end" (regexp-opt (pony-indenting-keywords))))
+      (if (looking-at (concat "^[ \t]*{%-? *.*?{%-? *end" pony-indenting-tags-regexp "\\>"))
           (current-indentation)
-        (if (looking-at (concat "^[ \t]*{%-? *" (regexp-opt (pony-indenting-keywords)))) ; Check start tag
+        (if (looking-at (concat "^[ \t]*{%-? *" pony-indenting-tags-regexp "\\>")) ; Check start tag
             (+ (current-indentation) indent-width)
           (if (looking-at "^[ \t]*<") ; Assume sgml block trust sgml
               default
@@ -69,8 +80,8 @@
             (forward-line -1)
             (if
                 (and
-                 (looking-at (concat "^[ \t]*{%-? *" (regexp-opt (pony-indenting-keywords))))
-                 (not (looking-at (concat "^[ \t]*{%-? *.*?{% *end" (regexp-opt (pony-indenting-keywords))))))
+                 (looking-at (concat "^[ \t]*{%-? *" pony-indenting-tags-regexp "\\>"))
+                 (not (looking-at (concat "^[ \t]*{%-? *.*?{% *end" pony-indenting-tags-regexp "\\>"))))
                 (current-indentation)
               (- (current-indentation) indent-width)))
         (if (looking-at "^[ \t]*</") ; Assume sgml end block trust sgml
@@ -97,7 +108,7 @@
     '("{%.*\\(\\bor\\b\\).*%}" . (1 font-lock-builtin-face))
     ;'("{% ?comment ?%}\\(\n?.*?\\)+?{% ?endcomment ?%}" . font-lock-comment-face)
     '("{#.*#}" . font-lock-comment-face)
-    '("{% +?\\(\\(end\\)?\\(extends\\|for\\|cache\\|cycle\\|filter\\|firstof\\|debug\\|if\\(changed\\|equal\\|notequal\\|\\)\\|include\\|load\\|now\\|regroup\\|spaceless\\|ssi\\|templatetag\\|widthratio\\|block\\|trans\\)\\) ?.*? ?%}" . 1)
+    (cons (concat "{% *\\(\\(?:end\\)?" (regexp-opt pony-indenting-tags) "\\|" (regexp-opt pony-nonindenting-tags) "\\>\\).*?%}") 1)
     '("{{ ?\\(.*?\\) ?}}" . (1 font-lock-variable-name-face))
     '("{%\\|\\%}\\|{{\\|}}" . font-lock-builtin-face)
     ))
