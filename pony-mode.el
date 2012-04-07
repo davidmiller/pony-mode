@@ -90,13 +90,11 @@ projects using sqlite."
 
 ;; Utility
 
-;;;###autoload
-(defun chomp (str)
+(defun pony-chomp (str)
   "Chomp leading and tailing whitespace www.emacswiki.org/emacs/ElispCookbook"
   (let ((s (if (symbolp str) (symbol-name str) str)))
     (replace-regexp-in-string "\\(^[[:space:]\n]*\\|[[:space:]\n]*$\\)" "" s)))
 
-;;;###autoload
 (defun pony-find-file (path pattern)
   "Find files matching pattern in or below path"
   (setq matches (list))
@@ -110,7 +108,6 @@ projects using sqlite."
             (add-to-list 'files f-or-d))))
     files))
 
-;;;###autoload
 (defun pony-locate (filepath)
   "Essentially duplicates the functionality of `locate-dominating-file'
 but allows paths rather than filenames"
@@ -464,7 +461,7 @@ locally with .dir-locals.el."
     (if settings
         (progn
           (cd (file-name-directory settings))
-          (setq set-val (chomp (shell-command-to-string
+          (setq set-val (pony-chomp (shell-command-to-string
                                 (format python-c setting))))
           (cd working-dir)
           set-val))))
