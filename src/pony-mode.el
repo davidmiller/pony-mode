@@ -109,6 +109,13 @@ projects using sqlite."
             (add-to-list 'files f-or-d))))
     files))
 
+(defun pony-find-file-p (path pattern)
+  "Predicate to determine whether a file whose name matches PATTERN is to be
+found in or under PATH"
+  (if (pony-find-file path pattern)
+      t
+    nil))
+
 (defun pony-locate (filepath)
   "Essentially duplicates the functionality of `locate-dominating-file'
 but allows paths rather than filenames"
@@ -239,7 +246,7 @@ more conservative local-var manipulation."
 (defun pony-configfile-p ()
   "Establish whether this project has a .ponyrc file in the root"
   (if (equal 'dired-mode major-mode)
-      "YAY"
+      (pony-find-file-p dired-directory ".dir-locals.el")
     (if (or
          (dir-locals-find-file (buffer-file-name))
          (pony-rooted-sym-p '.ponyrc))

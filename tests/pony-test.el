@@ -42,6 +42,12 @@ elements joined by \."
     (should (equal (list (path.join *ponytestbase* "data/ponytester/manage.py"))
                    (pony-find-file path pattern)))))
 
+(ert-deftest pony-find-file-p ()
+  "find some py files"
+  (let ((path (path.join *ponytestbase* "data/ponytester"))
+        (pattern "manag"))
+    (should (equal t (pony-find-file-p path pattern)))))
+
 ;;; pony-locate
 
 (ert-deftest pony-read-file ()
@@ -58,6 +64,8 @@ elements joined by \."
   (save-excursion
     (let ((tpl (find-file (path.join *ponytestbase* "data/ponytester/templates/wholefile.html"))))
       (switch-to-buffer tpl)
+      (goto-char (point-min))
+      (should (equal 4 (count-lines (point-min) (point-max))))
       (forward-line 2)
       (should (equal 3 (line-number-at-pos)))
       (should (equal 0 (pony-calculate-indent))))))
