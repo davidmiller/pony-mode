@@ -103,11 +103,18 @@ projects using sqlite."
              (directory-files path t "^[^\\.]"))
       (if (file-directory-p f-or-d)
           (dolist (filename
-                   (string-match f-or-d pattern))
+                   (string-match pattern f-or-d))
             (add-to-list 'files filename))
         (if (string-match pattern f-or-d)
             (add-to-list 'files f-or-d))))
     files))
+
+(defun pony-find-file-p (path pattern)
+  "Predicate to determine whether a file whose name matches PATTERN is to be
+found in or under PATH"
+  (if (pony-find-file path pattern)
+      t
+    nil))
 
 (defun pony-locate (filepath)
   "Essentially duplicates the functionality of `locate-dominating-file'
@@ -236,21 +243,28 @@ more conservative local-var manipulation."
 
 (defstruct pony-project python settings)
 
-;;;###autoload
 (defun pony-configfile-p ()
   "Establish whether this project has a .ponyrc file in the root"
-  (if (or
-       (dir-locals-find-file (pony-project-root))
-       (pony-rooted-sym-p '.ponyrc))
-      t nil))
+  (if (equal 'dired-mode major-mode)
+      (if ( pony-locate ".dir-locals.el") t nil)
+    (if (or
+         (dir-locals-find-file (buffer-file-name))
+         (pony-rooted-sym-p '.ponyrc))
+        t nil)))
 
-;;;###autoload
 (defun pony-rc ()
   "Return the settings for the current project.
 
 Evaluate the pony-settings variable from the directory-local
 variables; if not found, evaluate .ponyrc instead."
   (eval (cdr (or (assq 'pony-settings dir-local-variables-alist)
+                 (and (equal emacs-major-version 23)
+                      (equal 'dired-mode major-mode)
+                      (dolist (pair (rest (first (pony-read-file (pony-locate ".dir-locals.el")))) res)
+                        (if ( equal 'pony-settings (first pair))
+                            (setq res (cons nil
+                                       (apply 'make-pony-project (rest (rest pair)))))
+                          nil)))
                  (cons nil (pony-read-file (concat (pony-project-root) ".ponyrc")))))))
 
 (when (featurep 'files-x)
@@ -295,7 +309,6 @@ variables; if not found, evaluate .ponyrc instead."
 
 ;; Environment
 
-;;;###autoload
 (defun pony-project-root()
   "Return the root of the project(dir with manage.py in) or nil"
   (pony-localise
@@ -771,7 +784,7 @@ If you are currently in the *ponyserver* buffer, restart the server"
          (buff (get-buffer buffname))
          (working-dir default-directory))
     (if proc
-        (progn
+       (progn
           (message "Pony Dev Server already running")
           (if (and buff (equalp buff (current-buffer)))
               (pony-restart-server)
