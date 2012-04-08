@@ -1,2 +1,3 @@
 language: emacs-lsip
 script: rake test
+install: pip install -r requirements.txt --use-mirrors
