@@ -246,9 +246,9 @@ more conservative local-var manipulation."
 (defun pony-configfile-p ()
   "Establish whether this project has a .ponyrc file in the root"
   (if (equal 'dired-mode major-mode)
-      (if ( pony-locate ".dir-locals.el") t nil)
+      (if (pony-locate ".dir-locals.el") t nil)
     (if (or
-         (dir-locals-find-file (buffer-file-name))
+         (and (buffer-file-name) (dir-locals-find-file (buffer-file-name)))
          (pony-rooted-sym-p '.ponyrc))
         t nil)))
 
@@ -265,7 +265,9 @@ variables; if not found, evaluate .ponyrc instead."
                             (setq res (cons nil
                                        (apply 'make-pony-project (rest (rest pair)))))
                           nil)))
-                 (cons nil (pony-read-file (concat (pony-project-root) ".ponyrc")))))))
+                 (let ((ponyrc (concat (pony-project-root) ".ponyrc")))
+                   (and (file-exists-p ponyrc)
+                        (cons nil (pony-read-file ponyrc))))))))
 
 (when (featurep 'files-x)
 ;;;###autoload
@@ -396,19 +398,22 @@ This command will only work if you run with point in a buffer that is within you
         (if found
             found)))))
 
-;;;###autoload
 (defun pony-active-python ()
   "Fetch the active Python interpreter for this Django project.
 Be aware of .ponyrc configfiles, 'clean', buildout, and
  virtualenv situations"
-  (if (pony-configfile-p)
+  (if (and (pony-configfile-p)
+           (pony-rc))
+
       (pony-project-python (pony-rc))
+    ;;        (let ((ponysettings (pony-rc)))
+    ;;          (and ponysettings
+
     (let ((venv-out (pony-locate "bin/python")))
       (if venv-out
           venv-out
         (executable-find "python")))))
 
-;;;###autoload
 (defun pony-command-exists-p(cmd)
   "Is cmd installed in this app"
   (if (string-match cmd

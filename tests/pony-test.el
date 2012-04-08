@@ -55,6 +55,25 @@ elements joined by \."
   (should (equal "Hello Beautiful World!"
                  (pony-read-file (path.join *ponytestbase* "data/HELLO.txt")))))
 
+(ert-deftest pony-active-python ()
+  "Get our active Python interpreter"
+  (let ((settingsfile (path.join *ponytestbase* "data/ponytester/settings.py")))
+    (save-excursion
+      (should (equal (executable-find "python") (pony-active-python))))))
+
+(ert-deftest pony-command-exists-t ()
+  "Should be a valid command"
+  (let ((settingsfile (path.join *ponytestbase* "data/ponytester/settings.py")))
+    (save-excursion
+      (find-file settingsfile)
+      (should (equal t (pony-command-exists-p "runserver"))))))
+
+(ert-deftest pony-command-exists-f ()
+  "Should be a valid command"
+  (let ((settingsfile (path.join *ponytestbase* "data/ponytester/settings.py")))
+    (save-excursion
+      (find-file settingsfile)
+      (should (equal nil (pony-command-exists-p "like_this_is_a_command"))))))
 
 ;;;
 ;;; pony-tpl.el
