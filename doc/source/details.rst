@@ -5,6 +5,21 @@ Pony Mode Details
 
 Pony Mode has at least more than twelve features for helping you work on your Django projects from Emacs
 
+.. _dev-server:
+
+Development server
+------------------
+
+The command::
+
+    M-x pony-runserver
+
+(Which is bound by default to C-c C-p r) Will start the dev server for your current project
+
+Pony Mode will check to see if runserver_plus is available, and will prefer to use that, falling back to the basic Django runserver.
+
+You can configure the :ref:`pony-server-host` and :ref:`pony-server-port` your server runs on by configuring the custom variables.
+
 Fabric Integration
 ------------------
 
@@ -61,19 +76,4 @@ Virtualenv support assumes that you initialized the virtualenv with something eq
 If your setup is different to this, then the implicit Virtualenv detection may fail.
 
 Fear not though! - you can customise the interpreter used by Pony-mode with a pony-project.
-
-Projects
---------
-Pony projects are defined in the .dir-locals.el file at the root of your current project.
-
-The file should look something like this::
-
-    ;; Pony mode config for the megacorp project
-    ((nil ;; This applies these settings regardless of major mode
-
-      (pony-settings . (make-pony-project
-                        :python "/home/david/virtualenvs/megacorp/production/bin/python"
-                        :settings "local_settings_file")
-    )))
-
 

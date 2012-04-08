@@ -6,9 +6,7 @@ A Django mode for emacs.
 Features (Non-exhaustive):
 --------------------------
 
-* Run dev server in an emacs buffer [C-c C-p r]
-    * Checks to see if runserver_plus is available
-    * If not uses in-built runserver
+* Run the :ref:`dev-server` in an emacs buffer [C-c C-p r]
 * Jump to current project in browser (start server if required) [C-c C-p b]
 * Run test case at point in buffer [C-c C-p t]
 * Run tests for current app in buffer [C-c C-p t]
@@ -40,7 +38,23 @@ How do I install Pony Mode?
 Features
 --------
 
-:ref:`details`
+Pony Mode has at least more than 3 features that make working on your Django projects from Emacs easier:
+
+.. toctree::
+   :maxdepth: 2
+
+   details
+
+Configuration
+-------------
+
+Configuration options for Pony Mode
+
+.. toctree::
+   :maxdepth: 2
+
+   configuration
+
 
 Bugs
 ----

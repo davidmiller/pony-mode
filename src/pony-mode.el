@@ -53,7 +53,7 @@
   :type 'string)
 
 (defcustom pony-settings-module "settings"
-  "Settings file to use with manage.py"
+  "Settings module to use with manage.py"
   :group 'pony
   :type 'string)
 

@@ -25,6 +25,6 @@ def upload_docs():
         local("rm -rf pony-mode-docs.tar.gz")
         local("tar zcvf pony-mode-docs.tar.gz *")
         operations.put("pony-mode-docs.tar.gz",
-                       "/home/happenup/webapps/pony-mode-docs/pony-mode-docs.tar.gz")
-    with cd("/home/happenup/webapps/pony-mode-docs/"):
+                       "/home/happenup/webapps/ponydocs/pony-mode-docs.tar.gz")
+    with cd("/home/happenup/webapps/ponydocs/"):
         run("tar zxvf pony-mode-docs.tar.gz")
