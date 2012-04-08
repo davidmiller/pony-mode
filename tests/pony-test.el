@@ -27,6 +27,10 @@ elements joined by \."
 ;;; Unit tests begin
 ;;;
 
+;;;
+;;; pony-mode.el
+;;;
+
 (ert-deftest pony-test-chomp ()
   "Should kill leading and tailing whitespace"
   (should (equal "Hello Beautiful World" (pony-chomp " Hello Beautiful World "))))
@@ -44,3 +48,16 @@ elements joined by \."
   "File contents to string."
   (should (equal "Hello Beautiful World!"
                  (pony-read-file (path.join *ponytestbase* "data/HELLO.txt")))))
+
+
+;;;
+;;; pony-tpl.el
+;;;
+(ert-deftest pony-calculate-indent-multitags ()
+  "Calculate indents in our test file - regression re #51"
+  (save-excursion
+    (let ((tpl (find-file (path.join *ponytestbase* "data/ponytester/templates/wholefile.html"))))
+      (switch-to-buffer tpl)
+      (forward-line 2)
+      (should (equal 3 (line-number-at-pos)))
+      (should (equal 0 (pony-calculate-indent))))))
