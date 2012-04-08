@@ -160,7 +160,6 @@ pick up directory-local settings."
            (pony-local! 'dir-local-variables-alist current-locals)))
     buffer))
 
-;;;###autoload
 (defun pony-comint-pop(name command args)
   "This is the main entry point for sub-processes in Pony-mode.
 It creates a comint interaction buffer, called `name', running
@@ -169,7 +168,6 @@ It creates a comint interaction buffer, called `name', running
   (apply 'make-comint name command nil args)
   (pony-pop (concat "*" name "*") :dirlocals t))
 
-;;;###autoload
 (defun pony-manage-pop (name command args)
   "Run manage.py commands in a commint buffer. Intended as a
 wrapper around `pony-commint-pop', this function bypasses the
@@ -185,7 +183,6 @@ functions."
           (cons command (append args (list (concat "--settings=" settings))))))
     (pony-comint-pop name (pony-active-python) python-args)))
 
-;;;###autoload
 (defun pony-manage-popif (name command args)
   "This wrapper around `pony-manage-pop' will check to see if COMMAND exists
 before attempting the manage-pop"
@@ -193,7 +190,6 @@ before attempting the manage-pop"
       (pony-manage-pop name (pony-manage-cmd) (cons command args))
     (message "The Django command %s doesn't seem to be installed" command)))
 
-;;;###autoload
 (defun pony-dir-excursion(dir &rest rest)
   "pony-comint-pop where we need to change into `dir` first"
   (let ((curdir default-directory))
@@ -201,7 +197,6 @@ before attempting the manage-pop"
     (apply 'pony-comint-pop rest)
     (cd curdir)))
 
-;;;###autoload
 (defun pony-mini-file(prompt &optional startdir)
   "Read a file from the minibuffer."
   (expand-file-name
@@ -209,14 +204,12 @@ before attempting the manage-pop"
                    (or startdir
                        (expand-file-name default-directory)))))
 
-;;;###autoload
 (defun pony-local! (var val)
   "Set the buffer-local variable VAR to VAL.
 Destructive function with no state checking - see `pony-localise' for a
 more conservative local-var manipulation."
   (set (make-local-variable var) val))
 
-;;;###autoload
 (defun pony-localise (var func)
   "Return buffer local varible or get & set it"
   (if (local-variable-p var)
@@ -374,13 +367,11 @@ settings.py in) or nil"
             (if package-root
                 (expand-file-name (file-name-as-directory package-root)
                                   (pony-project-root)))))))))
-;;;###autoload
 (defun pony-rooted-sym-p (symb)
   "Expand the concatenation of `symb` onto `pony-project-root` and determine whether
 that file exists"
   (file-exists-p (concat (pony-project-root) (symbol-name symb))))
 
-;;;###autoload
 (defun pony-manage-cmd()
   "Return the current manage command
 This command will only work if you run with point in a buffer that is within your project"
@@ -404,11 +395,7 @@ Be aware of .ponyrc configfiles, 'clean', buildout, and
  virtualenv situations"
   (if (and (pony-configfile-p)
            (pony-rc))
-
       (pony-project-python (pony-rc))
-    ;;        (let ((ponysettings (pony-rc)))
-    ;;          (and ponysettings
-
     (let ((venv-out (pony-locate "bin/python")))
       (if venv-out
           venv-out
@@ -888,10 +875,6 @@ If the project has the django_extras package installed, then use the excellent
   (interactive)
   (pony-manage-pop "ponymigrations" (pony-manage-cmd) (list "syncdb")))
 
-;; (defun pony-south-get-migrations()
-;;   "Get a list of migration numbers for the current app"
-;; )
-
 ;;;###autoload
 (defun pony-south-convert()
   "Convert an existing app to south"
@@ -1004,7 +987,6 @@ If the project has the django_extras package installed, then use the excellent
 
 ;; Snippets
 
-;;;###autoload
 
 ;;;###autoload
 (defun pony-load-snippets()

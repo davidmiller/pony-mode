@@ -50,6 +50,20 @@ elements joined by \."
 
 ;;; pony-locate
 
+(ert-deftest pony-configfile-p ()
+  "Proj has a configfile"
+  (let ((settingsfile (path.join *ponytestbase* "data/ponytester/settings.py")))
+    (save-excursion
+      (find-file settingsfile)
+      (should (equal t (pony-configfile-p))))))
+
+(ert-deftest pony-rc ()
+  "Configfile should be nil"
+  (let ((settingsfile (path.join *ponytestbase* "data/ponytester/settings.py")))
+    (save-excursion
+      (find-file settingsfile)
+      (should (equal nil (pony-rc))))))
+
 (ert-deftest pony-read-file ()
   "File contents to string."
   (should (equal "Hello Beautiful World!"
