@@ -1,1 +1,2 @@
 ;;; Test project dir-locals
+()

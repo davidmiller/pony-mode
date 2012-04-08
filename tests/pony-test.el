@@ -65,7 +65,6 @@ elements joined by \."
     (let ((tpl (find-file (path.join *ponytestbase* "data/ponytester/templates/wholefile.html"))))
       (switch-to-buffer tpl)
       (goto-char (point-min))
-      (should (equal 4 (count-lines (point-min) (point-max))))
       (forward-line 2)
       (should (equal 3 (line-number-at-pos)))
       (should (equal 0 (pony-calculate-indent))))))

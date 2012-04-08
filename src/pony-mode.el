@@ -103,7 +103,7 @@ projects using sqlite."
              (directory-files path t "^[^\\.]"))
       (if (file-directory-p f-or-d)
           (dolist (filename
-                   (string-match f-or-d pattern))
+                   (string-match pattern f-or-d))
             (add-to-list 'files filename))
         (if (string-match pattern f-or-d)
             (add-to-list 'files f-or-d))))
@@ -246,7 +246,7 @@ more conservative local-var manipulation."
 (defun pony-configfile-p ()
   "Establish whether this project has a .ponyrc file in the root"
   (if (equal 'dired-mode major-mode)
-      (pony-find-file-p dired-directory ".dir-locals.el")
+      (if ( pony-locate ".dir-locals.el") t nil)
     (if (or
          (dir-locals-find-file (buffer-file-name))
          (pony-rooted-sym-p '.ponyrc))
@@ -258,6 +258,13 @@ more conservative local-var manipulation."
 Evaluate the pony-settings variable from the directory-local
 variables; if not found, evaluate .ponyrc instead."
   (eval (cdr (or (assq 'pony-settings dir-local-variables-alist)
+                 (and (equal emacs-major-version 23)
+                      (equal 'dired-mode major-mode)
+                      (dolist (pair (rest (first (pony-read-file (pony-locate ".dir-locals.el")))) res)
+                        (if ( equal 'pony-settings (first pair))
+                            (setq res (cons nil
+                                       (apply 'make-pony-project (rest (rest pair)))))
+                          nil)))
                  (cons nil (pony-read-file (concat (pony-project-root) ".ponyrc")))))))
 
 (when (featurep 'files-x)
