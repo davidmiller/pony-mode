@@ -127,6 +127,8 @@
   (run-hooks 'pony-tpl-mode-hook)
   (set (make-local-variable 'font-lock-defaults)
        '(pony-tpl-font-lock-keywords))
+  (if (> emacs-major-version 23)
+      (font-lock-refresh-defaults))
   (set (make-local-variable 'indent-line-function) 'pony-indent)
    (pony-load-snippets))
 
