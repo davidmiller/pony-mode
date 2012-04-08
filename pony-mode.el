@@ -102,7 +102,8 @@ projects using sqlite."
     (dolist (f-or-d
              (directory-files path t "^[^\\.]"))
       (if (file-directory-p f-or-d)
-          (dolist (filename (find-dot f-or-d pattern))
+          (dolist (filename
+                   (string-match f-or-d pattern))
             (add-to-list 'files filename))
         (if (string-match pattern f-or-d)
             (add-to-list 'files f-or-d))))
