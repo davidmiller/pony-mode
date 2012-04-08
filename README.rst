@@ -111,7 +111,7 @@ Installation
     M-x byte-compile-file
 3. Add the path to your load-path::
 
-    (add-to-list 'load-path "path/to/pony-mode")
+    (add-to-list 'load-path "path/to/pony-mode/src")
 4. Add to your .emacs::
 
     (require 'pony-mode)
