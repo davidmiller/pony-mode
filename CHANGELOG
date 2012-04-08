@@ -2,6 +2,11 @@
 0.3
 ===
 
+Project structure
+-----------------
+
+The project now has a new directory structure, which places the Elisp files that make up Pony Mode in ./src
+
 Alternative settings files
 --------------------------
 
