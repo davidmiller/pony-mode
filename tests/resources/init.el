@@ -6,7 +6,7 @@
 (add-to-list 'load-path
              (expand-file-name
               (concat (file-name-directory load-file-name)
-                      "../../")))
+                      "../../src")))
 (require 'pony-mode)
 (setq tab-width 4)
 (global-set-key [M-left] 'windmove-left) ; move to left windnow
