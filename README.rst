@@ -1,7 +1,7 @@
 Pony Mode -a Django mode for emacs
 ==================================
 
-New Django mode for emacs.
+A Django mode for emacs.
 
 Features (Non-exhaustive):
 --------------------------
@@ -95,23 +95,23 @@ The file should look something like this:
 
     ;; Pony mode config for the megacorp project
     ((nil ;; This applies these settings regardless of major mode
-    
+
       (pony-settings . (make-pony-project
                         :python "/home/david/virtualenvs/megacorp/production/bin/python"
                         :settings "local_settings_file")
-    )
+    )))
 
-    
+
 Installation
 ------------
 
-1. clone this repo somewhere $ git clone http://github.com/davidmiller/pony-mode
+1. clone this repo somewhere $ git clone https://github.com/davidmiller/pony-mode
 2. Byte-compile the file::
 
     M-x byte-compile-file
 3. Add the path to your load-path::
 
-    (add-to-list 'load-path "path/to/pony-mode")
+    (add-to-list 'load-path "path/to/pony-mode/src")
 4. Add to your .emacs::
 
     (require 'pony-mode)
@@ -121,6 +121,13 @@ Bugs
 ----
 
 Pony-mode is under active development, so please report any bugs on the github issue tracker
+
+Help
+----
+Turns out that there is a mailing list at https://groups.google.com/group/pony-mode .
+
+Low frequency, high helpfulness. Feel free to stop by for helps & chats...
+
 
 Licence
 -------

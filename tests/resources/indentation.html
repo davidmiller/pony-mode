@@ -1,0 +1,33 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    {% block title %}
+      Test Fixture with tags
+    {% endblock %}
+  </head>
+  <body>
+    {% ifequal 2 1 %}
+      Wrong Universe
+      {% block universe %}
+	Current Universe is {{universe}}
+      {% endblock universe %}
+    {% endifequal %}
+    {% ifnotequal 1 2 %}
+      <p>
+	Phew
+      </p>
+    {% endifnotequal%}
+    {% ifchanged universe %}
+      <div>
+	What?
+      </div>
+    {% endifchanged %}
+    {% if great %}
+      You're {{ great}}
+    {% elif dylan %}
+      Wait - you're {{dylan}}? What does that even mean?      
+    {% else %}
+      You're UNSPECIFIED!      
+    {% endif %}      
+  </body>
+</html> 
+
