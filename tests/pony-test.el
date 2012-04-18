@@ -23,6 +23,16 @@ elements joined by \."
           (setq path (concat path "/" item)))))
     path))
 
+(defmacro pony-deftest-excursion (name path body)
+  "Write an ERT test called NAME where we move to the file below *PONYTESTBASE*
+indicated by PATH before executing BODY"
+
+  `(ert-deftest ,name ()
+     (let ((thisfile (path.join *ponytestbase* ,path)))
+       (save-excursion
+         (find-file ,target)
+         ,body))))
+
 ;;;
 ;;; Unit tests begin
 ;;;
@@ -69,6 +79,13 @@ elements joined by \."
   (should (equal "Hello Beautiful World!"
                  (pony-read-file (path.join *ponytestbase* "data/HELLO.txt")))))
 
+(ert-deftest pony-project-newstructure-p ()
+  "Say no to oldstructure"
+    (let ((settingsfile (path.join *ponytestbase* "data/ponytester/settings.py")))
+    (save-excursion
+      (find-file settingsfile)
+      (should (equal nil (pony-project-newstructure-p))))))
+
 (ert-deftest pony-active-python ()
   "Get our active Python interpreter"
   (let ((settingsfile (path.join *ponytestbase* "data/ponytester/settings.py")))
@@ -88,6 +105,27 @@ elements joined by \."
     (save-excursion
       (find-file settingsfile)
       (should (equal nil (pony-command-exists-p "like_this_is_a_command"))))))
+
+(ert-deftest pony-get-settings-file-basename ()
+  "Should return the default basename"
+  (let ((settingsfile (path.join *ponytestbase* "data/ponytester/settings.py")))
+    (save-excursion
+      (find-file settingsfile)
+      (should (equal "settings" (pony-get-settings-file-basename))))))
+
+(ert-deftest pony-get-settings-module ()
+  "Should return the absolute path to the settings module"
+  (let ((settingsfile (path.join *ponytestbase* "data/ponytester/settings.py")))
+    (save-excursion
+      (find-file settingsfile)
+      (should (equal settingsfile (pony-get-settings-module))))))
+
+(ert-deftest pony-setting-p-t ()
+  "This setting exists"
+  (let ((settingsfile (path.join *ponytestbase* "data/ponytester/settings.py")))
+    (save-excursion
+      (find-file settingsfile)
+      (should (equal t (pony-setting-p "DEBUG"))))))
 
 ;;;
 ;;; pony-tpl.el

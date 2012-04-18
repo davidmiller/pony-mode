@@ -428,7 +428,10 @@ Be aware of .ponyrc configfiles, 'clean', buildout, and
 project. By default this is 'settings', but it can be changed
 locally with .dir-locals.el."
   (if (pony-configfile-p)
-      (let ((settings (pony-project-settings (pony-rc))))
+      (let* ((rc (pony-rc))
+             (settings (if rc
+                           (pony-project-settings rc)
+                         nil)))
         (if settings
             settings
           pony-settings-module))
