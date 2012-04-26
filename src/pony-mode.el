@@ -70,7 +70,7 @@ projects using sqlite."
 
 (defcustom pony-snippet-dir (expand-file-name
                              (concat (file-name-directory load-file-name)
-                                     "/snippets"))
+                                     "/../snippets"))
   "Directory in which to locate Yasnippet snippets for Pony Mode"
   :group 'pony
   :type 'string)
