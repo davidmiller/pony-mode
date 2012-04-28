@@ -41,6 +41,19 @@ indicated by PATH before executing BODY"
 ;;; pony-mode.el
 ;;;
 
+;;;
+;;; Custom defaults
+;;;
+
+(ert-deftest snippet-dir ()
+  "Get the snippet dir correct by default."
+  (should (equal pony-snippet-dir
+                 (expand-file-name
+                  (path.join *ponytestbase* "../snippets")))))
+
+;;;
+;;; Functions begin
+;;;
 (ert-deftest pony-chomp ()
   "Should kill leading and tailing whitespace"
   (should (equal "Hello Beautiful World" (pony-chomp " Hello Beautiful World "))))
