@@ -23,15 +23,15 @@ elements joined by \."
           (setq path (concat path "/" item)))))
     path))
 
-(defmacro pony-deftest-excursion (name path body)
+(defmacro pony-deftest-excursion (name path docstring body)
   "Write an ERT test called NAME where we move to the file below *PONYTESTBASE*
 indicated by PATH before executing BODY"
-
-  `(ert-deftest ,name ()
-     (let ((thisfile (path.join *ponytestbase* ,path)))
-       (save-excursion
-         (find-file ,target)
-         ,body))))
+  (let ((target (path.join *ponytestbase* path)))
+    `(ert-deftest ,name ()
+      ,docstring
+      (save-excursion
+        (find-file ,target)
+        ,body))))
 
 ;;;
 ;;; Unit tests begin
@@ -41,7 +41,7 @@ indicated by PATH before executing BODY"
 ;;; pony-mode.el
 ;;;
 
-(ert-deftest pony-test-chomp ()
+(ert-deftest pony-chomp ()
   "Should kill leading and tailing whitespace"
   (should (equal "Hello Beautiful World" (pony-chomp " Hello Beautiful World "))))
 
@@ -58,33 +58,32 @@ indicated by PATH before executing BODY"
         (pattern "manag"))
     (should (equal t (pony-find-file-p path pattern)))))
 
-;;; pony-locate
-
-(ert-deftest pony-configfile-p ()
-  "Proj has a configfile"
-  (let ((settingsfile (path.join *ponytestbase* "data/ponytester/settings.py")))
-    (save-excursion
-      (find-file settingsfile)
-      (should (equal t (pony-configfile-p))))))
-
-(ert-deftest pony-rc ()
-  "Configfile should be nil"
-  (let ((settingsfile (path.join *ponytestbase* "data/ponytester/settings.py")))
-    (save-excursion
-      (find-file settingsfile)
-      (should (equal nil (pony-rc))))))
+(pony-deftest-excursion pony-locate "data/ponytester/settings.py"
+  "Let's find the settings file"
+  (should (equal (path.join *ponytestbase* "data/ponytester/.dir-locals.el")
+                 (pony-locate ".dir-locals.el"))))
 
 (ert-deftest pony-read-file ()
   "File contents to string."
   (should (equal "Hello Beautiful World!"
                  (pony-read-file (path.join *ponytestbase* "data/HELLO.txt")))))
 
-(ert-deftest pony-project-newstructure-p ()
+(ert-deftest pony-pop ()
+  "We should be able to pop to a buffer and also return it."
+  (save-excursion
+    (should (equal (pony-pop "foobuff") (get-buffer "foobuff")))))
+
+(pony-deftest-excursion pony-configfile-p  "data/ponytester/settings.py"
+ "Proj has a configfile"
+ (should (equal t (pony-configfile-p))))
+
+(pony-deftest-excursion pony-rc "data/ponytester/settings.py"
+  "Configfile should be nil"
+  (should (equal nil (pony-rc))))
+
+(pony-deftest-excursion pony-proj-newstructure-p "data/ponytester/settings.py"
   "Say no to oldstructure"
-    (let ((settingsfile (path.join *ponytestbase* "data/ponytester/settings.py")))
-    (save-excursion
-      (find-file settingsfile)
-      (should (equal nil (pony-project-newstructure-p))))))
+  (should (equal nil (pony-project-newstructure-p))))
 
 (ert-deftest pony-active-python ()
   "Get our active Python interpreter"
