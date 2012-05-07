@@ -1,5 +1,5 @@
-VERSION = %x[grep -P -o '(?<=version=)[0-9]+$' pony-mode.el].strip
-RELEASEDIR = "pony-mode/#{VERSION}"
+VERS = %x[grep -P -o '(?<=Version: )[0-9.a-d]+$' src/pony-mode.el].strip
+RELEASEDIR = "pony-mode/#{VERS}"
 BUILDDIR = "build/#{RELEASEDIR}"
 
 task :clean do
@@ -7,16 +7,19 @@ task :clean do
 end
 
 task :tag do
-  sh "git tag #{VERSION}"
+  sh "git tag #{VERS}"
 end
 
 task :package do
+  p VERS
+  p RELEASEDIR
+  p BUILDDIR
   sh "mkdir -p #{BUILDDIR}"
-  %w[pony-mode.el pony-mode-pkg.el snippets].each do |f|
-    sh "cp -rv #{f} #{BUILDDIR}"
+  %w[pony-mode.el pony-mode-pkg.el pony-tpl.el snippets].each do |f|
+    sh "cp -rv src/#{f} #{BUILDDIR}"
   end
   sh "cp README.rst #{BUILDDIR}/README"
-  sh "cd build; tar -cf pony-mode-#{VERSION}.tar $(RELEASEDIR)"
+  sh "cd build; tar -cf pony-mode-#{VERS}.tar #{RELEASEDIR}"
 end
 
 task :test do
