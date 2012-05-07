@@ -65,7 +65,7 @@ Default: /path/to/pony-mode/snippets
 
 
 Per - Project configuration
-----------------------------
+===========================
 
 Pony projects are defined in the .dir-locals.el file at the root of your current project.
 
