@@ -49,7 +49,7 @@ indicated by PATH before executing BODY"
   "Get the snippet dir correct by default."
   (should (equal pony-snippet-dir
                  (expand-file-name
-                  (path.join *ponytestbase* "../snippets")))))
+                  (path.join *ponytestbase* "../src/snippets")))))
 
 ;;;
 ;;; Functions begin
