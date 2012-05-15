@@ -75,6 +75,11 @@ projects using sqlite."
   :group 'pony
   :type 'string)
 
+(defcustom pony-enable-template-mode t
+  "Enable Django template mode?"
+  :group 'pony
+  :type 'bool)
+
 (defvar pony-filesystem-ceiling (if (eq 'windows-nt system-type)
                                     "c:/" "/"))
 
@@ -1131,7 +1136,8 @@ If the project has the django_extras package installed, then use the excellent
 (add-hook 'html-mode-hook
            (lambda ()
              (if (pony-project-root)
-                   (pony-tpl-mode))))
+                 (if pony-enable-template-mode
+                       (pony-tpl-mode)))))
 
 (add-hook 'dired-mode-hook
           (lambda ()
