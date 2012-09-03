@@ -75,9 +75,11 @@ projects using sqlite."
   :group 'pony
   :type 'string)
 
-
 (defcustom pony-tpl-indent-moves nil
   "Should TAB move (point) ? if set to t, TAB will move (point)."
+
+(defcustom pony-enable-template-mode t
+  "Enable Django template mode?"
   :group 'pony
   :type 'bool)
 
@@ -999,10 +1001,14 @@ If the project has the django_extras package installed, then use the excellent
 
 ;;;###autoload
 (defun pony-load-snippets()
-  "Load snippets if yasnippet installed"
+  "Load snippets if yasnippet installed and pony-snippet-dir is set"
   (interactive)
-  (if (fboundp 'yas/load-directory)
-      (yas/load-directory pony-snippet-dir)))
+  (when pony-snippet-dir
+    (cond
+     ((fboundp 'yas-load-directory)
+      (yas-load-directory pony-snippet-dir))
+     ((fboundp 'yas/load-directory)
+      (yas/load-directory pony-snippet-dir)))))
 
 ;; Keymaps
 
@@ -1137,7 +1143,8 @@ If the project has the django_extras package installed, then use the excellent
 (add-hook 'html-mode-hook
            (lambda ()
              (if (pony-project-root)
-                   (pony-tpl-mode))))
+                 (if pony-enable-template-mode
+                       (pony-tpl-mode)))))
 
 (add-hook 'dired-mode-hook
           (lambda ()
