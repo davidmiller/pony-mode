@@ -75,6 +75,12 @@ projects using sqlite."
   :group 'pony
   :type 'string)
 
+
+(defcustom pony-tpl-indent-moves nil
+  "Should TAB move (point) ? if set to t, TAB will move (point)."
+  :group 'pony
+  :type 'bool)
+
 (defvar pony-filesystem-ceiling (if (eq 'windows-nt system-type)
                                     "c:/" "/"))
 

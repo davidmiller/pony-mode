@@ -92,12 +92,15 @@
 (defun pony-indent ()
   "Indent current line as Jinja code"
   (interactive)
-  (save-excursion
-    (beginning-of-line)
-    (let ((indent (pony-calculate-indent)))
-      (if (< indent 0)
-          (setq indent 0))
-      (indent-line-to indent))))
+  (flet ((indenter ()
+                   (beginning-of-line)
+                   (let ((indent (pony-calculate-indent)))
+                     (if (< indent 0)
+                         (setq indent 0))
+                     (indent-line-to indent))))
+    (if pony-tpl-indent-moves
+        (indenter)
+      (save-excursion (indenter)))))
 
 (defvar pony-tpl-mode-hook nil)
 
