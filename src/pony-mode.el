@@ -75,9 +75,6 @@ projects using sqlite."
   :group 'pony
   :type 'string)
 
-(defcustom pony-tpl-indent-moves nil
-  "Should TAB move (point) ? if set to t, TAB will move (point)."
-
 (defcustom pony-enable-template-mode t
   "Enable Django template mode?"
   :group 'pony
