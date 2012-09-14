@@ -21,6 +21,11 @@ Now, this will take you to the server buffer.
 
 From the server buffer, running pony-runserver will restart the server.
 
+Pony Test
+---------
+
+Now clears the test buffer on each invocation.
+
 0.2
 ====
 

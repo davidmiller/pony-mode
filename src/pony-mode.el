@@ -77,6 +77,8 @@ projects using sqlite."
 
 (defcustom pony-tpl-indent-moves nil
   "Should TAB move (point) ? if set to t, TAB will move (point)."
+  :group 'pony
+  :type 'bool)
 
 (defcustom pony-enable-template-mode t
   "Enable Django template mode?"
@@ -954,6 +956,11 @@ If the project has the django_extras package installed, then use the excellent
           (default-command
             (concat app (and app class ".") class (and class func ".") func)))
      (list (read-string "Test: " default-command))))
+  (let ((buffer (get-buffer "*ponytests*")))
+    (when buffer
+      (save-excursion
+        (pop-to-buffer buffer)
+        (erase-buffer))))
   (pony-manage-pop "ponytests" (pony-manage-cmd)
                    (list "test" (if pony-test-failfast "--failfast" "") command))
   (pony-test-mode))
