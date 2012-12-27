@@ -202,10 +202,8 @@ before attempting the manage-pop"
 
 (defun pony-dir-excursion(dir &rest rest)
   "pony-comint-pop where we need to change into `dir` first"
-  (let ((curdir default-directory))
-    (cd dir)
-    (apply 'pony-comint-pop rest)
-    (cd curdir)))
+  (let ((default-directory dir))
+    (apply 'pony-comint-pop rest)))
 
 (defun pony-mini-file(prompt &optional startdir)
   "Read a file from the minibuffer."
@@ -474,16 +472,10 @@ locally with .dir-locals.el."
   "Get the pony settings.py value for `setting`"
   (let ((settings (pony-get-settings-module))
         (python-c (concat (pony-active-python)
-                          " -c \"import settings; print settings.%s\""))
-        (working-dir default-directory)
-        (set-val nil))
+                          " -c \"import settings; print settings.%s\"")))
     (if settings
-        (progn
-          (cd (file-name-directory settings))
-          (setq set-val (pony-chomp (shell-command-to-string
-                                (format python-c setting))))
-          (cd working-dir)
-          set-val))))
+        (let ((default-directory (file-name-directory settings)))
+          (pony-chomp (shell-command-to-string (format python-c setting)))))))
 
 ;;;###autoload
 (defun pony-setting()
@@ -683,10 +675,9 @@ This feature is somewhat experimental and known to break in some cases.
 
 Bug reports welcome. Patches even more so :)"
   (interactive "sUrl: ")
-  (let* ((workdir default-directory)
+  (let* ((default-directory (pony-project-root))
          (program
           (progn
-            (cd (pony-project-root))
             (format (concat "python -c '"
                             (mapconcat 'identity
                                        '("import os"
@@ -702,7 +693,6 @@ Bug reports welcome. Patches even more so :)"
          (output (shell-command-to-string program))
          (fun (first (split-string output)))
          (file (car (last (split-string output)))))
-    (cd workdir)
     (find-file file)
     ;; TODO Search for file. This currently doesn't work because of decorators
     ))
@@ -804,12 +794,10 @@ command is available, use that, otherwise fall back to manage.py runserver."
   (if (pony-command-exists-p "runserver_plus")
       (setq command "runserver_plus")
     (setq command "runserver"))
-  (progn
-    (cd (pony-project-root))
+  (let ((defualt-directory (pony-project-root)))
     (pony-manage-pop "ponyserver" (pony-manage-cmd)
                      (list command
-                           (concat pony-server-host ":"  pony-server-port)))
-    (cd working-dir)))
+                           (concat pony-server-host ":"  pony-server-port)))))
 
 ;;;###autoload
 (defun pony-stopserver()
@@ -933,14 +921,12 @@ If the project has the django_extras package installed, then use the excellent
 (defun pony-tags()
   "Generate new tags table"
   (interactive)
-  (let ((working-dir default-directory)
-        (tags-dir (read-directory-name "TAGS location: "
-                                       (pony-project-root))))
-    (cd (expand-file-name tags-dir))
+  (let* ((tags-dir (read-directory-name "TAGS location: "
+                                       (pony-project-root)))
+         (default-directory tags-dir))
     (message "TAGging... this could take some time")
     (shell-command pony-etags-command )
     (visit-tags-table (concat tags-dir "TAGS"))
-    (cd working-dir)
     (message "TAGS table regenerated")))
 
 ;; Testing
