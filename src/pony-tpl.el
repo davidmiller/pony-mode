@@ -75,19 +75,21 @@
   (if (bobp)  ; Check begining of buffer
       0
     (let ((indent-width sgml-basic-offset) (default (sgml-indent-line-num)))
-      (if (looking-at "^[ \t]*{%-? *e\\(nd\\|lse\\|lif\\)") ; Check close tag
-          (save-excursion
-            (forward-line -1)
-            (if
-                (and
-                 (looking-at (concat "^[ \t]*{%-? *" pony-indenting-tags-regexp "\\>"))
-                 (not (looking-at (concat "^[ \t]*{%-? *.*?{% *end" pony-indenting-tags-regexp "\\>"))))
-                (current-indentation)
-              (- (current-indentation) indent-width)))
-        (if (looking-at "^[ \t]*</") ; Assume sgml end block trust sgml
-            default
-          (save-excursion
-            (pony-calculate-indent-backward default)))))))
+      (save-excursion
+        (beginning-of-line)
+        (if (looking-at "^[ \t]*{%-? *e\\(nd\\|lse\\|lif\\)") ; Check close tag
+            (save-excursion
+              (forward-line -1)
+              (if
+                  (and
+                   (looking-at (concat "^[ \t]*{%-? *" pony-indenting-tags-regexp "\\>"))
+                   (not (looking-at (concat "^[ \t]*{%-? *.*?{% *end" pony-indenting-tags-regexp "\\>"))))
+                  (current-indentation)
+                (- (current-indentation) indent-width)))
+          (if (looking-at "^[ \t]*</") ; Assume sgml end block trust sgml
+              default
+            (save-excursion
+              (pony-calculate-indent-backward default))))))))
 
 (defun pony-indent ()
   "Indent current line as Jinja code"
