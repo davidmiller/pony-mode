@@ -189,8 +189,12 @@ functions."
                        (concat (pony-project-package) "."
                                (pony-get-settings-file-basename))
                      (pony-get-settings-file-basename)))
+         (pythonpath (if (pony-project-newstructure-p)
+                         (pony-get-pythonpath)
+                       nil))
          (python-args
-          (cons command (append args (list (concat "--settings=" settings))))))
+          (cons command (append args (list (concat "--settings=" settings)
+                                           (concat "--pythonpath=" pythonpath))))))
     (pony-comint-pop name (pony-active-python) python-args)))
 
 (defun pony-manage-popif (name command args)
@@ -244,7 +248,7 @@ more conservative local-var manipulation."
 ;; which should define a pony-project variable
 ;;
 
-(defstruct pony-project python settings)
+(defstruct pony-project python settings pythonpath)
 
 (defun pony-configfile-p ()
   "Establish whether this project has a .ponyrc file in the root"
@@ -446,6 +450,16 @@ locally with .dir-locals.el."
             settings
           pony-settings-module))
     pony-settings-module))
+
+(defun pony-get-pythonpath()
+  "Return the customized pythonpath to be passed to manage.py.
+This is configured in .dir-locals.el."
+  (if (pony-configfile-p)
+      (let* ((rc (pony-rc)))
+        (if rc
+            (pony-project-pythonpath rc)
+          nil))
+    nil))
 
 (defun pony-get-settings-module()
   "Return the absolute path to the pony settings file"
