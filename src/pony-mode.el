@@ -92,6 +92,7 @@ projects using sqlite."
 (require 'sgml-mode)
 (require 'sql)
 (require 'thingatpt)
+(require 'which-func)
 
 ;; Utility
 
@@ -944,7 +945,7 @@ If the project has the django_extras package installed, then use the excellent
 (defun pony-test (command)
   "Run the test(s) given by `command'."
   (interactive
-   (let* ((defuns (subseq (split-string (python-current-defun) "\\.") 0 2))
+   (let* ((defuns (subseq (split-string (which-function) "\\.") 0 2))
           (class (first defuns))
           (func (let ((f (second defuns))) (and f (string-match "^test" f) f)))
           (app (pony-get-app))
