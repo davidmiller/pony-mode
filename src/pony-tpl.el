@@ -56,7 +56,7 @@
 
 (defun pony-calculate-indent-backward (default)
   "Return indent column based on previous lines"
-  (let ((indent-width sgml-basic-offset) (default (sgml-indent-line-num)))
+  (let ((indent-width sgml-basic-offset))
     (forward-line -1)
     (if (looking-at "^[ \t]*{%-? *end") ; Don't indent after end
         (current-indentation)
@@ -72,21 +72,22 @@
 
 (defun pony-calculate-indent ()
   "Return indent column"
-  (if (bobp)  ; Check begining of buffer
-      0
-    (let ((indent-width sgml-basic-offset) (default (sgml-indent-line-num)))
-      (if (looking-at "^[ \t]*{%-? *e\\(nd\\|lse\\|lif\\)") ; Check close tag
-          (save-excursion
-            (forward-line -1)
-            (if
-                (and
-                 (looking-at (concat "^[ \t]*{%-? *" pony-indenting-tags-regexp "\\>"))
-                 (not (looking-at (concat "^[ \t]*{%-? *.*?{% *end" pony-indenting-tags-regexp "\\>"))))
-                (current-indentation)
-              (- (current-indentation) indent-width)))
-        (if (looking-at "^[ \t]*</") ; Assume sgml end block trust sgml
-            default
-          (save-excursion
+  (save-excursion
+    (beginning-of-line)
+    (if (bobp)  ; Check begining of buffer
+        0
+      (let ((indent-width sgml-basic-offset) (default (sgml-indent-line-num)))
+        (if (looking-at "^[ \t]*{%-? *e\\(nd\\|lse\\|lif\\)") ; Check close tag
+            (progn
+              (forward-line -1)
+              (if
+                  (and
+                   (looking-at (concat "^[ \t]*{%-? *" pony-indenting-tags-regexp "\\>"))
+                   (not (looking-at (concat "^[ \t]*{%-? *.*?{% *end" pony-indenting-tags-regexp "\\>"))))
+                  (current-indentation)
+                (- (current-indentation) indent-width)))
+          (if (looking-at "^[ \t]*</") ; Assume sgml end block trust sgml
+              default
             (pony-calculate-indent-backward default)))))))
 
 (defun pony-indent ()
