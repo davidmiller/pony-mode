@@ -69,7 +69,7 @@ projects using sqlite."
   :type 'string)
 
 (defcustom pony-snippet-dir (expand-file-name
-                             (concat (file-name-directory load-file-name)
+                             (concat (file-name-directory (or load-file-name default-directory))
                                      "./snippets"))
   "Directory in which to locate Yasnippet snippets for Pony Mode"
   :group 'pony
@@ -924,7 +924,6 @@ If the project has the django_extras package installed, then use the excellent
   (let ((app (read-from-minibuffer "Initial migration: " (pony-get-app))))
     (pony-manage-popif "ponymigrations" "schemamigration" (list app "--initial"))))
 
-
 ;; TAGS
 
 ;;;###autoload
@@ -1001,7 +1000,6 @@ If the project has the django_extras package installed, then use the excellent
 
 ;; Snippets
 
-
 ;;;###autoload
 (defun pony-load-snippets()
   "Load snippets if yasnippet installed and pony-snippet-dir is set"
@@ -1057,47 +1055,171 @@ If the project has the django_extras package installed, then use the excellent
      (easy-menu-define
        pony-menu pony-minor-mode-map "Pony Mode Menu"
        '("Pony"
-         ;; Interactive
-         ["Launch Pony shell" pony-shell]
-         ["Launch Pony db shell" pony-db-shell]
-         "-"
-         ;; Server
-         ["Run dev server for project" pony-runserver]
-         ["Stop dev server for project" pony-stopserver]
-         ["Restart the dev server" pony-restart-server]
-         ["Launch project in browser" pony-browser]
+         ;; "Interactive"
+          ["Launch Pony shell" pony-shell
+           :help " `pony-shell'
+
+Open a Python shell with the current pony project's context loaded\.
+
+If the project has the django_extras package installed, then use the excellent
+`shell_plus' command\. Otherwise, fall back to manage\.py shell . "]
+          
+          ["Launch Pony db shell" pony-db-shell
+           :help " `pony-db-shell'
+
+Run interpreter for this project's default database as an inferior process\.. "]
+          
+          "-"
+          ;; Server
+          
+          ["Pony runserver" pony-runserver
+           :help " `pony-runserver'
+
+Start the Django development server\.
+
+If the server is currently running, just switch to the buffer\.
+
+If you are currently in the \*ponyserver\* buffer, restart the server. "]
+          
+          ["Pony stopserver" pony-stopserver
+           :help " `pony-stopserver'
+
+Stop the dev server. "]
+          
+          ["Pony restart server" pony-restart-server
+           :help " `pony-restart-server'
+
+Restart the pony Django dev server\.
+Django extras does this better with the Werkzeug server, but sometimes
+you can't have nice things\.. "]
+          
+          ["Pony browser" pony-browser
+           :help " `pony-browser'
+
+Open a tab at the development server. "]
+          
+          
          "-"
          ("Models"
-          ["Syncdb" pony-syncdb]
-          ["South convert" pony-south-convert]
-          ["South Schemamigration --auto" pony-south-schemamigration]
-          ["South migrate" pony-south-migrate])
-         ;; Management
-         "-"
-         ["Run a management command" pony-manage]
-         ["Dumpdata to json" pony-dumpdata]
-         ["Flush App" pony-flush]
-         ["Startapp" pony-startapp]
-         ;; Tests
-         "-"
-         ["Run tests" pony-test]
-         ;; Goto
-         "-"
-         ["Goto the view file for a given url (Beta)" pony-resolve]
-         ["Goto settings file for project" pony-goto-settings]
-         ["Goto template for view or at point" pony-goto-template]
-         "-"
-         ["Check setting value for project" pony-setting]
+          
+          ["Pony syncdb" pony-syncdb
+           :help " `pony-syncdb'
+
+Run Syncdb on the current project. "]
+          
+          ["Pony south convert" pony-south-convert
+           :help " `pony-south-convert'
+
+Convert an existing app to south. "]
+          
+          ["Pony south schemamigration" pony-south-schemamigration
+           :help " `pony-south-schemamigration'
+
+Create migration for modification. "]
+          
+          ["Pony south migrate" pony-south-migrate
+           :help " `pony-south-migrate'
+
+Migrate app. "]
+          
+          ;; Management
+          "-"
+          
+          ["Pony manage" pony-manage
+           :help " `pony-manage'
+
+Interactively call the pony manage command\.
+
+Second string that is read from minibuffer may be an actual
+list of space separated arguments for the previously chosen management
+command\. If some of the arguments contain space itself they should be quoted
+with double quotes like "\.\.\."\.. "]
+          
+          ["Pony dumpdata" pony-dumpdata
+           :help " `pony-dumpdata'
+
+Dumpdata to json. "]
+          
+          ["Pony flush" pony-flush
+           :help " `pony-flush'
+
+Flush the app. "]
+          
+          ["Pony startapp" pony-startapp
+           :help " `pony-startapp'
+
+Run the pony startapp command. "]
+          
+          ;; Tests
+          "-"
+          
+          ["Pony test" pony-test
+           :help " `pony-test'
+
+Run the test(s) given by `command'\.. "]
+          
+          ;; Goto
+          "-"
+          
+          ["Pony resolve" pony-resolve
+           :help " `pony-resolve'
+
+Jump to the view file that URL resolves to
+
+This feature is somewhat experimental and known to break in some cases\.
+
+Bug reports welcome\. Patches even more so :). "]
+          
+          ["Pony goto settings" pony-goto-settings
+           :help " `pony-goto-settings'
+
+. "]
+          
+          ["Pony goto template" pony-goto-template
+           :help " `pony-goto-template'
+
+Jump-to-template-at-point. "]
+          
+          "-"
+          
+          ["Pony setting" pony-setting
+           :help " `pony-setting'
+
+Interactively display a setting value in the minibuffer. "]
+          )
          "-"
          ("Environment"
-          ["Generate TAGS file" pony-tags]
+          
+          ["Pony tags" pony-tags
+           :help " `pony-tags'
+
+Generate new tags table. "]
+          
           "-"
-          ["Run buildout on project" pony-buildout]
-          ["Run a script from buildout's bin/" pony-buildout-bin]
+          
+          ["Pony buildout" pony-buildout
+           :help " `pony-buildout'
+
+Run buildout again on the current project. "]
+          
+          ["Pony buildout bin" pony-buildout-bin
+           :help " `pony-buildout-bin'
+
+Run a script from the buildout bin/ dir. "]
+          
           "-"
-          ["Run fabric function" pony-fabric]
-          ["Run fabric 'deploy' function" pony-fabric-deploy])
-          )))
+          
+          ["Pony fabric" pony-fabric
+           :help " `pony-fabric'
+
+Run a fabric command. "]
+          
+          ["Pony fabric deploy" pony-fabric-deploy
+           :help " `pony-fabric-deploy'
+
+Deploy project with fab deploy. "]
+          
+          ))))
 
 ;; Pony-minor-mode
 (defvar pony-minor-mode-hook nil)
@@ -1122,7 +1244,7 @@ If the project has the django_extras package installed, then use the excellent
   (pony-minor-mode))
 
 ;;; ###pony-tmpl
-(load-file (concat (file-name-directory load-file-name) "/pony-tpl.el"))
+(load-file (concat (file-name-directory (or load-file-name default-directory)) "/pony-tpl.el"))
 
 (define-minor-mode pony-test-minor-mode
   "Pony Testin'"
