@@ -310,6 +310,13 @@ variables; if not found, evaluate .ponyrc instead."
     (when (string-match re path)
       (match-string 1 path))))
 
+(defun pony-get-module ()
+  (let* ((root (pony-project-root))
+         (path (file-name-sans-extension (or buffer-file-name (expand-file-name default-directory)))))
+    (when (string-match (pony-project-root) path)
+      (let ((path-to-class (substring path (match-end 0))))
+        (mapconcat 'identity (split-string path-to-class "/") ".")))))
+
 ;; Environment
 
 (defun pony-project-root()
@@ -947,9 +954,9 @@ If the project has the django_extras package installed, then use the excellent
    (let* ((defuns (subseq (split-string (which-function) "\\.") 0 2))
           (class (first defuns))
           (func (let ((f (second defuns))) (and f (string-match "^test" f) f)))
-          (app (pony-get-app))
+          (module (pony-get-module))
           (default-command
-            (concat app (and app class ".") class (and class func ".") func)))
+            (concat module (and module class ".") class (and class func ".") func)))
      (list (read-string "Test: " default-command))))
   (let ((buffer (get-buffer "*ponytests*")))
     (when buffer
