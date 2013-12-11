@@ -33,7 +33,7 @@
 
 (defvar pony-indenting-tags
   '("autoescape" "block" "blocktrans" "comment" "elif" "else" "empty"
-    "filter" "for" "if" "ifchanged" "ifequal" "ifnotequal" "spaceless" "with")
+    "filter" "for" "if" "ifchanged" "ifequal" "ifnotequal" "spaceless" "verbatim" "with")
   "List of template tags that imply indentation.")
 
 (defvar pony-indenting-tags-regexp
