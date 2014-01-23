@@ -77,7 +77,7 @@
     (if (bobp)  ; Check begining of buffer
         0
       (let ((indent-width sgml-basic-offset) (default (sgml-indent-line-num)))
-        (if (looking-at "^[ \t]*{%-? *e\\(nd\\|lse\\|lif\\)") ; Check close tag
+        (if (looking-at "^[ \t]*{%-? *e\\(nd\\|lse\\|lif\\|mpty\\)") ; Check close tag
             (progn
               (forward-line -1)
               (if
