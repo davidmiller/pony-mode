@@ -39,9 +39,10 @@ Installation
 ------------
 
 1. clone this repo somewhere $ git clone https://github.com/davidmiller/pony-mode
-2. Byte-compile the file::
+2. (optional) Byte-compile the files::
 
-    M-x byte-compile-file
+    M-x byte-compile-file (path/to/pony-mode/src/*.el)
+    
 3. Add the path to your load-path::
 
     (add-to-list 'load-path "path/to/pony-mode/src")
