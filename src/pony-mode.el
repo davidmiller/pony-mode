@@ -647,9 +647,13 @@ to its lisp equivalent"
    (replace-regexp-in-string "[][()'\"]" "" python-string) ", ?"))
 
 (defun pony-find-file-in-path(file path)
-  "Find FILE if it exists in one the directories in PATH"
+  "Find FILE if it exists in one the directories in PATH.
+
+If path doesn't exist in default-directory try to search it in
+parent directories.
+"
   (dolist (dir path)
-    (let ((file-absolute (expand-file-name file dir)))
+    (let ((file-absolute (expand-file-name file (pony-locate dir))))
       (if (file-exists-p file-absolute)
           (return (find-file file-absolute))))))
 
