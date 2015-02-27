@@ -1,6 +1,6 @@
 ;;; pony-mode.el --- minor mode for working with Django projects
 
-;; Copyright (C) 2011 David Miller <david@deadpansincerity.com>
+;; Copyright (C) 2015 David Miller <david@deadpansincerity.com>
 
 ;; Author: David Miller <david@deadpansincerity.com>
 ;; Maintainer: David Miller <david@deadpansincerity.com>
