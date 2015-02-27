@@ -54,7 +54,24 @@ Installation
 Bugs
 ----
 
-Pony-mode is under active development, so please report any bugs on the github issue tracker
+Please report any bugs on the github issue tracker
+
+Configuration 
+-------------
+
+Configuration options per project are available via .dir-locals.el
+
+
+The file should look something like this::
+
+    ;; Pony mode config for the megacorp project
+    ((nil . ;; This applies these settings regardless of major mode
+
+      ((pony-settings (make-pony-project
+                       :python "/home/david/virtualenvs/megacorp/production/bin/python"
+                       :pythonpath "/home/david/megacorp/libs/projectzero"
+                       :settings "local_settings_file")
+    ))))
 
 Help
 ----

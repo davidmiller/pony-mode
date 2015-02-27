@@ -1,24 +1,28 @@
 -*- mode: rst -*-
-0.4
-===
-Fixes numerous bugs that had accumulated by inactive maintenance. 
+=====
+ 0.4
+=====
+Fixes numerous bugs that had accumulated by inactive maintenance.
+
+Updates the project configuration format.
 
 
-0.3
-===
+=====
+ 0.3
+=====
 
 Project structure
------------------
+=================
 
 The project now has a new directory structure, which places the Elisp files that make up Pony Mode in ./src
 
 Alternative settings files
---------------------------
+==========================
 
 Pony-mode now supports setting an alternative settings file to use, either globally or on a per project basis through the pony-project call in .dir-locals.el
 
 Restarting The Development Server
----------------------------------
+=================================
 
 Previously, running  pony-runserver when the server was running wouldmessage "already running".
 
@@ -27,15 +31,16 @@ Now, this will take you to the server buffer.
 From the server buffer, running pony-runserver will restart the server.
 
 Pony Test
----------
+=========
 
 Now clears the test buffer on each invocation.
 
-0.2
-====
+=====
+ 0.2
+=====
 
 Virtualenv Support
-------------------
+==================
 
 Pony-mode now has `native' support for Virtualenv...
 This means that when launching commands or sub-processes, pony-mode will attempt to determine whether your project is in a Virtualenv, and if so, will use the appropriate interpreter/site-packages.
@@ -69,7 +74,7 @@ envious/
 If your directories are structured differently and things don't work, file bugs!
 
 New defcustom `pony-sqlite-program'
------------------------------------
+===================================
 
 This variable is the name of the program used by `pony-db-shell' when your project's database is SQLite3. Defaults to "sqlite3".
 Either:
@@ -77,7 +82,7 @@ Either:
     (setq pony-db-shell "foobar")
 
 Miscelaneous
------------
+============
 
 * M-x pony-fabric will fail elegantly if there is no fabfile for the project
 * M-x pony-temp-server bug fixed for lightweight alternative server host:port instances
