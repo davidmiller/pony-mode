@@ -258,17 +258,10 @@ more conservative local-var manipulation."
 
 Evaluate the pony-settings variable from the directory-local
 variables; if not found, evaluate .ponyrc instead."
-  (eval (cdr (or (assq 'pony-settings dir-local-variables-alist)
-                 (and (equal emacs-major-version 23)
-                      (equal 'dired-mode major-mode)
-                      (dolist (pair (rest (first (pony-read-file (pony-locate ".dir-locals.el")))) res)
-                        (if ( equal 'pony-settings (first pair))
-                            (setq res (cons nil
-                                       (apply 'make-pony-project (rest (rest pair)))))
-                          nil)))
-                 (let ((ponyrc (concat (pony-project-root) ".ponyrc")))
-                   (and (file-exists-p ponyrc)
-                        (cons nil (pony-read-file ponyrc))))))))
+  (dolist (pair (rest (first (pony-read-file (pony-locate ".dir-locals.el")))) res)
+    (if (equal 'pony-settings (first pair))
+        (setq res (eval (first (rest pair))))
+      nil)))
 
 (when (featurep 'files-x)
 ;;;###autoload
@@ -877,7 +870,7 @@ If the project has the django_extras package installed, then use the excellent
   (interactive)
   (let ((command (if (pony-command-exists-p "shell_plus")
                      "shell_plus" "shell")))
-       (pony-manage-pop "ponysh" (pony-manage-cmd) (list command))))
+    (pony-manage-pop "ponysh" (pony-manage-cmd) (list command))))
 
 ;; Startapp
 
