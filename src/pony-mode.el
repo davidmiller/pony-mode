@@ -1067,15 +1067,15 @@ Open a Python shell with the current pony project's context loaded\.
 
 If the project has the django_extras package installed, then use the excellent
 `shell_plus' command\. Otherwise, fall back to manage\.py shell . "]
-          
+
           ["Launch Pony db shell" pony-db-shell
            :help " `pony-db-shell'
 
 Run interpreter for this project's default database as an inferior process\.. "]
-          
+
           "-"
           ;; Server
-          
+
           ["Pony runserver" pony-runserver
            :help " `pony-runserver'
 
@@ -1084,51 +1084,51 @@ Start the Django development server\.
 If the server is currently running, just switch to the buffer\.
 
 If you are currently in the \*ponyserver\* buffer, restart the server. "]
-          
+
           ["Pony stopserver" pony-stopserver
            :help " `pony-stopserver'
 
 Stop the dev server. "]
-          
+
           ["Pony restart server" pony-restart-server
            :help " `pony-restart-server'
 
 Restart the pony Django dev server\.
 Django extras does this better with the Werkzeug server, but sometimes
 you can't have nice things\.. "]
-          
+
           ["Pony browser" pony-browser
            :help " `pony-browser'
 
 Open a tab at the development server. "]
-          
-          
+
+
          "-"
          ("Models"
-          
+
           ["Pony syncdb" pony-syncdb
            :help " `pony-syncdb'
 
 Run Syncdb on the current project. "]
-          
+
           ["Pony south convert" pony-south-convert
            :help " `pony-south-convert'
 
 Convert an existing app to south. "]
-          
+
           ["Pony south schemamigration" pony-south-schemamigration
            :help " `pony-south-schemamigration'
 
 Create migration for modification. "]
-          
+
           ["Pony south migrate" pony-south-migrate
            :help " `pony-south-migrate'
 
 Migrate app. "]
-          
+
           ;; Management
           "-"
-          
+
           ["Pony manage" pony-manage
            :help " `pony-manage'
 
@@ -1138,33 +1138,33 @@ Second string that is read from minibuffer may be an actual
 list of space separated arguments for the previously chosen management
 command\. If some of the arguments contain space itself they should be quoted
 with double quotes like "\.\.\."\.. "]
-          
+
           ["Pony dumpdata" pony-dumpdata
            :help " `pony-dumpdata'
 
 Dumpdata to json. "]
-          
+
           ["Pony flush" pony-flush
            :help " `pony-flush'
 
 Flush the app. "]
-          
+
           ["Pony startapp" pony-startapp
            :help " `pony-startapp'
 
 Run the pony startapp command. "]
-          
+
           ;; Tests
           "-"
-          
+
           ["Pony test" pony-test
            :help " `pony-test'
 
 Run the test(s) given by `command'\.. "]
-          
+
           ;; Goto
           "-"
-          
+
           ["Pony resolve" pony-resolve
            :help " `pony-resolve'
 
@@ -1173,19 +1173,19 @@ Jump to the view file that URL resolves to
 This feature is somewhat experimental and known to break in some cases\.
 
 Bug reports welcome\. Patches even more so :). "]
-          
+
           ["Pony goto settings" pony-goto-settings
            :help " `pony-goto-settings'
 
 . "]
-          
+
           ["Pony goto template" pony-goto-template
            :help " `pony-goto-template'
 
 Jump-to-template-at-point. "]
-          
+
           "-"
-          
+
           ["Pony setting" pony-setting
            :help " `pony-setting'
 
@@ -1193,36 +1193,36 @@ Interactively display a setting value in the minibuffer. "]
           )
          "-"
          ("Environment"
-          
+
           ["Pony tags" pony-tags
            :help " `pony-tags'
 
 Generate new tags table. "]
-          
+
           "-"
-          
+
           ["Pony buildout" pony-buildout
            :help " `pony-buildout'
 
 Run buildout again on the current project. "]
-          
+
           ["Pony buildout bin" pony-buildout-bin
            :help " `pony-buildout-bin'
 
 Run a script from the buildout bin/ dir. "]
-          
+
           "-"
-          
+
           ["Pony fabric" pony-fabric
            :help " `pony-fabric'
 
 Run a fabric command. "]
-          
+
           ["Pony fabric deploy" pony-fabric-deploy
            :help " `pony-fabric-deploy'
 
 Deploy project with fab deploy. "]
-          
+
           ))))
 
 ;; Pony-minor-mode
