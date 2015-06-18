@@ -409,13 +409,11 @@ Be aware of .ponyrc configfiles, 'clean', buildout, and
           venv-out
         (executable-find "python")))))
 
-(defun pony-command-exists-p(cmd)
-  "Is cmd installed in this app"
-  (if (string-match cmd
-                    (shell-command-to-string (concat (pony-active-python)
-                                                     " " (pony-manage-cmd))))
-      t
-    nil))
+(defun pony-command-exists-p (cmd)
+  "Is `cmd' installed in this app"
+  (string-match cmd
+                (shell-command-to-string (concat (pony-active-python)
+                                                  " " (pony-manage-cmd)))))
 
 ;;;###autoload
 (defun pony-command-if-exists(proc-name command args)
