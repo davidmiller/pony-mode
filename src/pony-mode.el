@@ -175,8 +175,8 @@ It creates a comint interaction buffer, called `name', running
   (pony-pop (concat "*" name "*") :dirlocals t))
 
 (defun pony-manage-pop (name command args)
-  "Run manage.py commands in a commint buffer. Intended as a
-wrapper around `pony-commint-pop', this function bypasses the
+  "Run manage.py commands in a comint buffer. Intended as a
+wrapper around `pony-comint-pop', this function bypasses the
 need to construct manage.py calling sequences in command
 functions."
   ;; !!! This API is utterly stupid. call (pony-manage-cmd)
@@ -882,7 +882,7 @@ If the project has the django_extras package installed, then use the excellent
     (pony-command-if-exists "ponymigrations"
                            "startapp" app)))
 
-;; Syncdb / South
+;; Syncdb / Migrations
 
 ;;;###autoload
 (defun pony-syncdb()
@@ -891,42 +891,29 @@ If the project has the django_extras package installed, then use the excellent
   (pony-manage-pop "ponymigrations" (pony-manage-cmd) (list "syncdb")))
 
 ;;;###autoload
-(defun pony-south-convert()
-  "Convert an existing app to south"
-  (interactive)
-  (let ((app (read-from-minibuffer "Convert: " (pony-get-app))))
-    (pony-manage-popif "ponymigrations" "convert_to_south" (list app))))
-
-;;;###autoload
-(defun pony-south-schemamigration()
-  "Create migration for modification"
-  (interactive)
-  (let ((app (read-from-minibuffer "Schema Migration: " (pony-get-app))))
-    (pony-manage-popif "ponymigrations" "schemamigration"
-                       (list app "--auto"))))
-
-;;;###autoload
-(defun pony-south-migrate()
+(defun pony-migrate()
   "Migrate app"
   (interactive)
   (let ((app (read-from-minibuffer "Migrate: " (pony-get-app))))
     (pony-manage-popif "ponymigrations" "migrate" (list app))))
 
-;; (defun pony-south-fake ()
-;;   "Fake a migration for a model"
-;;   (interactive)
-;;   (let ((app (read-from-minibuffer "Convert: " (pony-get-app)))
-;;         (migration (read-from-minibuffer "migration: "
-;;                                          (pony-south-get-migrations))))
-;;     (pony-command-if-exists "ponymigrations"
-;;                               "migrate" (list app migrations))))
-
-;;;###autoload
-(defun pony-south-initial ()
-  "Run the initial south migration for an app"
+(defun pony-migrate-fake()
+  "Fake a migration"
   (interactive)
-  (let ((app (read-from-minibuffer "Initial migration: " (pony-get-app))))
-    (pony-manage-popif "ponymigrations" "schemamigration" (list app "--initial"))))
+  (let ((app (read-from-minibuffer "Migrate (Fake): " (pony-get-app))))
+    (pony-manage-popif "ponymigrations" "migrate" (list app "--fake"))))
+
+(defun pony-makemigrations()
+  "Creates new migration(s) for apps."
+  (interactive)
+  (let ((app (read-from-minibuffer "Make migrations: " (pony-get-app))))
+    (pony-manage-popif "ponymigrations" "makemigrations" (list app))))
+
+(defun pony-makemigrations-dry-run()
+  "Fake the creation of migration(s) for apps."
+  (interactive)
+  (let ((app (read-from-minibuffer "Make migrations (Fake): " (pony-get-app))))
+    (pony-manage-popif "ponymigrations" "makemigrations" (list app "--dry-run"))))
 
 ;; TAGS
 
@@ -1111,20 +1098,25 @@ Open a tab at the development server. "]
 
 Run Syncdb on the current project. "]
 
-          ["Pony south convert" pony-south-convert
-           :help " `pony-south-convert'
-
-Convert an existing app to south. "]
-
-          ["Pony south schemamigration" pony-south-schemamigration
-           :help " `pony-south-schemamigration'
-
-Create migration for modification. "]
-
-          ["Pony south migrate" pony-south-migrate
-           :help " `pony-south-migrate'
+          ["Pony migrate" pony-migrate
+           :help " `pony-migrate'
 
 Migrate app. "]
+
+	  ["Pony migrate (fake)" pony-migrate-fake
+           :help " `pony-migrate-fake'
+
+Fake migrate app. "]
+
+          ["Pony makemigrations" pony-makemigrations
+           :help " `pony-makemigrations'
+
+Make app migration(s). "]
+
+	  ["Pony makemigrations (dry-run)" pony-makemigrations-dry-run
+           :help " `pony-makemigrations-dry-run'
+
+Fake make app migration(s). "]
 
           ;; Management
           "-"

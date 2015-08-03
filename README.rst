@@ -14,7 +14,7 @@ Features (Non-exhaustive):
 * Run tests for current app in buffer [C-c C-p t]
 * Run Syncdb on current project
 * Management commands for current project in interactive buffer
-* South integration - run south convert, schemamigration, migrate
+* Migrations, run migrate, makemigrations
 * Run django shell in buffer [C-c C-p s]
   * Checks for shell_plus
   * If not defaults to shell
