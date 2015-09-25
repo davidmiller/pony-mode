@@ -928,6 +928,29 @@ If the project has the django_extras package installed, then use the excellent
   (let ((app (read-from-minibuffer "Initial migration: " (pony-get-app))))
     (pony-manage-popif "ponymigrations" "schemamigration" (list app "--initial"))))
 
+;; CELERY
+
+;;;###autoload
+(defun pony-celeryd-start ()
+  "Run celeryd"
+  (interactive)
+  (let* ((command "celeryd"))
+    (pony-manage-pop "ponyceleryd" (pony-manage-cmd) (cons command (list)))))
+
+;;;###autoload
+(defun pony-celeryd-stop()
+  "Stop celeryd"
+  (interactive)
+  (let ((proc (get-buffer-process "*ponyceleryd*")))
+    (when proc (kill-process proc t))))
+
+;;;###autoload
+(defun pony-celeryd-restart ()
+  "Restart celeryd"
+  (interactive)
+  (pony-celeryd-stop)
+  (run-with-timer 1 nil 'pony-celeryd-start))
+
 ;; TAGS
 
 ;;;###autoload
@@ -1039,6 +1062,7 @@ If the project has the django_extras package installed, then use the excellent
 (pony-key "\C-c\C-p!" 'pony-shell)
 (pony-key "\C-c\C-pt" 'pony-test)
 (pony-key "\C-c\C-p\C-r" 'pony-reload-mode)
+(pony-key "\C-c\C-p\c" 'pony-celeryd-start)
 
 (defvar pony-test-minor-mode-map
   (let ((map (make-keymap)))
