@@ -13,7 +13,7 @@ Features (Non-exhaustive):
 * Run test case at point in buffer [C-c C-p t]
 * Run tests for current app in buffer [C-c C-p t]
 * Run Syncdb on current project
-* Run Celeryd on current project [C-c C-p c]
+* Run Celeryd [C-c C-p c]
 * Management commands for current project in interactive buffer
 * South integration - run south convert, schemamigration, migrate
 * Run django shell in buffer [C-c C-p s]
