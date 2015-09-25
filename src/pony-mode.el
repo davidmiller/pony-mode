@@ -242,7 +242,7 @@ more conservative local-var manipulation."
 ;; which should define a pony-project variable
 ;;
 
-(defstruct pony-project python settings pythonpath)
+(defstruct pony-project python settings pythonpath appsdir)
 
 (defun pony-configfile-p ()
   "Establish whether this project has a .ponyrc file in the root"
@@ -297,7 +297,7 @@ variables; if not found, evaluate .ponyrc instead."
 
 (defun pony-get-app ()
   "Return the name of the current app, or nil if no app found."
-  (let* ((root (pony-project-root))
+  (let* ((root (concat (pony-project-root) (pony-get-appsdir)))
          (re (concat "^" (regexp-quote root) "\\([A-Za-z_]+\\)/"))
          (path (or buffer-file-name (expand-file-name default-directory))))
     (when (string-match re path)
@@ -454,6 +454,17 @@ This is configured in .dir-locals.el."
             (pony-project-pythonpath rc)
           nil))
     nil))
+
+(defun pony-get-appsdir()
+  "Return the apps directory, relative to project root.
+This is configured in .dir-locals.el."
+  (if (pony-configfile-p)
+      (let* ((rc (pony-rc)))
+        (if rc
+            (pony-project-appsdir rc)
+          nil))
+    nil))
+
 
 (defun pony-get-settings-module()
   "Return the absolute path to the pony settings file"
