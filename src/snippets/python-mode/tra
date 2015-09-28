@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# contributor: starenka starenka0@gmail.com
+# name: gettext
+# key: tra
+# --
+
+_(u\'${str}\')$0
