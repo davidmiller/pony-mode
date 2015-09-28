@@ -13,6 +13,7 @@ Features (Non-exhaustive):
 * Run test case at point in buffer [C-c C-p t]
 * Run tests for current app in buffer [C-c C-p t]
 * Run Syncdb on current project
+* Run Celeryd [C-c C-p c]
 * Management commands for current project in interactive buffer
 * South integration - run south convert, schemamigration, migrate
 * Run django shell in buffer [C-c C-p s]
@@ -70,7 +71,8 @@ The file should look something like this::
       ((pony-settings (make-pony-project
                        :python "/home/david/virtualenvs/megacorp/production/bin/python"
                        :pythonpath "/home/david/megacorp/libs/projectzero"
-                       :settings "local_settings_file")
+                       :settings "local_settings_file"
+                       :appsdir "testproject/apps/")
     ))))
 
 Help
