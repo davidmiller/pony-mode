@@ -246,22 +246,26 @@ more conservative local-var manipulation."
 
 (defun pony-configfile-p ()
   "Establish whether this project has a .ponyrc file in the root"
-  (if (equal 'dired-mode major-mode)
-      (if (pony-locate ".dir-locals.el") t nil)
-    (if (or
-         (and (buffer-file-name) (dir-locals-find-file (buffer-file-name)))
-         (pony-rooted-sym-p '.ponyrc))
-        t nil)))
+  (if (and (boundp 'dir-local-variables-alist) dir-local-variables-alist)
+	  t
+	(if (equal 'dired-mode major-mode)
+		(if (pony-locate ".dir-locals.el") t nil)
+	  (if (or
+		   (and (buffer-file-name) (dir-locals-find-file (buffer-file-name)))
+		   (pony-rooted-sym-p '.ponyrc))
+		  t nil))))
 
 (defun pony-rc ()
   "Return the settings for the current project.
 
 Evaluate the pony-settings variable from the directory-local
 variables; if not found, evaluate .ponyrc instead."
-  (dolist (pair (rest (first (pony-read-file (pony-locate ".dir-locals.el")))) res)
-    (if (equal 'pony-settings (first pair))
-        (setq res (eval (first (rest pair))))
-      nil)))
+  (if (and (boundp 'dir-local-variables-alist) dir-local-variables-alist)
+	  (eval (cadr (car dir-local-variables-alist)))
+	(dolist (pair (rest (first (pony-read-file (pony-locate ".dir-locals.el")))) res)
+	  (if (equal 'pony-settings (first pair))
+		  (setq res (eval (first (rest pair))))
+		nil))))
 
 (when (featurep 'files-x)
 ;;;###autoload
