@@ -33,7 +33,7 @@
 
 (defvar pony-indenting-tags
   '("autoescape" "block" "blocktrans" "comment" "elif" "else" "empty"
-    "filter" "form_tag" "for" "if" "ifchanged" "ifequal" "ifnotequal" "plural" "spaceless" "verbatim" "with")
+    "filter" "for" "if" "ifchanged" "ifequal" "ifnotequal" "plural" "spaceless" "verbatim" "with")
   "List of template tags that imply indentation.")
 
 (defvar pony-indenting-tags-regexp
@@ -113,7 +113,7 @@
     '("{%.*\\(\\bor\\b\\).*%}" . (1 font-lock-builtin-face))
     ;'("{% ?comment ?%}\\(\n?.*?\\)+?{% ?endcomment ?%}" . font-lock-comment-face)
     '("{#.*#}" . font-lock-comment-face)
-    (cons (concat "{% *\\(\\(?:end\\)?" (regexp-opt pony-indenting-tags) "\\|" (regexp-opt pony-nonindenting-tags) "\\>\\).*?%}") 1)
+    (cons (concat "{% *\\(\\(?:end\\)?" (regexp-opt pony-indenting-tags) "\\|" (regexp-opt pony-nonindenting-tags) "\\)\\>.*?%}") 1)
     '("{{ ?\\(.*?\\) ?}}" . (1 font-lock-variable-name-face))
     '("{%\\|\\%}\\|{{\\|}}" . font-lock-builtin-face)
     ))
