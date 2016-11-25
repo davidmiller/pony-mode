@@ -171,7 +171,7 @@ pick up directory-local settings."
 It creates a comint interaction buffer, called `name', running
 `command', called with `args'"
   (ansi-color-for-comint-mode-on)
-  (apply 'make-comint name command nil args)
+  (let ((default-directory (pony-project-root))) (apply 'make-comint name command nil args))
   (pony-pop (concat "*" name "*") :dirlocals t))
 
 (defun pony-manage-pop (name command args)
@@ -258,10 +258,12 @@ more conservative local-var manipulation."
 
 Evaluate the pony-settings variable from the directory-local
 variables; if not found, evaluate .ponyrc instead."
-  (dolist (pair (rest (first (pony-read-file (pony-locate ".dir-locals.el")))) res)
-    (if (equal 'pony-settings (first pair))
-        (setq res (eval (first (rest pair))))
-      nil)))
+  (let (res)
+    (dolist (pair (rest (first (pony-read-file (pony-locate ".dir-locals.el")))) res)
+      (if (equal 'pony-settings (first pair))
+          (setq res (eval (first (rest pair))))
+        nil)))
+  )
 
 (when (featurep 'files-x)
 ;;;###autoload
