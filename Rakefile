@@ -24,5 +24,5 @@ end
 
 task :test do
   p "Running unit tests"
-  sh " emacs -batch -L src -L tests -L tests/resources -l ert.el -l pony-test.el -f ert-run-tests-batch-and-exit"
+  sh " emacs -batch -L src -L tests -L tests/resources -l pony-test.el -f ert-run-tests-batch-and-exit"
 end
