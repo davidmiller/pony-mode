@@ -258,10 +258,9 @@ more conservative local-var manipulation."
 
 Evaluate the pony-settings variable from the directory-local
 variables; if not found, evaluate .ponyrc instead."
-  (dolist (pair (rest (first (pony-read-file (pony-locate ".dir-locals.el")))) res)
-    (if (equal 'pony-settings (first pair))
-        (setq res (eval (first (rest pair))))
-      nil)))
+  (eval (cdr (assoc 'pony-settings
+		    (cdr (car (pony-read-file
+			       (pony-locate ".dir-locals.el"))))))))
 
 (when (featurep 'files-x)
 ;;;###autoload
