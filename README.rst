@@ -86,11 +86,3 @@ Licence
 -------
 
 Totally GPL
-
-Roadmap
--------
-
-Check the org-mode file pony.org for current todo/wish list
-
-(If you can stand the org-to-github-markdown transition:
-https://github.com/davidmiller/pony-mode/blob/master/pony.org )hs
